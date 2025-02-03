@@ -5,8 +5,9 @@ import { Card } from './ui/card';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
-import { Plus, Key, Trash2, Copy, Eye, EyeOff } from 'lucide-react';
-import { useState } from 'react';
+import { Key, Trash2, Copy, Eye, EyeOff } from 'lucide-react';
+import { CreateKeyDialog } from './create-key-dialog';
+import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '../hooks/use-toast';
 
 type Key = {
@@ -21,8 +22,34 @@ type Key = {
 
 export function KeysList() {
   const [keys, setKeys] = useState<Key[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showValues, setShowValues] = useState<Record<string, boolean>>({});
   const { toast } = useToast();
+
+  const fetchKeys = useCallback(async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/keys`, {
+        credentials: 'include',
+      });
+      
+      if (!response.ok) throw new Error('Failed to fetch keys');
+      
+      const data = await response.json();
+      setKeys(data);
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [toast]);
+
+  useEffect(() => {
+    fetchKeys();
+  }, [fetchKeys]);
 
   const toggleValueVisibility = (id: string) => {
     setShowValues(prev => ({
@@ -51,10 +78,7 @@ export function KeysList() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Environment Variables</h2>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Add New
-        </Button>
+        <CreateKeyDialog onKeyCreated={fetchKeys} />
       </div>
 
       <div className="grid gap-4">
