@@ -47,8 +47,9 @@ router.post('/', authenticate, async (req, res) => {
       .single();
 
     if (error) throw error;
-    res.status(201).json(key);
-  } catch (error) {
+    return res.status(201).json(key);
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: error.errors });
     }
@@ -119,8 +120,8 @@ router.post('/import', authenticate, upload.single('file'), async (req, res) => 
       .select();
 
     if (error) throw error;
-    res.status(201).json(data);
+    return res.status(201).json(data);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });

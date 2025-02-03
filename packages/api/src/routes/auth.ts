@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
+
 import { supabase } from '../lib/supabase';
 
 export const router = Router();
@@ -24,11 +23,12 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: error.message });
     }
 
-    res.json({ 
+    return res.json({ 
       token: data.session.access_token,
       user: data.user
     });
   } catch (error) {
+    return res.status(400).json({ error: error instanceof Error ? error.message : 'Invalid request' });
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: error.errors });
     }

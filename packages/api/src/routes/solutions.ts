@@ -48,9 +48,8 @@ router.get('/', authenticate, async (req, res) => {
 
 // Create a new solution
 router.post('/', authenticate, async (req, res) => {
-  const { keyIds, ...data } = solutionSchema.parse(req.body);
-  
   try {
+    const { keyIds, ...data } = solutionSchema.parse(req.body);
     // Start a Supabase transaction
     const { data: solution, error: solutionError } = await supabase
       .from('solutions')
@@ -75,40 +74,9 @@ router.post('/', authenticate, async (req, res) => {
 
     if (relationError) throw relationError;
 
-    // Fetch the complete solution with keys
-    const { data: completeSolution, error: fetchError } = await supabase
-      .from('solutions')
-      .select(`
-        id,
-        name,
-        description,
-        created_at,
-        updated_at,
-        solution_keys (
-          key:keys (
-            id,
-            name,
-            description
-          )
-        )
-      `)
-      .eq('id', solution.id)
-      .single();
-
-    if (fetchError) throw fetchError;
-
-    // Transform the response
-    const transformedSolution = {
-      ...completeSolution,
-      keys: completeSolution.solution_keys.map(sk => sk.key),
-    };
-
-    res.status(201).json(transformedSolution);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.errors });
-    }
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(201).json(solution);
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
   }
 });
 
@@ -133,10 +101,20 @@ router.get('/:id/env', authenticate, async (req, res) => {
     if (error) throw error;
 
     // Filter out revoked keys and transform to env format
-    const envVars = solution.solution_keys
-      .filter(sk => !sk.key.revoked)
-      .reduce((acc, sk) => {
-        acc[sk.key.name] = sk.key.value;
+    type KeyType = {
+      key: {
+        revoked?: boolean;
+        name?: string;
+        value?: string;
+      };
+    };
+
+    const envVars = (solution.solution_keys as KeyType[] || [])
+      .filter(sk => !sk.key?.revoked)
+      .reduce((acc: Record<string, string>, sk) => {
+        if (sk.key?.name && sk.key?.value) {
+          acc[sk.key.name] = sk.key.value;
+        }
         return acc;
       }, {} as Record<string, string>);
 
