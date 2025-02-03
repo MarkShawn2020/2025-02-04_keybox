@@ -37,7 +37,12 @@ export default async function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </head>
       <body className="bg-background text-foreground">
-        <ThemeProvider>
+        <ThemeProvider
+        attribute="class"
+                  defaultTheme="system"
+                  enableSystem
+                  disableTransitionOnChange
+        >
           <main className="min-h-screen flex flex-col items-center">
             <div className="flex-1 w-full flex flex-col gap-8 md:gap-20 items-center">
               <nav className="w-full flex justify-center border-b border-b-foreground/10">
@@ -47,7 +52,7 @@ export default async function RootLayout({
                       href={"/"} 
                       className="flex items-center gap-2 text-lg md:text-base font-semibold hover:opacity-70 transition-opacity"
                     >
-                      <Logo mode="svg" className="h-8 w-auto" color="currentColor" />
+                      {/* <Logo mode="svg" className="h-8 w-auto" color="currentColor" /> */}
                       <JoinSVG />
                       <span>EnvBox</span>
                     </Link>
@@ -65,20 +70,21 @@ export default async function RootLayout({
                   </div>
                 </div>
               </nav>
+              
               <div className="flex flex-col gap-8 md:gap-20 w-full max-w-5xl px-4 md:px-5">
                 {children}
               </div>
 
               <footer className="w-full flex flex-col md:flex-row items-center justify-center border-t mx-auto text-center text-xs gap-4 md:gap-8 py-8 md:py-16 px-4">
-                <p>
-                  Built with{" "}
+              <p>
+                  Powered by{" "}
                   <a
-                    href="https://supabase.com"
+                    href="https://github.com/markshawn2020"
                     target="_blank"
                     className="font-bold hover:underline"
                     rel="noreferrer"
                   >
-                    Supabase
+                    CS Magic
                   </a>
                 </p>
                 <ThemeSwitcher />
