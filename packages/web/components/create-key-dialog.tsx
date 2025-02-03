@@ -164,12 +164,19 @@ export function CreateKeyDialog({ onKeyCreated }: CreateKeyDialogProps) {
   };
 
   return (
-    <Dialog onOpenChange={(open) => {
-        if (!open) handleClose();
-        else setOpen(true);
-      }}>
+    <Dialog 
+      open={open}
+      onOpenChange={(value) => {
+        if (!value) {
+          handleClose();
+        } else {
+          setOpen(true);
+          setStep('platform');
+        }
+      }}
+    >
       <DialogTrigger asChild>
-        <Button>
+        <Button onClick={() => setOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Add New
         </Button>
