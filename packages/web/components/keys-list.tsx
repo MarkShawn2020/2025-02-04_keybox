@@ -9,6 +9,8 @@ import { Key, Trash2, Copy, Eye, EyeOff } from 'lucide-react';
 import { CreateKeyDialog } from './create-key-dialog';
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '../hooks/use-toast';
+import { createClient } from '@/utils/supabase/client';
+
 
 type Key = {
   id: string;
@@ -26,10 +28,18 @@ export function KeysList() {
   const [showValues, setShowValues] = useState<Record<string, boolean>>({});
   const { toast } = useToast();
 
+
   const fetchKeys = useCallback(async () => {
     try {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No active session');
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/keys`, {
         credentials: 'include',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
       });
       
       if (!response.ok) throw new Error('Failed to fetch keys');

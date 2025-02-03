@@ -52,7 +52,7 @@ export default async function RootLayout({
                       href={"/"} 
                       className="flex items-center gap-2 text-lg md:text-base font-semibold hover:opacity-70 transition-opacity"
                     >
-                      {/* <Logo mode="svg" className="h-8 w-auto" color="currentColor" /> */}
+                      <Logo mode="svg" className="h-8 w-auto" color="currentColor" />
                       <JoinSVG />
                       <span>EnvBox</span>
                     </Link>
