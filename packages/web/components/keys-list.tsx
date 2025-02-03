@@ -68,6 +68,36 @@ export function KeysList() {
     }));
   };
 
+  const deleteKey = async (id: string) => {
+    try {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No active session');
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/keys/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      });
+      
+      if (!response.ok) throw new Error('Failed to delete key');
+      
+      await fetchKeys();
+      toast({
+        title: 'Success',
+        description: 'Key deleted successfully',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  };
+
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -123,7 +153,11 @@ export function KeysList() {
                 >
                   <Copy className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => deleteKey(key.id)}
+                >
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>

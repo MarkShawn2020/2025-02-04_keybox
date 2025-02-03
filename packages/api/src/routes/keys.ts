@@ -21,7 +21,7 @@ router.get('/', authenticate, async (req, res) => {
   try {
     const { data: keys, error } = await supabase
       .from('keys')
-      .select('id, name, description, tags, created_at, updated_at')
+      .select('*')
       .eq('user_id', req.user.id)
       .order('created_at', { ascending: false });
 
@@ -93,6 +93,22 @@ router.get('/export', authenticate, async (req, res) => {
     res.setHeader('Content-Type', 'text/plain');
     res.setHeader('Content-Disposition', 'attachment; filename=.env');
     res.send(envString);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete a key
+router.delete('/:id', authenticate, async (req, res) => {
+  try {
+    const { error } = await supabase
+      .from('keys')
+      .delete()
+      .eq('id', req.params.id)
+      .eq('user_id', req.user.id);
+
+    if (error) throw error;
+    res.json({ message: 'Key deleted successfully' });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
