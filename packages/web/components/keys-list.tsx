@@ -44,8 +44,6 @@ export function KeysList() {
   const [platforms, setPlatforms] = useState<Platform[]>([]);
   const [loading, setLoading] = useState(true);
   const [showValues, setShowValues] = useState<Record<string, boolean>>({});
-  const [expandedPlatforms, setExpandedPlatforms] = useState<Record<string, boolean>>({});
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const { toast } = useToast();
 
 
@@ -234,10 +232,7 @@ export function KeysList() {
       <div className="grid gap-6">
         {platforms.map((platform) => (
           <Card key={platform.id} className="p-4">
-            <div 
-              className="flex items-start justify-between mb-4 cursor-pointer" 
-              onClick={() => setExpandedPlatforms(prev => ({ ...prev, [platform.id]: !prev[platform.id] }))}
-            >
+            <div className="flex items-start justify-between mb-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <Key className="h-4 w-4 text-muted-foreground" />
@@ -276,14 +271,10 @@ export function KeysList() {
               </div>
             </div>
             
-            {expandedPlatforms[platform.id] && (
-              <div className="pl-4 space-y-4">
+            <div className="pl-4 space-y-4">
                 {platform.key_groups.map((group) => (
                   <Card key={group.id} className="p-4">
-                    <div 
-                      className="flex items-start justify-between mb-4 cursor-pointer"
-                      onClick={() => setExpandedGroups(prev => ({ ...prev, [group.id]: !prev[group.id] }))}
-                    >
+                    <div className="flex items-start justify-between mb-4">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <Key className="h-4 w-4 text-muted-foreground" />
@@ -310,8 +301,7 @@ export function KeysList() {
                       </div>
                     </div>
                     
-                    {expandedGroups[group.id] && (
-                      <div className="space-y-3">
+                    <div className="space-y-3">
                         {group.keys.map((key) => (
                           <div key={key.id} className="border rounded-lg p-3">
                             <div className="flex items-center justify-between mb-2">
@@ -372,11 +362,9 @@ export function KeysList() {
                           </div>
                         ))}
                       </div>
-                    )}
                   </Card>
                 ))}
               </div>
-            )}
           </Card>
         ))}
       </div>
