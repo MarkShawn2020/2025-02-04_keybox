@@ -164,8 +164,8 @@ export function KeysList() {
             </div>
             <div className="mt-2">
               <Input
-                type={showValues[key.id] ? 'text' : 'password'}
-                value={key.value}
+                type="text"
+                value={showValues[key.id] ? key.value : `${key.value.slice(0, 2)}...${key.value.slice(-2)}`}
                 readOnly
                 className="font-mono"
               />
