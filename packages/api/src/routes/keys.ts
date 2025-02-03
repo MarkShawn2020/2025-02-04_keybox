@@ -57,17 +57,27 @@ router.post('/', authenticate, async (req, res) => {
   }
 });
 
-// Revoke a key
-router.post('/:id/revoke', authenticate, async (req, res) => {
+// Toggle key status
+router.patch('/:id/toggle-status', authenticate, async (req, res) => {
   try {
+    const { data: currentKey, error: fetchError } = await supabase
+      .from('keys')
+      .select('revoked')
+      .eq('id', req.params.id)
+      .eq('user_id', req.user.id)
+      .single();
+
+    if (fetchError) throw fetchError;
+    if (!currentKey) throw new Error('Key not found');
+
     const { error } = await supabase
       .from('keys')
-      .update({ revoked: true })
+      .update({ revoked: !currentKey.revoked })
       .eq('id', req.params.id)
       .eq('user_id', req.user.id);
 
     if (error) throw error;
-    res.json({ message: 'Key revoked successfully' });
+    res.json({ message: 'Key status updated successfully', revoked: !currentKey.revoked });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

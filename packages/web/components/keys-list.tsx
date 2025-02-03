@@ -20,6 +20,7 @@ type Key = {
   tags?: string[];
   created_at: string;
   updated_at: string;
+  revoked: boolean;
 };
 
 export function KeysList() {
@@ -98,6 +99,36 @@ export function KeysList() {
     }
   };
 
+  const toggleKeyStatus = async (id: string) => {
+    try {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No active session');
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/keys/${id}/toggle-status`, {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      });
+      
+      if (!response.ok) throw new Error('Failed to update key status');
+      
+      await fetchKeys();
+      toast({
+        title: 'Success',
+        description: 'Key status updated successfully',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  };
+
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -129,6 +160,12 @@ export function KeysList() {
                 <div className="flex items-center gap-2">
                   <Key className="h-4 w-4 text-muted-foreground" />
                   <Label className="font-medium">{key.name}</Label>
+                  <span className={`px-2 py-0.5 text-xs rounded-full ${key.revoked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                    {key.revoked ? 'Revoked' : 'Active'}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    Created {new Date(key.created_at).toLocaleDateString()}
+                  </span>
                 </div>
                 {key.description && (
                   <p className="text-sm text-muted-foreground">{key.description}</p>
@@ -152,6 +189,15 @@ export function KeysList() {
                   onClick={() => copyToClipboard(key.value)}
                 >
                   <Copy className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => toggleKeyStatus(key.id)}
+                  className={key.revoked ? 'text-red-500 hover:text-red-600' : 'text-green-500 hover:text-green-600'}
+                >
+                  <span className="sr-only">{key.revoked ? 'Activate' : 'Revoke'} key</span>
+                  {key.revoked ? '🔓' : '🔒'}
                 </Button>
                 <Button
                   variant="ghost"
