@@ -4,3 +4,4 @@
 - 包管理器：pnpm
 - 前端 @packages/web， nextjs 14 app router
 - 后端 @packages/api, express
+- 数据库：supabase
