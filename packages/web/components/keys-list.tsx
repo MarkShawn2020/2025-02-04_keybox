@@ -354,15 +354,11 @@ export function KeysList() {
                               <span className={`px-1.5 py-0.5 text-xs rounded ${key.revoked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                                 {key.revoked ? 'Revoked' : 'Active'}
                               </span>
-                              <div className="w-32 overflow-hidden font-mono">
-                                <span className="text-sm text-muted-foreground">
-                                  {showValues[key.id] ? (
-                                    key.value
-                                  ) : (
-                                    key.value.replace(/./g, '•')
-                                  )}
-                                </span>
-                              </div>
+
+                              <span className="text-xs text-muted-foreground">
+                                {new Date(key.created_at).toLocaleDateString()}
+                              </span>
+
                               <div className="flex-1 min-w-0">
                                 {editingNote === key.id ? (
                                   <form
@@ -400,6 +396,18 @@ export function KeysList() {
                                   </div>
                                 )}
                               </div>
+
+                              <div className="w-32 overflow-hidden font-mono">
+                                <span className="text-sm text-muted-foreground">
+                                  {showValues[key.id] ? (
+                                    key.value
+                                  ) : (
+                                    key.value.replace(/./g, '•')
+                                  )}
+                                </span>
+                              </div>
+
+
                             </div>
                             <div className="flex items-center gap-1 ml-2">
                               <Button
