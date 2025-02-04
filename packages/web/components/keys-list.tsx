@@ -245,6 +245,11 @@ export function KeysList() {
     }
   };
 
+  const maskValue = (value: string) => {
+    if (value.length <= 2) value = value.replace(/./g, '•');
+    return `${value.slice(0, 2)}••••${value.slice(-2)}`;
+  };
+
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -402,7 +407,7 @@ export function KeysList() {
                                   {showValues[key.id] ? (
                                     key.value
                                   ) : (
-                                    key.value.replace(/./g, '•')
+                                    maskValue(key.value)
                                   )}
                                 </span>
                               </div>
