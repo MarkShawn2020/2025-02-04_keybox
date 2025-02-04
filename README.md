@@ -1,4 +1,4 @@
-# EnvBox - Environment Variable Manager
+# KeyBox - Environment Variable Manager
 
 A secure and user-friendly environment variable management solution that combines a web interface with CLI capabilities for seamless secret management.
 
@@ -124,16 +124,16 @@ The project uses the following tables:
 ### CLI
 ```bash
 # Login to your account
-envbox login
+KeyBox login
 
 # List available solutions
-envbox list
+KeyBox list
 
 # Generate .env file from a solution
-envbox pull <solution-name>
+KeyBox pull <solution-name>
 
 # Update existing .env file
-envbox sync
+KeyBox sync
 ```
 
 ## 🔒 Security

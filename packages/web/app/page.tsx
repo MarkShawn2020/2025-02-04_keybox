@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 const LandingPage = () => (
   <div className="flex flex-col items-center justify-center py-20 text-center">
     <Logo mode="svg" className="w-[180px] h-auto" color="currentColor" />
-    <h1 className="text-4xl font-bold m-4">EnvBox</h1>
+    <h1 className="text-4xl font-bold m-4">KeyBox</h1>
     <p className="text-xl text-muted-foreground">现代化的环境变量管理系统</p>
   </div>
 );

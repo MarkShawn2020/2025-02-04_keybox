@@ -7,6 +7,8 @@ import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Key, Trash2, Copy, Eye, EyeOff } from 'lucide-react';
 import { CreateKeyDialog } from './create-key-dialog';
+import { CreateKeyValueDialog } from './create-key-value-dialog';
+import { CreateKeyGroupDialog } from './create-key-group-dialog';
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '../hooks/use-toast';
 import { createClient } from '@/utils/supabase/client';
@@ -258,6 +260,10 @@ export function KeysList() {
                 )}
               </div>
               <div className="flex items-center gap-2">
+                <CreateKeyGroupDialog 
+                  onKeyGroupCreated={fetchPlatforms}
+                  platformId={platform.id}
+                />
                 <Button
                   variant="ghost"
                   size="icon"
@@ -288,6 +294,11 @@ export function KeysList() {
                         )}
                       </div>
                       <div className="flex items-center gap-2">
+                        <CreateKeyValueDialog 
+                          onKeyCreated={fetchPlatforms}
+                          platformId={platform.id}
+                          groupId={group.id}
+                        />
                         <Button
                           variant="ghost"
                           size="icon"

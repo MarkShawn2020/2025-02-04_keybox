@@ -17,7 +17,7 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "EnvBox | Environment Variable Manager",
+  title: "KeyBox | Environment Variable Manager",
   description: "Securely manage and share your environment variables",
 };
 
@@ -54,7 +54,7 @@ export default async function RootLayout({
                     >
                       <Logo mode="svg" className="h-8 w-auto" color="currentColor" />
                       <JoinSVG />
-                      <span>EnvBox</span>
+                      <span>KeyBox</span>
                     </Link>
                     <DeployButton />
                   </div>

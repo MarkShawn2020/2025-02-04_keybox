@@ -1,5 +1,5 @@
 {
-  "name": "envbox",
+  "name": "KeyBox",
   "private": true,
   "scripts": {
     "dev": "pnpm -r run dev",
