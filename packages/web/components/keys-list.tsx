@@ -1,11 +1,12 @@
 'use client';
 
 import { Button } from './ui/button';
+import { Pencil1Icon } from '@radix-ui/react-icons';
 import { Card } from './ui/card';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
-import { Key, Trash2, Copy, Eye, EyeOff } from 'lucide-react';
+import { Key, Trash2, Copy, Eye, EyeOff, PencilIcon } from 'lucide-react';
 import { CreateKeyDialog } from './create-key-dialog';
 import { CreateKeyValueDialog } from './create-key-value-dialog';
 import { CreateKeyGroupDialog } from './create-key-group-dialog';
@@ -46,6 +47,8 @@ export function KeysList() {
   const [platforms, setPlatforms] = useState<Platform[]>([]);
   const [loading, setLoading] = useState(true);
   const [showValues, setShowValues] = useState<Record<string, boolean>>({});
+  const [editingNote, setEditingNote] = useState<string>();
+  const [noteValue, setNoteValue] = useState("");
   const { toast } = useToast();
 
 
@@ -145,6 +148,40 @@ export function KeysList() {
         description: error.message,
         variant: 'destructive',
       });
+    }
+  };
+
+  const updateNote = async (keyId: string, note: string) => {
+    try {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No active session');
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/keys/keys/${keyId}`, {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ note })
+      });
+      
+      if (!response.ok) throw new Error('Failed to update note');
+      
+      await fetchPlatforms();
+      toast({
+        title: 'Success',
+        description: 'Note updated successfully',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setEditingNote(undefined);
     }
   };
 
@@ -317,18 +354,52 @@ export function KeysList() {
                               <span className={`px-1.5 py-0.5 text-xs rounded ${key.revoked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                                 {key.revoked ? 'Revoked' : 'Active'}
                               </span>
-                              <span className="text-sm text-muted-foreground font-mono w-24">
-                                {showValues[key.id] ? (
-                                  key.value
-                                ) : (
-                                  key.value.replace(/./g, '•')
-                                )}
-                              </span>
-                              {key.note && (
-                                <span className="text-xs text-muted-foreground truncate">
-                                  ({key.note})
+                              <div className="w-32 overflow-hidden font-mono">
+                                <span className="text-sm text-muted-foreground">
+                                  {showValues[key.id] ? (
+                                    key.value
+                                  ) : (
+                                    key.value.replace(/./g, '•')
+                                  )}
                                 </span>
-                              )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                {editingNote === key.id ? (
+                                  <form
+                                    onSubmit={(e) => {
+                                      e.preventDefault();
+                                      updateNote(key.id, noteValue);
+                                    }}
+                                    className="flex items-center gap-1"
+                                  >
+                                    <Input
+                                      value={noteValue}
+                                      onChange={(e) => setNoteValue(e.target.value)}
+                                      className="h-6 text-xs"
+                                      autoFocus
+                                      onBlur={() => {
+                                        if (noteValue !== key.note) {
+                                          updateNote(key.id, noteValue);
+                                        }
+                                        setEditingNote(undefined);
+                                      }}
+                                    />
+                                  </form>
+                                ) : (
+                                  <div
+                                    className="text-xs text-muted-foreground truncate cursor-text px-2 py-1 rounded border border-transparent hover:border-input hover:bg-accent/50 focus:border-input focus:bg-accent/50 transition-colors"
+                                    onClick={() => {
+                                      setEditingNote(key.id);
+                                      setNoteValue(key.note || "");
+                                    }}
+                                  >
+                                    <span className="flex items-center gap-1">
+                                      {/* <PencilIcon className="h-3 w-3" /> */}
+                                      {key.note || "Click to add note"}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                             <div className="flex items-center gap-1 ml-2">
                               <Button
