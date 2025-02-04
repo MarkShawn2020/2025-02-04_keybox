@@ -6,7 +6,7 @@ import { Card } from './ui/card';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
-import { Key, Trash2, Copy, Eye, EyeOff, PencilIcon } from 'lucide-react';
+import { Key, Trash2, Copy, Eye, EyeOff, PencilIcon, ChevronDown, ChevronRight } from 'lucide-react';
 import { CreateKeyDialog } from './create-key-dialog';
 import { CreateKeyValueDialog } from './create-key-value-dialog';
 import { CreateKeyGroupDialog } from './create-key-group-dialog';
@@ -49,6 +49,8 @@ export function KeysList() {
   const [showValues, setShowValues] = useState<Record<string, boolean>>({});
   const [editingNote, setEditingNote] = useState<string>();
   const [noteValue, setNoteValue] = useState("");
+  const [collapsedPlatforms, setCollapsedPlatforms] = useState<Record<string, boolean>>({});
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const { toast } = useToast();
 
 
@@ -276,8 +278,15 @@ export function KeysList() {
       <div className="space-y-2">
         {platforms.map((platform) => (
           <div key={platform.id} className="border rounded-lg">
-            <div className="flex items-center justify-between p-2 bg-muted/50">
-              <div>
+            <div 
+              className="flex items-center justify-between p-2 bg-muted/50 cursor-pointer hover:bg-muted/70 transition-colors"
+              onClick={() => setCollapsedPlatforms(prev => ({ ...prev, [platform.id]: !prev[platform.id] }))}
+            >
+              <div className="flex items-center gap-2">
+                {collapsedPlatforms[platform.id] ? 
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" /> : 
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                }
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{platform.name}</span>
                   <span className="text-xs text-muted-foreground">
@@ -318,11 +327,18 @@ export function KeysList() {
               </div>
             </div>
             
-            <div className="divide-y">
+            <div className="divide-y" style={{ display: collapsedPlatforms[platform.id] ? 'none' : 'block' }}>
                 {platform.key_groups.map((group) => (
                   <div key={group.id} className="p-2 pl-4">
-                    <div className="flex items-center justify-between">
-                      <div>
+                    <div 
+                      className="flex items-center justify-between cursor-pointer hover:bg-muted/30 transition-colors"
+                      onClick={() => setCollapsedGroups(prev => ({ ...prev, [group.id]: !prev[group.id] }))}
+                    >
+                      <div className="flex items-center gap-2">
+                        {collapsedGroups[group.id] ? 
+                          <ChevronRight className="h-4 w-4 text-muted-foreground" /> : 
+                          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                        }
                         <div className="flex items-center gap-2">
                           <span className="font-medium">{group.name}</span>
                           <span className="text-xs text-muted-foreground">
@@ -352,7 +368,7 @@ export function KeysList() {
                       </div>
                     </div>
                     
-                    <div className="space-y-1 mt-2">
+                    <div className="space-y-1 mt-2" style={{ display: collapsedGroups[group.id] ? 'none' : 'block' }}>
                         {group.keys.map((key) => (
                           <div key={key.id} className="flex items-center justify-between py-1 pl-4">
                             <div className="flex items-center gap-2 flex-1 min-w-0">
