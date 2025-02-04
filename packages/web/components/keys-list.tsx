@@ -231,27 +231,26 @@ export function KeysList() {
         <CreateKeyDialog onKeyCreated={fetchPlatforms} />
       </div>
 
-      <div className="grid gap-6">
+      <div className="space-y-2">
         {platforms.map((platform) => (
-          <Card key={platform.id} className="p-4">
-            <div className="flex items-start justify-between mb-4">
-              <div className="space-y-1">
+          <div key={platform.id} className="border rounded-lg">
+            <div className="flex items-center justify-between p-2 bg-muted/50">
+              <div>
                 <div className="flex items-center gap-2">
-                  <Key className="h-4 w-4 text-muted-foreground" />
-                  <Label className="font-medium">{platform.name}</Label>
+                  <span className="font-medium">{platform.name}</span>
                   <span className="text-xs text-muted-foreground">
-                    Created {new Date(platform.created_at).toLocaleDateString()}
+                    {new Date(platform.created_at).toLocaleDateString()}
                   </span>
                 </div>
                 {platform.description && (
                   <p className="text-sm text-muted-foreground">{platform.description}</p>
                 )}
                 {platform.tags && platform.tags.length > 0 && (
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-1 mt-1">
                     {platform.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-1 text-xs rounded-full bg-secondary"
+                        className="px-1.5 py-0.5 text-xs rounded bg-secondary"
                       >
                         {tag}
                       </span>
@@ -259,7 +258,7 @@ export function KeysList() {
                   </div>
                 )}
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <CreateKeyGroupDialog 
                   onKeyGroupCreated={fetchPlatforms}
                   platformId={platform.id}
@@ -277,23 +276,22 @@ export function KeysList() {
               </div>
             </div>
             
-            <div className="pl-4 space-y-4">
+            <div className="divide-y">
                 {platform.key_groups.map((group) => (
-                  <Card key={group.id} className="p-4">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="space-y-1">
+                  <div key={group.id} className="p-2 pl-4">
+                    <div className="flex items-center justify-between">
+                      <div>
                         <div className="flex items-center gap-2">
-                          <Key className="h-4 w-4 text-muted-foreground" />
-                          <Label className="font-medium">{group.name}</Label>
+                          <span className="font-medium">{group.name}</span>
                           <span className="text-xs text-muted-foreground">
-                            Created {new Date(group.created_at).toLocaleDateString()}
+                            {new Date(group.created_at).toLocaleDateString()}
                           </span>
                         </div>
                         {group.description && (
                           <p className="text-sm text-muted-foreground">{group.description}</p>
                         )}
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1">
                         <CreateKeyValueDialog 
                           onKeyCreated={fetchPlatforms}
                           platformId={platform.id}
@@ -312,71 +310,69 @@ export function KeysList() {
                       </div>
                     </div>
                     
-                    <div className="space-y-3">
+                    <div className="space-y-1 mt-2">
                         {group.keys.map((key) => (
-                          <div key={key.id} className="border rounded-lg p-3">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center gap-2">
-                                <span className={`px-2 py-0.5 text-xs rounded-full ${key.revoked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
-                                  {key.revoked ? 'Revoked' : 'Active'}
-                                </span>
-                                <span className="text-xs text-muted-foreground">
-                                  Added {new Date(key.created_at).toLocaleDateString()}
-                                </span>
-                                {key.note && (
-                                  <span className="text-xs text-muted-foreground">Note: {key.note}</span>
+                          <div key={key.id} className="flex items-center justify-between py-1 pl-4">
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                              <span className={`px-1.5 py-0.5 text-xs rounded ${key.revoked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                                {key.revoked ? 'Revoked' : 'Active'}
+                              </span>
+                              <span className="text-sm text-muted-foreground font-mono w-24">
+                                {showValues[key.id] ? (
+                                  key.value
+                                ) : (
+                                  key.value.replace(/./g, '•')
                                 )}
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => toggleValueVisibility(key.id)}
-                                >
-                                  {showValues[key.id] ? (
-                                    <EyeOff className="h-4 w-4" />
-                                  ) : (
-                                    <Eye className="h-4 w-4" />
-                                  )}
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => copyToClipboard(key.value)}
-                                >
-                                  <Copy className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => toggleKeyStatus(key.id)}
-                                  className={key.revoked ? 'text-red-500 hover:text-red-600' : 'text-green-500 hover:text-green-600'}
-                                >
-                                  <span className="sr-only">{key.revoked ? 'Activate' : 'Revoke'} key</span>
-                                  {key.revoked ? '🔓' : '🔒'}
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => deleteKey(key.id)}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
+                              </span>
+                              {key.note && (
+                                <span className="text-xs text-muted-foreground truncate">
+                                  ({key.note})
+                                </span>
+                              )}
                             </div>
-                            <Input
-                              type="text"
-                              value={showValues[key.id] ? key.value : `${key.value.slice(0, 2)}...${key.value.slice(-2)}`}
-                              readOnly
-                              className="font-mono"
-                            />
+                            <div className="flex items-center gap-1 ml-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => toggleValueVisibility(key.id)}
+                              >
+                                {showValues[key.id] ? (
+                                  <EyeOff className="h-3 w-3" />
+                                ) : (
+                                  <Eye className="h-3 w-3" />
+                                )}
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => copyToClipboard(key.value)}
+                              >
+                                <Copy className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => toggleKeyStatus(key.id)}
+                                className={key.revoked ? 'text-red-500 hover:text-red-600' : 'text-green-500 hover:text-green-600'}
+                              >
+                                <span className="sr-only">{key.revoked ? 'Activate' : 'Revoke'} key</span>
+                                {key.revoked ? '🔓' : '🔒'}
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => deleteKey(key.id)}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
                           </div>
                         ))}
                       </div>
-                  </Card>
+                  </div>
                 ))}
               </div>
-          </Card>
+          </div>
         ))}
       </div>
     </div>

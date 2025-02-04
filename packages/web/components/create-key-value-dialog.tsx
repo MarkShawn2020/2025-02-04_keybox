@@ -34,10 +34,10 @@ export function CreateKeyValueDialog({ onKeyCreated, platformId, groupId }: Crea
   };
 
   const handleSubmit = async () => {
-    if (!formData.note) {
+    if (!formData.value.trim()) {
       toast({
         title: "Error",
-        description: "Please enter a key name",
+        description: "Please enter a value",
         variant: "destructive",
       });
       return;
@@ -107,25 +107,27 @@ export function CreateKeyValueDialog({ onKeyCreated, platformId, groupId }: Crea
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label>Key Name</Label>
-            <Input
-              placeholder="Enter key name"
-              value={formData.note}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, note: e.target.value }))
-              }
-            />
-          </div>
           <div className="space-y-2">
             <Label>Key Value</Label>
             <Input
-              placeholder="Enter key value"
+              placeholder="Enter value (required)"
               value={formData.value}
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, value: e.target.value }))
               }
             />
           </div>
+
+            <Label>Note</Label>
+            <Input
+              placeholder="Enter note"
+              value={formData.note}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, note: e.target.value }))
+              }
+            />
+          </div>
+
         </div>
         <div className="flex justify-end space-x-2">
           <Button variant="outline" onClick={handleClose}>
