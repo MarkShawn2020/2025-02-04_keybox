@@ -9,22 +9,7 @@ import { stringify as stringifyEnv } from 'dotenv-stringify';
 export const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
-const keySchema = z.object({
-  value: z.string().min(1),
-  note: z.string().optional(),
-  revoked: z.boolean().default(false),
-});
-
-const keyGroupSchema = z.object({
-  name: z.string().min(1),  // e.g. API_KEY
-  description: z.string().optional(),
-});
-
-const platformSchema = z.object({
-  name: z.string().min(1),  // e.g. OPENAI, ALICLOUD
-  description: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-});
+import { keyGroupSchema, platformSchema, keySchema } from '@keybox/shared'
 
 // List all keys for the authenticated user
 router.get('/', authenticate, async (req, res) => {

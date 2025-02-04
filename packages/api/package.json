@@ -9,6 +9,7 @@
     "lint": "eslint . --ext .ts"
   },
   "dependencies": {
+    "@keybox/shared": "workspace:*",
     "@supabase/supabase-js": "^2.39.3",
     "@types/multer": "^1.4.12",
     "cors": "^2.8.5",

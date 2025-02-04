@@ -6,7 +6,7 @@ import { Card } from './ui/card';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
-import { Key, Trash2, Copy, Eye, EyeOff, PencilIcon, ChevronDown, ChevronRight } from 'lucide-react';
+import { Key as KeyIcon, Trash2, Copy, Eye, EyeOff, PencilIcon, ChevronDown, ChevronRight } from 'lucide-react';
 import { CreateKeyDialog } from './create-key-dialog';
 import { CreateKeyValueDialog } from './create-key-value-dialog';
 import { CreateKeyGroupDialog } from './create-key-group-dialog';
@@ -15,33 +15,7 @@ import { useToast } from '../hooks/use-toast';
 import { createClient } from '@/utils/supabase/client';
 
 
-type Key = {
-  id: string;
-  value: string;
-  note?: string;
-  revoked: boolean;
-  created_at: string;
-  updated_at: string;
-};
-
-type KeyGroup = {
-  id: string;
-  name: string;
-  description?: string;
-  created_at: string;
-  updated_at: string;
-  keys: Key[];
-};
-
-type Platform = {
-  id: string;
-  name: string;
-  description?: string;
-  tags?: string[];
-  created_at: string;
-  updated_at: string;
-  key_groups: KeyGroup[];
-};
+import type { Key, KeyGroup, Platform } from '@keybox/shared';
 
 export function KeysList() {
   const [platforms, setPlatforms] = useState<Platform[]>([]);
