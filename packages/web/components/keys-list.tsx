@@ -14,6 +14,7 @@ export function KeysList() {
     updateNote,
     toggleKeyStatus,
     deletePlatform,
+    updateGroup,
   } = useKeys();
 
   if (loading) {
@@ -38,6 +39,7 @@ export function KeysList() {
             onDeleteKey={deleteKey}
             onDeleteGroup={deleteKeyGroup}
             onDeletePlatform={deletePlatform}
+            onUpdateGroup={updateGroup}
           />
         ))}
       </div>

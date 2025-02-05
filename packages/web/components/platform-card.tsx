@@ -15,6 +15,7 @@ interface PlatformCardProps {
   onDeleteKey: (keyId: string) => Promise<void>;
   onDeleteGroup: (groupId: string) => Promise<void>;
   onDeletePlatform: (platformId: string) => Promise<void>;
+  onUpdateGroup: (groupId: string, data: { name: string; description?: string; tags?: string[] }) => Promise<void>;
 }
 
 export function PlatformCard({ 
@@ -25,6 +26,7 @@ export function PlatformCard({
   onDeleteKey,
   onDeleteGroup,
   onDeletePlatform,
+  onUpdateGroup,
 }: PlatformCardProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -90,6 +92,7 @@ export function PlatformCard({
             onToggleKeyStatus={onToggleKeyStatus}
             onDeleteKey={onDeleteKey}
             onDeleteGroup={onDeleteGroup}
+            onUpdateGroup={onUpdateGroup}
           />
         ))}
       </div>

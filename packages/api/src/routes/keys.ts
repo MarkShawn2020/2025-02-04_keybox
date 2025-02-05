@@ -192,6 +192,37 @@ router.delete('/keys/:id', authenticate, async (req, res) => {
   }
 });
 
+// Update a key group
+router.patch('/groups/:id', authenticate, async (req, res) => {
+  try {
+    const updateSchema = z.object({
+      name: z.string().min(1).optional(),
+      description: z.string().optional(),
+      tags: z.array(z.string()).optional(),
+    });
+
+    const data = updateSchema.parse(req.body);
+    
+    const { data: group, error } = await supabase
+      .from('key_groups')
+      .update(data)
+      .eq('id', req.params.id)
+      .eq('user_id', req.user.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    if (!group) throw new Error('Group not found');
+
+    return res.json(group);
+  } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: error.errors });
+    }
+    return res.status(500).json({ error: error.message });
+  }
+});
+
 // Delete a key group and all its keys
 router.delete('/groups/:id', authenticate, async (req, res) => {
   try {

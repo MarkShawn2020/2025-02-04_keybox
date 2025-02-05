@@ -13,6 +13,7 @@ export const keyGroupSchema = z.object({
   id: z.string(),
   name: z.string().min(1),  // e.g. API_KEY
   description: z.string().optional(),
+  tags: z.array(z.string()).optional(),
   created_at: z.string(),
   updated_at: z.string(),
   keys: z.array(keySchema).optional(),

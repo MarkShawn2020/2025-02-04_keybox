@@ -190,6 +190,38 @@ export function useKeys() {
     }
   };
 
+  const updateGroup = async (groupId: string, data: { name: string; description?: string; tags?: string[] }) => {
+    try {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No active session');
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/keys/groups/${groupId}`, {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) throw new Error('Failed to update group');
+      
+      await fetchPlatforms();
+      toast({
+        title: 'Success',
+        description: 'Group updated successfully',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  };
+
   useEffect(() => {
     fetchPlatforms();
   }, [fetchPlatforms]);
@@ -203,5 +235,6 @@ export function useKeys() {
     updateNote,
     toggleKeyStatus,
     deletePlatform,
+    updateGroup,
   };
 }
