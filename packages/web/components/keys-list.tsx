@@ -23,7 +23,7 @@ export function KeysList() {
       </div>
 
       <div className="space-y-2">
-        {platforms.map((platform) => (
+        {[...platforms].sort((a, b) => a.name.localeCompare(b.name)).map((platform) => (
           <PlatformCard
             key={platform.id}
             platform={platform}

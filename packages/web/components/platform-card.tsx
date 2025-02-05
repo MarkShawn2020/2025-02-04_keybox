@@ -64,13 +64,15 @@ export function PlatformCard({ platform }: PlatformCardProps) {
       </div>
       
       <div className="divide-y" style={{ display: isCollapsed ? 'none' : 'block' }}>
-        {platform.key_groups?.map((group) => (
-          <KeyGroupCard
-            key={group.id}
-            group={group}
-            platformId={platform.id}
-          />
-        ))}
+        {[...(platform.key_groups || [])]
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map((group) => (
+            <KeyGroupCard
+              key={group.id}
+              group={group}
+              platformId={platform.id}
+            />
+          ))}
       </div>
     </div>
   );
