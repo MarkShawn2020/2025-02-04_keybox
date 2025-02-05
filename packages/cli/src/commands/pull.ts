@@ -38,7 +38,23 @@ export async function pull(options: PullOptions) {
     
     console.log(chalk.green(`✓ Environment variables saved to ${options.output}`));
   } catch (error) {
-    console.error(chalk.red('Failed to pull environment variables:'), error);
+    let errorMessage = 'Failed to pull environment variables';
+    
+    if (error.message.includes('Project not found')) {
+      errorMessage = `Project '${projectName}' not found. Please create it first using 'keybox create'.`;
+    } else if (error.message.includes('Not logged in')) {
+      errorMessage = 'Not logged in. Please run `keybox login` first.';
+    } else {
+      // Try to parse error message if it's JSON
+      try {
+        const parsed = JSON.parse(error.message);
+        if (parsed.error) {
+          errorMessage = parsed.error;
+        }
+      } catch {}
+    }
+    
+    console.error(chalk.red(errorMessage));
     process.exit(1);
   }
 }

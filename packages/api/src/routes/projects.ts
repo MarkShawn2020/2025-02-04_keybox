@@ -5,6 +5,74 @@ import { supabase } from '../lib/supabase';
 
 export const router = Router();
 
+// Get environment variables for a project
+router.get('/:name/keys', authenticate, async (req, res) => {
+  try {
+    console.log('[DEBUG] Authenticated user:', req.user?.id);
+    const { name } = req.params;
+    console.log('[DEBUG] Looking for project:', name);
+    
+    // First get the project
+    const { data: projects, error: projectError } = await supabase
+      .from('projects')
+      .select('id')
+      .eq('name', name)
+      .eq('user_id', req.user.id);
+    
+    // Check if we got exactly one project
+    if (projects && projects.length > 1) {
+      return res.status(409).json({ 
+        error: `Found multiple projects with name: ${name}. This should not happen due to unique constraint.` 
+      });
+    }
+    
+    const project = projects?.[0];
+
+    if (projectError) {
+      console.error('[DEBUG] Project error:', projectError);
+      throw projectError;
+    }
+    if (!project) {
+      console.log('[DEBUG] Project not found for name:', name);
+      return res.status(404).json({ error: 'Project not found' });
+    }
+    console.log('[DEBUG] Found project:', project);
+
+    // Then get all keys for the project
+    const { data: projectKeys, error: keysError } = await supabase
+      .from('project_keys')
+      .select(`
+        key_id,
+        keys!inner(
+          value,
+          key_groups!inner(
+            name
+          )
+        )
+      `)
+      .eq('project_id', project.id);
+
+    if (keysError) {
+      console.error('[DEBUG] Keys error:', keysError);
+      throw keysError;
+    }
+    console.log('[DEBUG] Found project keys:', projectKeys);
+
+    // Transform to key-value pairs
+    const envVars = projectKeys.reduce((acc: Record<string, string>, pk: any) => {
+      if (pk.keys?.key_groups?.name && pk.keys.value) {
+        acc[pk.keys.key_groups.name] = pk.keys.value;
+      }
+      return acc;
+    }, {});
+
+    res.json(envVars);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 // Get all projects for the current user
 router.get('/', authenticate, async (req, res) => {
   try {

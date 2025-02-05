@@ -1,22 +1,28 @@
 import keytar from 'keytar';
 
 const KEYBOX_SERVICE = 'keybox-cli';
-const TOKEN_KEY = 'auth-token';
-const API_BASE_URL = 'http://localhost:3000/api';
+const TOKEN_KEY = 'token';
+const API_BASE_URL = process.env.API_URL || 'http://localhost:3001';
 
 export async function getAuthToken(): Promise<string | null> {
   return keytar.getPassword(KEYBOX_SERVICE, TOKEN_KEY);
 }
 
 export async function fetchEnvVars(token: string, projectName: string): Promise<Record<string, string>> {
-  const response = await fetch(`${API_BASE_URL}/projects/${encodeURIComponent(projectName)}/env`, {
+  const response = await fetch(`${API_BASE_URL}/projects/${encodeURIComponent(projectName)}/keys`, {
     headers: {
       'Authorization': `Bearer ${token}`
     }
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch env vars: ${response.statusText}`);
+    const errorText = await response.text();
+    console.error('Response error:', {
+      status: response.status,
+      statusText: response.statusText,
+      body: errorText
+    });
+    throw new Error(`Failed to fetch env vars: ${errorText}`);
   }
 
   return response.json();
