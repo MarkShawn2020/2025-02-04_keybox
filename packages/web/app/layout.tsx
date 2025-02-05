@@ -65,11 +65,34 @@ export default async function RootLayout({
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/site.webmanifest" />
       </head>
-      <body className="bg-background text-foreground antialiased min-h-screen flex flex-col">
+      <body className="bg-background text-foreground antialiased min-h-screen flex flex-col overflow-x-hidden">
+        {/* 背景装饰 */}
+        <div className="fixed inset-0 -z-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]">
+          <div className="absolute inset-0 bg-background/90 [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,transparent_0%,black_100%)]" />
+        </div>
+        <div className="fixed -top-64 right-0 -z-10 transform-gpu blur-3xl" aria-hidden="true">
+          <div
+            className="aspect-[801/678] w-[50.0625rem] bg-gradient-to-tr from-[#80808080] to-[#80808080] opacity-30"
+            style={{
+              clipPath:
+                'polygon(63.1% 29.6%, 100% 17.2%, 76.7% 3.1%, 48.4% 0.1%, 44.6% 4.8%, 54.5% 25.4%, 59.8% 49.1%, 55.3% 57.9%, 44.5% 57.3%, 27.8% 48%, 35.1% 81.6%, 0% 97.8%, 39.3% 100%, 35.3% 81.5%, 97.2% 52.3%, 63.1% 29.6%)',
+            }}
+          />
+        </div>
+        <div className="fixed -top-64 left-0 -z-10 transform-gpu blur-3xl" aria-hidden="true">
+          <div
+            className="aspect-[801/678] w-[50.0625rem] bg-gradient-to-tr from-[#80808080] to-[#80808080] opacity-30"
+            style={{
+              clipPath:
+                'polygon(63.1% 29.6%, 100% 17.2%, 76.7% 3.1%, 48.4% 0.1%, 44.6% 4.8%, 54.5% 25.4%, 59.8% 49.1%, 55.3% 57.9%, 44.5% 57.3%, 27.8% 48%, 35.1% 81.6%, 0% 97.8%, 39.3% 100%, 35.3% 81.5%, 97.2% 52.3%, 63.1% 29.6%)',
+            }}
+          />
+        </div>
+
         <Providers>
           <main className="flex-1 flex flex-col items-center">
             <div className="w-full flex flex-col gap-8 md:gap-20 items-center">
-              <nav className="w-full flex justify-center border-b border-b-foreground/10">
+              <nav className="w-full flex justify-center backdrop-blur-sm border-b border-b-foreground/10 sticky top-0 z-50">
                 <div className="w-full max-w-5xl flex flex-col md:flex-row justify-between items-stretch md:items-center py-4 px-5 md:py-3">
                   <div className="flex flex-col md:flex-row items-center justify-center md:justify-start gap-4 md:gap-6">
                     <Link 
@@ -109,7 +132,7 @@ export default async function RootLayout({
               </div>
             </div>
           </main>
-          <footer className="w-full border-t border-border/40 bg-muted/50">
+          <footer className="w-full border-t border-border/40 backdrop-blur-sm bg-background/80">
                 <div className="mx-auto max-w-5xl px-4 py-8 md:py-12">
                   <div className="flex flex-col gap-8">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-6">
