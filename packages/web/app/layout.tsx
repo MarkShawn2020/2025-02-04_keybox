@@ -165,9 +165,9 @@ export default async function RootLayout({
                       <Link href="/privacy" className="hover:text-foreground transition-colors">
                         隐私政策
                       </Link>
-                      <Link href="/docs" className="hover:text-foreground transition-colors">
+                      {/* <Link href="/docs" className="hover:text-foreground transition-colors">
                         文档中心
-                      </Link>
+                      </Link> */}
                       <Link href="/settings" className="hover:text-foreground transition-colors">
                         账户设置
                       </Link>

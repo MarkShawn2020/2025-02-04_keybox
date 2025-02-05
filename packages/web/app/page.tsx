@@ -46,7 +46,7 @@ const LandingPage = () => (
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 pt-4">
-        <Link href="/auth/sign-up">
+        <Link href="/sign-in">
           <Button 
             size="lg" 
             className="w-full sm:w-auto gap-2 bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary relative overflow-hidden group"
@@ -55,7 +55,7 @@ const LandingPage = () => (
             立即开始使用 <ArrowRight className="w-4 h-4 animate-bounce-x" />
           </Button>
         </Link>
-        <Link href="/docs">
+        {/* <Link href="/docs">
           <Button 
             size="lg" 
             variant="outline" 
@@ -64,7 +64,7 @@ const LandingPage = () => (
             <span className="absolute inset-0 bg-gradient-to-r from-primary/10 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
             了解更多
           </Button>
-        </Link>
+        </Link> */}
       </div>
     </div>
 
