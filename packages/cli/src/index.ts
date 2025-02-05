@@ -2,6 +2,7 @@
 
 import { Command } from 'commander';
 import { login } from './commands/login';
+import { logout } from './commands/logout';
 import { pull } from './commands/pull';
 import { create } from './commands/create';
 
@@ -16,6 +17,11 @@ program
   .command('login')
   .description('Login to KeyBox')
   .action(login);
+
+program
+  .command('logout')
+  .description('Logout from KeyBox')
+  .action(logout);
 
 program
   .command('pull')
