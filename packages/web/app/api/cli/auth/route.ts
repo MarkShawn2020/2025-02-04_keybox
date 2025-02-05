@@ -10,7 +10,13 @@ export async function GET(request: Request) {
     const provider = searchParams.get('provider') || 'email'
     
     const cookieStore = cookies()
-    const supabase = await createClient()
+    let supabase
+    try {
+      supabase = await createClient()
+    } catch (error) {
+      console.error('Failed to create Supabase client:', error)
+      return NextResponse.json({ error: 'Failed to initialize auth client' }, { status: 500 })
+    }
 
     if (provider === 'email') {
       if (!email) {
@@ -20,12 +26,31 @@ export async function GET(request: Request) {
       }
 
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+      const codeChallenge = searchParams.get('code_challenge')
+      const codeChallengeMethod = searchParams.get('code_challenge_method')
+
+      if (!codeChallenge || !codeChallengeMethod) {
+        return NextResponse.json({ 
+          error: 'PKCE parameters are required' 
+        }, { status: 400 })
+      }
+
+      console.log('Sending magic link with PKCE:', {
+        email,
+        redirectTo: `${siteUrl}/auth/cli?callback=${encodeURIComponent(callbackUrl)}`,
+        codeChallenge,
+        codeChallengeMethod
+      })
+
       const { data, error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${siteUrl}/auth/cli?redirect_url=${encodeURIComponent(callbackUrl)}`,
+          shouldCreateUser: true,
+          emailRedirectTo: `${siteUrl}/auth/cli?callback=${encodeURIComponent(callbackUrl)}`,
+          // 启用 PKCE
           data: {
-            redirect_url: callbackUrl
+            code_challenge: codeChallenge,
+            code_challenge_method: codeChallengeMethod
           }
         }
       })

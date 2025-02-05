@@ -13,16 +13,18 @@
     "link-dev": "pnpm link --global"
   },
   "dependencies": {
-    "commander": "^11.1.0",
-    "inquirer": "^8.2.6",
-    "open": "^8.4.2",
-    "keytar": "^7.9.0",
+    "@types/node-fetch": "^2.6.12",
     "chalk": "^4.1.2",
-    "dotenv": "^16.3.1"
+    "commander": "^11.1.0",
+    "dotenv": "^16.3.1",
+    "inquirer": "^8.2.6",
+    "keytar": "^7.9.0",
+    "node-fetch": "2",
+    "open": "^8.4.2"
   },
   "devDependencies": {
-    "@types/node": "^20.11.5",
     "@types/inquirer": "^9.0.7",
+    "@types/node": "^20.11.5",
     "typescript": "^5.3.3"
   }
 }
