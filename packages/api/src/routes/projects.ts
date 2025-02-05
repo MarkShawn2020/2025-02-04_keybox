@@ -18,7 +18,7 @@ router.get('/:name/keys', authenticate, async (req, res) => {
       .select('id')
       .eq('name', name)
       .eq('user_id', req.user.id);
-    
+
     // Check if we got exactly one project
     if (projects && projects.length > 1) {
       return res.status(409).json({ 
@@ -66,9 +66,9 @@ router.get('/:name/keys', authenticate, async (req, res) => {
       return acc;
     }, {});
 
-    res.json(envVars);
+    return res.json(envVars);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 
@@ -89,9 +89,9 @@ router.get('/', authenticate, async (req, res) => {
       keys: project.project_keys?.map((pk: any) => pk.key_id) || []
     }));
 
-    res.json(projectsWithKeys);
+    return res.json(projectsWithKeys);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 
@@ -127,9 +127,9 @@ router.post('/', authenticate, async (req, res) => {
       if (keysError) throw keysError;
     }
 
-    res.status(201).json(project);
+    return res.status(201).json(project);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 
@@ -172,9 +172,9 @@ router.put('/:id', authenticate, async (req, res) => {
       }
     }
 
-    res.json(project);
+    return res.json(project);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 
@@ -191,9 +191,9 @@ router.delete('/:id', authenticate, async (req, res) => {
 
     if (error) throw error;
 
-    res.status(204).send();
+    return res.status(204).send();
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 
@@ -223,9 +223,9 @@ router.get('/:id/env', authenticate, async (req, res) => {
 
     res.setHeader('Content-Type', 'text/plain');
     res.setHeader('Content-Disposition', 'attachment; filename=.env');
-    res.send(envContent);
+    return res.send(envContent);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 

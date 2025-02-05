@@ -29,7 +29,7 @@ const loginSchema = z.object({
 });
 
 // Generate a device code for CLI login
-router.post('/device/code', (req, res) => {
+router.post('/device/code', (_req, res) => {
   const deviceCode = randomBytes(32).toString('hex');
   const userCode = randomBytes(4).toString('hex').toUpperCase(); // Shorter code for user to type
   
@@ -66,7 +66,7 @@ router.post('/device/token', async (req, res) => {
   }
 
   deviceCodes.delete(device_code);
-  res.json({ token: codeData.token });
+  return res.json({ token: codeData.token });
 });
 
 // Verify and bind device code
@@ -80,7 +80,7 @@ router.post('/device/verify', async (req, res) => {
     }
   }
 
-  res.status(404).json({ error: 'Invalid user code' });
+  return res.status(404).json({ error: 'Invalid user code' });
 });
 
 // Get current user info
@@ -99,12 +99,14 @@ router.get('/me', authenticate, async (req, res) => {
       .eq('id', user.id)
       .single();
 
-    res.json({
+    return res.json({
+      id: user.id,
+      email: user.email,
       username: user.email,
-      lastLoginAt: profile?.last_login_at || user.last_sign_in_at
+      lastLoginAt: profile?.last_login_at ?? user.last_sign_in_at
     });
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
