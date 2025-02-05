@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Command, CommandGroup, CommandItem, CommandInput } from "@/components/ui/command";
 import { CommandList, Command as CommandPrimitive } from "cmdk";
+import { cn } from "@/lib/utils";
 
 type Option = {
   value: string;
@@ -21,7 +22,8 @@ export function MultiSelect({
   value,
   onChange,
   placeholder = "Select items...",
-}: MultiSelectProps) {
+  className
+}: MultiSelectProps & React.HTMLAttributes<HTMLDivElement>) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
@@ -58,7 +60,7 @@ export function MultiSelect({
   return (
     <Command
       onKeyDown={handleKeyDown}
-      className="overflow-visible bg-transparent"
+      className={cn("overflow-visible bg-transparent", className)}
     >
       <div className="group border border-input px-3 py-2 text-sm ring-offset-background rounded-md focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
         <div className="flex gap-1 flex-wrap">

@@ -7,28 +7,26 @@ import { Label } from '@/components/ui/label';
 import { useKeys } from '@/hooks/use-keys';
 import { MultiSelect } from '../ui/multi-select';
 import type { ProjectWithKeys } from '@keybox/shared';
-import { 
-  Pencil, 
-  Trash, 
-  Download,
-  Check,
-  X
-} from 'lucide-react';
+import { Pencil, Trash, Download, Check, X, Eye, EyeOff } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ProjectCardProps {
   project: ProjectWithKeys;
   onUpdate: (id: string, name: string, description?: string, keys?: string[]) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   onDownloadEnv: (id: string) => Promise<void>;
+  previewContent?: string;
 }
 
 export function ProjectCard({ 
   project, 
   onUpdate, 
   onDelete,
-  onDownloadEnv
+  onDownloadEnv,
+  previewContent
 }: ProjectCardProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [isPreviewVisible, setIsPreviewVisible] = useState(false);
   const [name, setName] = useState(project.name);
   const [description, setDescription] = useState(project.description || '');
   const [selectedKeys, setSelectedKeys] = useState<string[]>(project.keys);
@@ -57,44 +55,50 @@ export function ProjectCard({
   };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+    <Card className="overflow-hidden">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 py-2 px-3">
         {isEditing ? (
-          <div className="flex-1 mr-4">
+          <div className="flex-1 mr-2">
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Project name"
+              className="h-8"
             />
           </div>
         ) : (
-          <CardTitle>{project.name}</CardTitle>
+          <CardTitle className="text-base">{project.name}</CardTitle>
         )}
-        <div className="flex space-x-2">
+        <div className="flex space-x-1">
           {isEditing ? (
             <>
-              <Button size="sm" variant="ghost" onClick={handleSave}>
+              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={handleSave}>
                 <Check className="h-4 w-4" />
               </Button>
-              <Button size="sm" variant="ghost" onClick={handleCancel}>
+              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={handleCancel}>
                 <X className="h-4 w-4" />
               </Button>
             </>
           ) : (
             <>
-              <Button size="sm" variant="ghost" onClick={() => setIsEditing(true)}>
+              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setIsPreviewVisible(!isPreviewVisible)}>
+                {isPreviewVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
+              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setIsEditing(true)}>
                 <Pencil className="h-4 w-4" />
               </Button>
               <Button 
-                size="sm" 
+                size="icon" 
                 variant="ghost" 
+                className="h-8 w-8"
                 onClick={() => onDelete(project.id)}
               >
                 <Trash className="h-4 w-4" />
               </Button>
               <Button 
-                size="sm" 
+                size="icon" 
                 variant="ghost"
+                className="h-8 w-8"
                 onClick={() => onDownloadEnv(project.id)}
               >
                 <Download className="h-4 w-4" />
@@ -103,48 +107,63 @@ export function ProjectCard({
           )}
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-3 space-y-2">
         {isEditing ? (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Description</Label>
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <Label className="text-xs">Description</Label>
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Project description"
+                className="text-sm min-h-[60px]"
               />
             </div>
-            <div className="space-y-2">
-              <Label>Environment Variables</Label>
+            <div className="space-y-1">
+              <Label className="text-xs">Environment Variables</Label>
               <MultiSelect
                 options={allKeys}
                 value={selectedKeys}
                 onChange={setSelectedKeys}
                 placeholder="Select environment variables"
+                className="text-sm"
               />
             </div>
           </div>
         ) : (
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              {project.description || 'No description'}
-            </p>
-            <div>
-              <Label>Environment Variables</Label>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {project.keys.map(keyId => {
-                  const keyInfo = allKeys.find(k => k.value === keyId);
-                  return keyInfo ? (
-                    <div
-                      key={keyId}
-                      className="bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-sm"
-                    >
-                      {keyInfo.label}
-                    </div>
-                  ) : null;
-                })}
+          <div className="space-y-3">
+            {description && (
+              <div className="space-y-1">
+                <Label className="text-xs">Description</Label>
+                <p className="text-sm text-muted-foreground">{description}</p>
               </div>
-            </div>
+            )}
+            {selectedKeys.length > 0 && (
+              <div className="space-y-1">
+                <Label className="text-xs">Environment Variables</Label>
+                <div className="flex flex-wrap gap-1">
+                  {selectedKeys.map(keyId => {
+                    const keyInfo = allKeys.find(k => k.value === keyId);
+                    return keyInfo ? (
+                      <div 
+                        key={keyId}
+                        className="bg-secondary text-secondary-foreground px-1.5 py-0.5 rounded text-xs"
+                      >
+                        {keyInfo.label}
+                      </div>
+                    ) : null;
+                  })}
+                </div>
+              </div>
+            )}
+            {isPreviewVisible && previewContent && (
+              <div className="space-y-1">
+                <Label className="text-xs">.env Preview</Label>
+                <pre className="text-xs bg-muted p-2 rounded overflow-x-auto">
+                  {previewContent}
+                </pre>
+              </div>
+            )}
           </div>
         )}
       </CardContent>
