@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { useKeys } from '@/hooks/use-keys';
+import { usePlatforms } from '@/hooks/usePlatforms';
 import { MultiSelect } from '../ui/multi-select';
 import type { ProjectWithKeys } from '@keybox/shared';
 import { Pencil, Trash, Download, Check, X, Eye, EyeOff } from 'lucide-react';
@@ -31,24 +31,24 @@ export function ProjectCard({
   const [name, setName] = useState(project.name);
   const [description, setDescription] = useState(project.description || '');
   const [selectedKeys, setSelectedKeys] = useState<string[]>(project.keys);
-  const { platforms } = useKeys();
+  const { data: platforms } = usePlatforms();
 
   // console.log({platforms});
   
   // Flatten all keys from all platforms for MultiSelect
-  const allKeys = useMemo(() => platforms.flatMap(platform => 
+  const allKeys = useMemo(() => platforms?.flatMap(platform => 
     platform.key_groups?.flatMap(group => 
       group.keys?.map(key => ({
         value: key.id,
         label: `${platform.name} - ${group.name} - ${key.value}`
       })) || []
     ) || []
-  ), [platforms]);
+  ) || [], [platforms]);
 
   // Generate preview content
   const previewContent = useMemo(() => {
     if (!isPreviewVisible) return '';
-    return generateEnvContent(platforms, selectedKeys);
+    return generateEnvContent(platforms || [], selectedKeys);
   }, [isPreviewVisible, platforms, selectedKeys]);
 
   // Notify parent of preview content changes only when visibility changes

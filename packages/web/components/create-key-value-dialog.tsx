@@ -46,10 +46,11 @@ export function CreateKeyValueDialog({ platformId, groupId }: CreateKeyValueDial
     setLoading(true);
     try {
       createKey({
-        platformId,
         groupId,
-        value: formData.value,
-        note: formData.note || undefined,
+        data: {
+          value: formData.value,
+          note: formData.note || undefined,
+        }
       });
 
       toast({

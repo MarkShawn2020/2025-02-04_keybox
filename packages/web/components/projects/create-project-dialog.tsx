@@ -12,7 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { useKeys } from '@/hooks/use-keys';
+import { usePlatforms } from '@/hooks/usePlatforms';
 import { useProjects } from '@/hooks/use-projects';
 import { MultiSelect } from '../ui/multi-select';
 
@@ -25,7 +25,7 @@ export function CreateProjectDialog({ onProjectCreated }: CreateProjectDialogPro
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
-  const { platforms, fetchPlatforms } = useKeys();
+  const { data: platforms, refetch: fetchPlatforms } = usePlatforms();
 
   // Refresh platforms data when dialog opens
   useEffect(() => {
@@ -35,14 +35,14 @@ export function CreateProjectDialog({ onProjectCreated }: CreateProjectDialogPro
   }, [open, fetchPlatforms]);
 
   // Flatten all keys from all platforms
-  const allKeys = platforms.flatMap(platform => 
+  const allKeys = platforms?.flatMap(platform => 
     platform.key_groups?.flatMap(group => 
       group.keys?.map(key => ({
         value: key.id,
         label: `${platform.name} - ${group.name} - ${key.value}`
       })) || []
     ) || []
-  );
+  ) || [];
 
   const { createProject } = useProjects();
 

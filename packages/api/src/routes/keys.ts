@@ -29,6 +29,7 @@ router.get('/', authenticate, async (req, res) => {
           description,
           created_at,
           updated_at,
+          tags,
           keys:keys(
             id,
             value,

@@ -39,6 +39,9 @@ export function KeyGroupCard({ group, platformId }: KeyGroupCardProps) {
     }), {})
   );
 
+  console.log({group});
+  
+
   return (
     <div className="p-2 pl-4">
       <div 
@@ -143,24 +146,26 @@ export function KeyGroupCard({ group, platformId }: KeyGroupCardProps) {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
-                <span className="font-medium">{group.name}</span>
-                {group.tags && group.tags.length > 0 && (
-                  <div className="flex items-center gap-1">
-                    <TagIcon className="h-3 w-3 text-muted-foreground" />
-                    <div className="flex flex-wrap gap-1">
-                      {group.tags.map((tag, index) => (
-                        <Badge 
-                          key={index} 
-                          variant={defaultTags.includes(tag as any) ? "default" : "secondary"} 
-                          className="text-xs"
-                        >
-                          {tag}
-                        </Badge>
-                      ))}
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">{group.name}</span>
+                  {group.tags && group.tags.length > 0 && (
+                    <div className="flex items-center gap-1">
+                      
+                      <div className="flex flex-wrap gap-1">
+                        {group.tags.map((tag, index) => (
+                          <Badge 
+                            key={index} 
+                            variant={defaultTags.includes(tag as any) ? "default" : "secondary"} 
+                            className="text-xs"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
                 {group.description && (
                   <p className="text-sm text-muted-foreground">{group.description}</p>
                 )}
@@ -168,13 +173,14 @@ export function KeyGroupCard({ group, platformId }: KeyGroupCardProps) {
             )}
           </div>
         </div>
+
         <div className="flex items-center gap-1">
           {isEditing ? (
             <>
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={async (e) => {
+                onClick={(e) => {
                   e.stopPropagation();
                   const finalTags = [
                     ...Object.entries(specialTags)
@@ -189,8 +195,11 @@ export function KeyGroupCard({ group, platformId }: KeyGroupCardProps) {
                       description: editDescription || undefined,
                       tags: finalTags.length > 0 ? finalTags : undefined,
                     }
+                  }, {
+                    onSuccess: () => {
+                      setIsEditing(false);
+                    }
                   });
-                  setIsEditing(false);
                 }}
               >
                 <Check className="h-4 w-4" />

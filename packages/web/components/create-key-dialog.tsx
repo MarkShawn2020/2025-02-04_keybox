@@ -8,24 +8,20 @@ import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { createClient } from '@/utils/supabase/client';
+import { useCreatePlatform, useCreateKeyGroup, useCreateKey } from '@/hooks/usePlatforms';
 
-type CreateKeyDialogProps = {
-  onKeyCreated: () => void;
-};
-
-export function CreateKeyDialog({ onKeyCreated }: CreateKeyDialogProps) {
+export function CreateKeyDialog() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<'platform' | 'group' | 'key'>('platform');
   const [platformId, setPlatformId] = useState<string>();
   const [groupId, setGroupId] = useState<string>();
-  const [loading, setLoading] = useState(false);
+
   const { toast } = useToast();
 
-  const handlePlatformSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
+  const { mutate: createPlatform, isPending: isCreatingPlatform } = useCreatePlatform();
 
+  const handlePlatformSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = {
       name: formData.get('name') as string,
@@ -33,127 +29,84 @@ export function CreateKeyDialog({ onKeyCreated }: CreateKeyDialogProps) {
       tags: formData.get('tags') ? (formData.get('tags') as string).split(',').map(t => t.trim()) : [],
     };
 
-    try {
-      const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('No active session');
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/keys/platforms`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
-        credentials: 'include',
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create platform');
+    createPlatform(data, {
+      onSuccess: (platform) => {
+        setPlatformId(platform.id);
+        setStep('group');
+        toast({
+          title: 'Success',
+          description: 'Platform created successfully',
+        });
+      },
+      onError: (error: Error) => {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
       }
-
-      const result = await response.json();
-      setPlatformId(result.id);
-      setStep('group');
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
-  const handleGroupSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
+  const { mutate: createKeyGroup, isPending: isCreatingGroup } = useCreateKeyGroup();
 
+  const handleGroupSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = {
+      platformId: platformId!,
       name: formData.get('name') as string,
-      description: formData.get('description') as string,
+      description: formData.get('description') as string || undefined,
     };
 
-    try {
-      const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('No active session');
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/keys/platforms/${platformId}/groups`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
-        credentials: 'include',
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create key group');
+    createKeyGroup(data, {
+      onSuccess: (group) => {
+        setGroupId(group.id);
+        setStep('key');
+        toast({
+          title: 'Success',
+          description: 'Key group created successfully',
+        });
+      },
+      onError: (error: Error) => {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
       }
-
-      const result = await response.json();
-      setGroupId(result.id);
-      setStep('key');
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
-  const handleKeySubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
+  const { mutate: createKey, isPending: isCreatingKey } = useCreateKey();
 
+  const handleKeySubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = {
       value: formData.get('value') as string,
       note: formData.get('note') as string || undefined,
     };
 
-    try {
-      const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('No active session');
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/keys/groups/${groupId}/keys`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
-        credentials: 'include',
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create key');
+    createKey({
+      groupId: groupId!,
+      data,
+    }, {
+      onSuccess: () => {
+        setOpen(false);
+        toast({
+          title: 'Success',
+          description: 'Key created successfully',
+        });
+      },
+      onError: (error: Error) => {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
       }
-
-      toast({
-        title: 'Success',
-        description: 'Key created successfully',
-      });
-      
-      setOpen(false);
-      onKeyCreated();
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   const handleClose = () => {
@@ -220,8 +173,8 @@ export function CreateKeyDialog({ onKeyCreated }: CreateKeyDialogProps) {
               />
               <p className="text-sm text-muted-foreground mt-1">Optional tags for filtering and organization</p>
             </div>
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Creating...' : 'Next'}
+            <Button type="submit" disabled={isCreatingPlatform}>
+              {isCreatingPlatform ? 'Creating...' : 'Next'}
             </Button>
           </form>
         )}
@@ -247,8 +200,8 @@ export function CreateKeyDialog({ onKeyCreated }: CreateKeyDialogProps) {
               />
               <p className="text-sm text-muted-foreground mt-1">What this key is used for</p>
             </div>
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Creating...' : 'Next'}
+            <Button type="submit" disabled={isCreatingGroup}>
+              {isCreatingGroup ? 'Creating...' : 'Next'}
             </Button>
           </form>
         )}
@@ -276,13 +229,13 @@ export function CreateKeyDialog({ onKeyCreated }: CreateKeyDialogProps) {
               <p className="text-sm text-muted-foreground mt-1">Who provided this key or where it came from</p>
             </div>
             <div className="flex justify-between gap-4">
-              <Button type="submit" disabled={loading}>
-                {loading ? 'Creating...' : 'Create'}
+              <Button type="submit" disabled={isCreatingKey}>
+                {isCreatingKey ? 'Creating...' : 'Create'}
               </Button>
               <Button 
                 type="button" 
                 variant="outline" 
-                disabled={loading}
+                disabled={isCreatingPlatform}
                 onClick={() => {
                   // 先重置状态
                   setStep('platform');
@@ -290,8 +243,7 @@ export function CreateKeyDialog({ onKeyCreated }: CreateKeyDialogProps) {
                   setGroupId(undefined);
                   setOpen(false);
                   
-                  // 然后通知父组件和显示提示
-                  onKeyCreated();
+                  // 显示提示
                   toast({
                     title: 'Success',
                     description: 'Key group created successfully (no key value added)',

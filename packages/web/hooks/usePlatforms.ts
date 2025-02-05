@@ -5,7 +5,7 @@ import { api } from '@/utils/axios'
 export function usePlatforms() {
   return useQuery<Platform[]>({
     queryKey: ['platforms'],
-    queryFn: () => api.get('/platforms').then(res => res.data)
+    queryFn: () => api.get('/keys').then(res => res.data)
   })
 }
 
@@ -13,14 +13,17 @@ export function useUpdateKeyGroup() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: ({ groupId, data }: { 
+    mutationFn: async ({ groupId, data }: { 
       groupId: string; 
       data: { 
         name: string; 
         description?: string; 
         tags?: string[] 
       } 
-    }) => api.patch(`/keys/groups/${groupId}`, data),
+    }) => {
+      const response = await api.patch(`/keys/groups/${groupId}`, data);
+      return response.data;
+    },
     onSuccess: () => {
       // 更新成功后使缓存失效，触发重新获取
       queryClient.invalidateQueries({ queryKey: ['platforms'] })
@@ -75,22 +78,6 @@ export function useDeleteKey() {
   })
 }
 
-export function useCreateKey() {
-  const queryClient = useQueryClient()
-  
-  return useMutation({
-    mutationFn: (data: { 
-      platformId: string;
-      groupId: string;
-      value: string;
-      note?: string;
-    }) => api.post('/keys', data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['platforms'] })
-    }
-  })
-}
-
 export function useDeletePlatform() {
   const queryClient = useQueryClient()
   
@@ -110,7 +97,39 @@ export function useCreateKeyGroup() {
       platformId: string;
       name: string;
       description?: string;
-    }) => api.post('/keys/groups', data),
+    }) => api.post('/keys/groups', data).then(res => res.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['platforms'] })
+    }
+  })
+}
+
+export function useCreateKey() {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: ({ groupId, data }: { 
+      groupId: string;
+      data: {
+        value: string;
+        note?: string;
+      };
+    }) => api.post(`/keys/groups/${groupId}/keys`, data).then(res => res.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['platforms'] })
+    }
+  })
+}
+
+export function useCreatePlatform() {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: (data: { 
+      name: string;
+      description?: string;
+      tags?: string[];
+    }) => api.post('/keys/platforms', data).then(res => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['platforms'] })
     }
