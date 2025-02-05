@@ -31,17 +31,20 @@ const LandingPage = () => (
       
       <div className="relative">
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary/20 to-primary/20 blur-2xl opacity-50 animate-pulse" />
-        <Logo mode="svg" className="w-[200px] h-auto" color="currentColor" />
+        {/* <Logo mode="svg" className="w-[200px] h-auto" color="currentColor" /> */}
+        <h1 className="text-4xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70">
+
+        {/* 🔐  */}
+        KeyBox
+        </h1>
       </div>
 
       <div className="space-y-4">
         <h1 className="text-4xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70">
-          下一代
-          <span className="text-primary animate-text-gradient bg-gradient-to-r from-primary via-primary/80 to-primary bg-[length:200%_auto] motion-safe:animate-gradient"> 环境变量 </span>
-          管理系统
+        优雅的环境变量解决方案
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          安全、高效地管理和共享环境变量。支持命令行同步、多值变量，让配置管理变得简单。
+        安全、高效地管理和共享环境变量。支持命令行同步、多值变量，让环境变量管理不再烦恼！
         </p>
       </div>
 
