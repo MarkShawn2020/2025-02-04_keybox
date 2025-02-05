@@ -137,16 +137,19 @@ router.get('/:id/env', authenticate, async (req, res) => {
     // Get project keys with their values
     const { data: keys, error } = await supabase
       .from('project_keys')
-      .select('keys(*)')
+      .select('keys(*, key_groups(name))')
       .eq('project_id', id);
 
     if (error) throw error;
+
+    console.log(JSON.stringify(keys, null, 2));
+    
 
     // Generate .env content
     const envContent = keys
       .map((pk: any) => {
         const key = pk.keys;
-        return `${key.name}=${key.value}`;
+        return `${key.key_groups.name}=${key.value}`;
       })
       .join('\n');
 

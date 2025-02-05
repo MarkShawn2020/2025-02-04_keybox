@@ -149,7 +149,9 @@ export function useProjects() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = '.env';
+      const project = projects.find(p => p.id === id);
+      if (!project) throw new Error('Project not found');
+      a.download = `${project.name}.env`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);

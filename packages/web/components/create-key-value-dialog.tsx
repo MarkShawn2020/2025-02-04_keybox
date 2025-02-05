@@ -107,16 +107,7 @@ export function CreateKeyValueDialog({ onKeyCreated, platformId, groupId }: Crea
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-          <div className="space-y-2">
-            <Label>Key Value</Label>
-            <Input
-              placeholder="Enter value (required)"
-              value={formData.value}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, value: e.target.value }))
-              }
-            />
-          </div>
+
 
             <Label>Note</Label>
             <Input
@@ -126,6 +117,17 @@ export function CreateKeyValueDialog({ onKeyCreated, platformId, groupId }: Crea
                 setFormData((prev) => ({ ...prev, note: e.target.value }))
               }
             />
+
+<div className="space-y-2">
+            <Label>Key Value</Label>
+            <Input
+              placeholder="Enter value (required)"
+              value={formData.value}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, value: e.target.value }))
+              }
+            />
+          </div>
           </div>
 
         </div>
