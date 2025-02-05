@@ -15,6 +15,7 @@ type MultiSelectProps = {
   value: string[];
   onChange: (value: string[]) => void;
   placeholder?: string;
+  className?: string;
 };
 
 export function MultiSelect({
@@ -23,7 +24,7 @@ export function MultiSelect({
   onChange,
   placeholder = "Select items...",
   className
-}: MultiSelectProps & React.HTMLAttributes<HTMLDivElement>) {
+}: MultiSelectProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");

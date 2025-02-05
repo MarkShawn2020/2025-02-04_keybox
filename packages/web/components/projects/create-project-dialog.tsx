@@ -98,7 +98,7 @@ export function CreateProjectDialog({ onProjectCreated }: CreateProjectDialogPro
               <MultiSelect
                 options={allKeys}
                 value={selectedKeys}
-                onChange={setSelectedKeys}
+                onChange={(value: string[]) => setSelectedKeys(value)}
                 placeholder="Select environment variables"
               />
             </div>

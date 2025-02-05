@@ -124,7 +124,7 @@ export function ProjectCard({
               <MultiSelect
                 options={allKeys}
                 value={selectedKeys}
-                onChange={setSelectedKeys}
+                onChange={(value: string[]) => setSelectedKeys(value)}
                 placeholder="Select environment variables"
                 className="text-sm"
               />

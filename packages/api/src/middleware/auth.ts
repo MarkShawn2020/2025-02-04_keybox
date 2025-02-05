@@ -15,7 +15,7 @@ export const authenticate = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void | Response> => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
@@ -30,6 +30,7 @@ export const authenticate = async (
 
     req.user = { id: user.id };
     next();
+    return;
   } catch (error) {
     return res.status(401).json({ error: 'Invalid token' });
   }

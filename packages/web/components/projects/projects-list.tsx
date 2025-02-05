@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { CreateProjectDialog } from './create-project-dialog';
 import { ProjectCard } from './project-card';
 import { useProjects } from '@/hooks/use-projects';
@@ -14,6 +14,8 @@ export function ProjectsList() {
     deleteProject,
     downloadEnvFile,
   } = useProjects();
+
+  const [previewContent, setPreviewContent] = useState<{ [key: string]: string | undefined }>({});
 
   useEffect(() => {
     fetchProjects();
@@ -37,7 +39,13 @@ export function ProjectsList() {
             project={project}
             onUpdate={updateProject}
             onDelete={deleteProject}
-            onDownloadEnv={downloadEnvFile}
+            onDownloadEnv={async (id) => {
+              const content = await downloadEnvFile(id, true);
+              if (content) {
+                setPreviewContent(prev => ({ ...prev, [id]: content }));
+              }
+            }}
+            previewContent={previewContent[project.id]}
           />
         ))}
         {projects.length === 0 && (

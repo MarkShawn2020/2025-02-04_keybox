@@ -130,7 +130,7 @@ export function useProjects() {
     }
   };
 
-  const downloadEnvFile = async (id: string) => {
+  const downloadEnvFile = async (id: string, preview: boolean = false) => {
     try {
       const supabase = createClient();
       const { data: { session } } = await supabase.auth.getSession();
@@ -143,8 +143,15 @@ export function useProjects() {
         },
       });
 
-      if (!response.ok) throw new Error('Failed to download .env file');
+      if (!response.ok) throw new Error('Failed to fetch .env file');
 
+      // 如果是预览模式，返回文本内容
+      if (preview) {
+        const content = await response.text();
+        return content;
+      }
+
+      // 否则下载文件
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -167,6 +174,7 @@ export function useProjects() {
         description: error.message,
         variant: 'destructive',
       });
+      return '';
     }
   };
 
