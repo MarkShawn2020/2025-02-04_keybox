@@ -1,9 +1,5 @@
 import Logo from "@/components/logo";
-import { EnvVarActions } from "@/components/env-var-actions";
-import { KeysList } from "@/components/keys-list";
-import { ProjectsList } from "@/components/projects/projects-list";
 import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
 
 // Landing Page Component
 const LandingPage = () => (
@@ -17,16 +13,9 @@ const LandingPage = () => (
 // Dashboard Component
 const Dashboard = () => (
   <div className="flex flex-col gap-8 p-8">
-    <div className="flex flex-col gap-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">环境变量管理</h1>
-        <EnvVarActions />
-      </div>
-      <KeysList />
-    </div>
-    
-    <div className="flex flex-col gap-8">
-      <ProjectsList />
+    <div className="text-center">
+      <h1 className="text-2xl font-bold">欢迎使用 KeyBox</h1>
+      <p className="text-muted-foreground mt-2">请从上方导航栏选择要管理的内容</p>
     </div>
   </div>
 );

@@ -10,6 +10,7 @@ import { Suspense } from "react";
 import { Providers } from "./providers";
 import "./globals.css";
 import JoinSVG from '@/public/join.svg'
+import { createClient } from "@/utils/supabase/server";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -51,7 +52,24 @@ export default async function RootLayout({
                       <JoinSVG />
                       <span>KeyBox</span>
                     </Link>
+                    
                     <DeployButton />
+
+                    <div className="flex gap-6">
+
+                      <Link 
+                        href={"/variables"}
+                        className="text-sm font-medium transition-colors hover:text-primary text-muted-foreground"
+                      >
+                        变量管理
+                      </Link>
+                      <Link 
+                        href={"/projects"}
+                        className="text-sm font-medium transition-colors hover:text-primary text-muted-foreground"
+                      >
+                        项目管理
+                      </Link>
+                    </div>
                   </div>
                   
                   <div className="mt-4 md:mt-0 flex justify-center items-center">
@@ -67,6 +85,7 @@ export default async function RootLayout({
                   </div>
                 </div>
               </nav>
+
               
               <div className="flex flex-col gap-8 md:gap-20 w-full max-w-5xl px-4 md:px-5">
                 {children}
