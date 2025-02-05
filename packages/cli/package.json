@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "dev": "tsc -w",
+    "dev": "tsc",
     "start": "node dist/index.js",
     "link-dev": "pnpm link --global"
   },
