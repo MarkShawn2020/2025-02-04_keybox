@@ -16,6 +16,9 @@ interface KeyGroupCardProps {
   platformId: string;
 }
 
+const dangerousTags = ["server"] as const
+const defaultTags = [...dangerousTags, 'client'] as const;
+
 export function KeyGroupCard({ group, platformId }: KeyGroupCardProps) {
   const { mutate: updateGroup } = useUpdateKeyGroup();
   const { mutate: deleteGroup } = useDeleteKeyGroup();
@@ -31,7 +34,6 @@ export function KeyGroupCard({ group, platformId }: KeyGroupCardProps) {
   const [editTags, setEditTags] = useState<string[]>(group.tags || []);
   const [newTag, setNewTag] = useState('');
   
-  const defaultTags = ['server', 'client'] as const;
   const [specialTags, setSpecialTags] = useState<Record<string, boolean>>(
     defaultTags.reduce((acc, tag) => ({
       ...acc,
@@ -156,8 +158,8 @@ export function KeyGroupCard({ group, platformId }: KeyGroupCardProps) {
                         {group.tags.map((tag, index) => (
                           <Badge 
                             key={index} 
-                            variant={defaultTags.includes(tag as any) ? "default" : "secondary"} 
-                            className="text-xs"
+                            variant={dangerousTags.includes(tag as any) ? "destructive" : "secondary"} 
+                            className={`text-xs ${defaultTags.includes(tag as any) ? 'hover:bg-destructive/80' : ''}`}
                           >
                             {tag}
                           </Badge>
