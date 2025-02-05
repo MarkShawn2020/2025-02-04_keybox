@@ -11,6 +11,7 @@ import { Providers } from "./providers";
 import "./globals.css";
 import JoinSVG from '@/public/join.svg'
 import { createClient } from "@/utils/supabase/server";
+import { NavLinks } from "@/components/nav-links";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -52,23 +53,10 @@ export default async function RootLayout({
                       <JoinSVG />
                       <span>KeyBox</span>
                     </Link>
-                    
-                    <DeployButton />
+
 
                     <div className="flex gap-6">
-
-                      <Link 
-                        href={"/variables"}
-                        className="text-sm font-medium transition-colors hover:text-primary text-muted-foreground"
-                      >
-                        变量管理
-                      </Link>
-                      <Link 
-                        href={"/projects"}
-                        className="text-sm font-medium transition-colors hover:text-primary text-muted-foreground"
-                      >
-                        项目管理
-                      </Link>
+                      <NavLinks />
                     </div>
                   </div>
                   
@@ -78,6 +66,8 @@ export default async function RootLayout({
                     ) : (
                       <div className="flex gap-4 items-center">
                         <Suspense fallback={<div>Loading...</div>}>
+                        <DeployButton />
+ 
                           <HeaderAuth />
                         </Suspense>
                       </div>
