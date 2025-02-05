@@ -1,0 +1,51 @@
+'use client'
+
+import { useEffect } from 'react';
+import { CreateProjectDialog } from './create-project-dialog';
+import { ProjectCard } from './project-card';
+import { useProjects } from '@/hooks/use-projects';
+
+export function ProjectsList() {
+  const {
+    projects,
+    loading,
+    fetchProjects,
+    updateProject,
+    deleteProject,
+    downloadEnvFile,
+  } = useProjects();
+
+  useEffect(() => {
+    fetchProjects();
+  }, [fetchProjects]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold">Projects</h2>
+        <CreateProjectDialog onProjectCreated={fetchProjects} />
+      </div>
+
+      <div className="space-y-4">
+        {projects.map((project) => (
+          <ProjectCard
+            key={project.id}
+            project={project}
+            onUpdate={updateProject}
+            onDelete={deleteProject}
+            onDownloadEnv={downloadEnvFile}
+          />
+        ))}
+        {projects.length === 0 && (
+          <div className="text-center text-muted-foreground py-8">
+            No projects yet. Create one to get started!
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -30,8 +30,6 @@ export const authenticate = async (
 
     req.user = { id: user.id };
     next();
-    return;
-    next();
   } catch (error) {
     return res.status(401).json({ error: 'Invalid token' });
   }

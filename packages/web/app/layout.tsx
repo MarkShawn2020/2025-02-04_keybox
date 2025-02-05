@@ -64,7 +64,9 @@ export default async function RootLayout({
                       <EnvVarWarning />
                     ) : (
                       <div className="flex gap-4 items-center">
-                        <HeaderAuth />
+                        <Suspense fallback={<div>Loading...</div>}>
+                          <HeaderAuth />
+                        </Suspense>
                       </div>
                     )}
                   </div>

@@ -1,6 +1,7 @@
 import Logo from "@/components/logo";
 import { EnvVarActions } from "@/components/env-var-actions";
 import { KeysList } from "@/components/keys-list";
+import { ProjectsList } from "@/components/projects/projects-list";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -16,11 +17,17 @@ const LandingPage = () => (
 // Dashboard Component
 const Dashboard = () => (
   <div className="flex flex-col gap-8 p-8">
-    <div className="flex justify-between items-center">
-      <h1 className="text-2xl font-bold">环境变量管理</h1>
-      <EnvVarActions />
+    <div className="flex flex-col gap-8">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">环境变量管理</h1>
+        <EnvVarActions />
+      </div>
+      <KeysList />
     </div>
-    <KeysList />
+    
+    <div className="flex flex-col gap-8">
+      <ProjectsList />
+    </div>
   </div>
 );
 

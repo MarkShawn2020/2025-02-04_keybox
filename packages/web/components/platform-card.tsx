@@ -80,7 +80,7 @@ export function PlatformCard({
       </div>
       
       <div className="divide-y" style={{ display: isCollapsed ? 'none' : 'block' }}>
-        {platform.key_groups.map((group) => (
+        {platform.key_groups?.map((group) => (
           <KeyGroupCard
             key={group.id}
             group={group}
