@@ -24,5 +24,11 @@
     }
   },
   "include": ["packages/web/next-env.d.ts", "types/*.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "references": [
+    {"path": "./packages/shared/tsconfig.json"},
+    {"path": "./packages/api/tsconfig.json"},
+    {"path": "./packages/web/tsconfig.json"},
+    {"path": "./packages/cli/tsconfig.json"},
+  ]
 }

@@ -1,0 +1,28 @@
+{
+  "name": "@keybox/cli",
+  "version": "0.1.0",
+  "description": "KeyBox CLI - Manage your environment variables with ease",
+  "main": "dist/index.js",
+  "bin": {
+    "keybox": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "start": "node dist/index.js",
+    "link-dev": "pnpm link --global"
+  },
+  "dependencies": {
+    "commander": "^11.1.0",
+    "inquirer": "^8.2.6",
+    "open": "^8.4.2",
+    "keytar": "^7.9.0",
+    "chalk": "^4.1.2",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "@types/inquirer": "^9.0.7",
+    "typescript": "^5.3.3"
+  }
+}
