@@ -110,32 +110,49 @@ export default async function RootLayout({
 
               <footer className="w-full border-t border-border/40 bg-muted/50">
                 <div className="mx-auto max-w-5xl px-4 py-8 md:py-12">
-                  <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-                    <div className="flex flex-col md:flex-row items-center gap-4">
-                      <Link href="/" className="flex items-center gap-2">
-                        <Logo mode="svg" className="h-6 w-auto" color="currentColor" />
-                        <span className="font-semibold">KeyBox</span>
-                      </Link>
-                      <p className="text-sm text-muted-foreground">
-                        © {new Date().getFullYear()} CS Magic. All rights reserved.
-                      </p>
+                  <div className="flex flex-col gap-8">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                      <div className="flex flex-col md:flex-row items-center gap-4">
+                        <Link href="/" className="flex items-center gap-2">
+                          <Logo mode="svg" className="h-6 w-auto" color="currentColor" />
+                          <span className="font-semibold">KeyBox</span>
+                        </Link>
+                        <p className="text-sm text-muted-foreground">
+                          © {new Date().getFullYear()} CS Magic. All rights reserved.
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-6">
+                        <ThemeSwitcher />
+                        <a
+                          href="https://github.com/markshawn2020"
+                          target="_blank"
+                          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                          rel="noreferrer"
+                        >
+                          GitHub
+                        </a>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-6">
-                      <ThemeSwitcher />
-                      <a
-                        href="https://github.com/markshawn2020"
-                        target="_blank"
-                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                        rel="noreferrer"
-                      >
-                        GitHub
-                      </a>
-                      <Link
-                        href="/privacy"
-                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        Privacy
+                    
+                    <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm text-muted-foreground">
+                      <Link href="/terms" className="hover:text-foreground transition-colors">
+                        用户协议
                       </Link>
+                      <Link href="/privacy" className="hover:text-foreground transition-colors">
+                        隐私政策
+                      </Link>
+                      <Link href="/docs" className="hover:text-foreground transition-colors">
+                        文档中心
+                      </Link>
+                      <Link href="/settings" className="hover:text-foreground transition-colors">
+                        账户设置
+                      </Link>
+                      <a 
+                        href="mailto:support@csmagic.com"
+                        className="hover:text-foreground transition-colors"
+                      >
+                        联系我们
+                      </a>
                     </div>
                   </div>
                 </div>
