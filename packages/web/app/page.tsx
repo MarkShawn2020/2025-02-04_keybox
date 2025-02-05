@@ -26,7 +26,7 @@ const LandingPage = () => (
         <span className="px-2 py-1 bg-primary text-primary-foreground rounded-full text-xs font-medium animate-pulse">
           New
         </span>
-        <span className="text-muted-foreground">现已支持团队协作和权限管理</span>
+        <span className="text-muted-foreground">V0.1.0 正式上线！🎉🎉</span>
       </div>
       
       <div className="relative">
@@ -112,7 +112,7 @@ const Dashboard = () => (
 
     {/* Quick Actions */}
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <Link href="/variables" className="group">
+      <Link href="/protected/variables" className="group">
         <div className="p-6 rounded-lg border border-border/50 group-hover:border-border/80 transition-all bg-card hover:shadow-sm">
           <h3 className="font-semibold flex items-center gap-2 mb-2">
             <Key className="w-5 h-5" /> 创建环境变量
@@ -120,7 +120,7 @@ const Dashboard = () => (
           <p className="text-sm text-muted-foreground">添加新的环境变量或从文件导入</p>
         </div>
       </Link>
-      <Link href="/projects" className="group">
+      <Link href="/protected/projects" className="group">
         <div className="p-6 rounded-lg border border-border/50 group-hover:border-border/80 transition-all bg-card hover:shadow-sm">
           <h3 className="font-semibold flex items-center gap-2 mb-2">
             <Users className="w-5 h-5" /> 管理解决方案
@@ -128,7 +128,7 @@ const Dashboard = () => (
           <p className="text-sm text-muted-foreground">查看和管理您的解决方案</p>
         </div>
       </Link>
-      <Link href="/settings" className="group">
+      <Link href="/protected/settings" className="group">
         <div className="p-6 rounded-lg border border-border/50 group-hover:border-border/80 transition-all bg-card hover:shadow-sm">
           <h3 className="font-semibold flex items-center gap-2 mb-2">
             <Lock className="w-5 h-5" /> 安全设置
