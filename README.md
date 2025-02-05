@@ -2,6 +2,8 @@
 
 A secure and user-friendly environment variable management solution that combines a web interface with CLI capabilities for seamless secret management.
 
+![alt text](./assets/images/landing-page.png)
+
 ## 🎯 Project Goals
 
 - Provide a centralized platform for managing environment variables and API keys
