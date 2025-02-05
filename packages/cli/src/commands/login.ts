@@ -2,13 +2,54 @@ import axios from 'axios';
 import open from 'open';
 import { Spinner } from 'cli-spinner';
 import keytar from 'keytar';
+import chalk from 'chalk';
 
 const API_URL = process.env.API_URL || 'http://localhost:3001';
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 const SERVICE_NAME = 'keybox-cli';
 
+async function getCurrentUser(token: string) {
+  try {
+    console.log(chalk.blue('🔍 Checking current login status...'));
+    const response = await axios.get(`${API_URL}/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    console.log(chalk.blue('✓ Successfully retrieved user info'));
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(chalk.yellow(`ℹ Token validation failed: ${error.response?.status} ${error.response?.statusText}`));
+    }
+    return null;
+  }
+}
+
 export async function login() {
     try {
+      // Check if already logged in
+      console.log(chalk.blue('🔑 Checking for existing credentials...'));
+      const existingToken = await keytar.getPassword(SERVICE_NAME, 'token');
+      
+      if (existingToken) {
+        console.log(chalk.blue('✓ Found existing token'));
+        const user = await getCurrentUser(existingToken);
+        if (user) {
+          console.log(chalk.green('\n✓ Successfully verified existing login!'));
+          console.log(`Username: ${chalk.cyan(user.username)}`);
+          if (user.lastLoginAt) {
+            console.log(`Last login: ${chalk.cyan(new Date(user.lastLoginAt).toLocaleString())}`);
+          }
+          return;
+        }
+        
+        console.log(chalk.yellow('⚠️ Existing token is invalid, clearing...'));
+        // Token exists but is invalid - clear it
+        await keytar.deletePassword(SERVICE_NAME, 'token');
+        console.log(chalk.yellow('✓ Invalid token cleared'));
+      } else {
+        console.log(chalk.blue('ℹ No existing login found'));
+      }
+    
       console.log('Connecting to API server...');
       // Step 1: Get device code
       const { data: deviceData } = await axios.post(`${API_URL}/auth/device/code`);

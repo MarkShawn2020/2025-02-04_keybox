@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { randomBytes } from 'crypto';
 import { supabase } from '../lib/supabase';
+import { authenticate } from '../middleware/auth';
 
 export const router = Router();
 
@@ -82,6 +83,31 @@ router.post('/device/verify', async (req, res) => {
   res.status(404).json({ error: 'Invalid user code' });
 });
 
+// Get current user info
+router.get('/me', authenticate, async (req, res) => {
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser(req.headers.authorization?.split(' ')[1] || '');
+    
+    if (error || !user) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+
+    // Get user's last login time from metadata
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('last_login_at')
+      .eq('id', user.id)
+      .single();
+
+    res.json({
+      username: user.email,
+      lastLoginAt: profile?.last_login_at || user.last_sign_in_at
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = loginSchema.parse(req.body);
@@ -94,6 +120,14 @@ router.post('/login', async (req, res) => {
     if (error) {
       return res.status(401).json({ error: error.message });
     }
+
+    // Update last login time
+    await supabase
+      .from('profiles')
+      .upsert({
+        id: data.user.id,
+        last_login_at: new Date().toISOString()
+      });
 
     return res.json({ 
       token: data.session.access_token,

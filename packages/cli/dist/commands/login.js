@@ -8,12 +8,52 @@ const axios_1 = __importDefault(require("axios"));
 const open_1 = __importDefault(require("open"));
 const cli_spinner_1 = require("cli-spinner");
 const keytar_1 = __importDefault(require("keytar"));
+const chalk_1 = __importDefault(require("chalk"));
 const API_URL = process.env.API_URL || 'http://localhost:3001';
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 const SERVICE_NAME = 'keybox-cli';
+async function getCurrentUser(token) {
+    var _a, _b;
+    try {
+        console.log(chalk_1.default.blue('🔍 Checking current login status...'));
+        const response = await axios_1.default.get(`${API_URL}/auth/me`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        console.log(chalk_1.default.blue('✓ Successfully retrieved user info'));
+        return response.data;
+    }
+    catch (error) {
+        if (axios_1.default.isAxiosError(error)) {
+            console.log(chalk_1.default.yellow(`ℹ Token validation failed: ${(_a = error.response) === null || _a === void 0 ? void 0 : _a.status} ${(_b = error.response) === null || _b === void 0 ? void 0 : _b.statusText}`));
+        }
+        return null;
+    }
+}
 async function login() {
     var _a, _b;
     try {
+        // Check if already logged in
+        console.log(chalk_1.default.blue('🔑 Checking for existing credentials...'));
+        const existingToken = await keytar_1.default.getPassword(SERVICE_NAME, 'token');
+        if (existingToken) {
+            console.log(chalk_1.default.blue('✓ Found existing token'));
+            const user = await getCurrentUser(existingToken);
+            if (user) {
+                console.log(chalk_1.default.green('\n✓ Successfully verified existing login!'));
+                console.log(`Username: ${chalk_1.default.cyan(user.username)}`);
+                if (user.lastLoginAt) {
+                    console.log(`Last login: ${chalk_1.default.cyan(new Date(user.lastLoginAt).toLocaleString())}`);
+                }
+                return;
+            }
+            console.log(chalk_1.default.yellow('⚠️ Existing token is invalid, clearing...'));
+            // Token exists but is invalid - clear it
+            await keytar_1.default.deletePassword(SERVICE_NAME, 'token');
+            console.log(chalk_1.default.yellow('✓ Invalid token cleared'));
+        }
+        else {
+            console.log(chalk_1.default.blue('ℹ No existing login found'));
+        }
         console.log('Connecting to API server...');
         // Step 1: Get device code
         const { data: deviceData } = await axios_1.default.post(`${API_URL}/auth/device/code`);
