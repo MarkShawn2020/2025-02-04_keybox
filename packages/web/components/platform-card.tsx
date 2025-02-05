@@ -6,29 +6,15 @@ import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
 import { CreateKeyGroupDialog } from './create-key-group-dialog';
 import { KeyGroupCard } from './key-group-card';
 import type { Platform } from '@keybox/shared';
+import { useDeletePlatform } from '@/hooks/usePlatforms';
 
 interface PlatformCardProps {
   platform: Platform;
-  onKeyCreated: () => Promise<void>;
-  onUpdateNote: (keyId: string, note: string) => Promise<void>;
-  onToggleKeyStatus: (keyId: string) => Promise<void>;
-  onDeleteKey: (keyId: string) => Promise<void>;
-  onDeleteGroup: (groupId: string) => Promise<void>;
-  onDeletePlatform: (platformId: string) => Promise<void>;
-  onUpdateGroup: (groupId: string, data: { name: string; description?: string; tags?: string[] }) => Promise<void>;
 }
 
-export function PlatformCard({ 
-  platform,
-  onKeyCreated,
-  onUpdateNote,
-  onToggleKeyStatus,
-  onDeleteKey,
-  onDeleteGroup,
-  onDeletePlatform,
-  onUpdateGroup,
-}: PlatformCardProps) {
+export function PlatformCard({ platform }: PlatformCardProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { mutate: deletePlatform } = useDeletePlatform();
 
   return (
     <div className="border rounded-lg">
@@ -65,7 +51,6 @@ export function PlatformCard({
         </div>
         <div className="flex items-center gap-1">
           <CreateKeyGroupDialog 
-            onKeyGroupCreated={onKeyCreated}
             platformId={platform.id}
           />
           <Button
@@ -73,7 +58,7 @@ export function PlatformCard({
             size="icon"
             onClick={(e) => {
               e.stopPropagation();
-              onDeletePlatform(platform.id);
+              deletePlatform(platform.id);
             }}
           >
             <Trash2 className="h-4 w-4" />
@@ -87,12 +72,6 @@ export function PlatformCard({
             key={group.id}
             group={group}
             platformId={platform.id}
-            onKeyCreated={onKeyCreated}
-            onUpdateNote={onUpdateNote}
-            onToggleKeyStatus={onToggleKeyStatus}
-            onDeleteKey={onDeleteKey}
-            onDeleteGroup={onDeleteGroup}
-            onUpdateGroup={onUpdateGroup}
           />
         ))}
       </div>

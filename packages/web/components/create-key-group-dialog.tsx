@@ -11,15 +11,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { createClient } from '@/utils/supabase/client';
+import { useCreateKeyGroup } from "@/hooks/usePlatforms";
 import { Textarea } from "./ui/textarea";
 
 type CreateKeyGroupDialogProps = {
-  onKeyGroupCreated: () => void;
   platformId: string;
 };
 
-export function CreateKeyGroupDialog({ onKeyGroupCreated, platformId }: CreateKeyGroupDialogProps) {
+export function CreateKeyGroupDialog({ platformId }: CreateKeyGroupDialogProps) {
+  const { mutate: createKeyGroup } = useCreateKeyGroup();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -45,30 +45,16 @@ export function CreateKeyGroupDialog({ onKeyGroupCreated, platformId }: CreateKe
 
     setLoading(true);
     try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error('Not authenticated');
-      }
-
-      const { error } = await supabase
-        .from('key_groups')
-        .insert({
-          name: formData.name,
-          description: formData.description,
-          platform_id: platformId,
-          user_id: user.id,
-        });
-
-      if (error) {
-        throw error;
-      }
+      createKeyGroup({
+        platformId,
+        name: formData.name,
+        description: formData.description || undefined,
+      });
 
       toast({
         title: "Success",
         description: "Key group created successfully",
       });
-      onKeyGroupCreated();
       handleClose();
     } catch (error) {
       toast({

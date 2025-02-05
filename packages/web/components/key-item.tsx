@@ -9,9 +9,9 @@ import type { Key } from '@keybox/shared';
 
 interface KeyItemProps {
   keyData: Key;
-  onUpdateNote: (keyId: string, note: string) => Promise<void>;
-  onToggleStatus: (keyId: string) => Promise<void>;
-  onDelete: (keyId: string) => Promise<void>;
+  onUpdateNote: (keyId: string, note: string) => void;
+  onToggleStatus: (keyId: string) => void;
+  onDelete: (keyId: string) => void;
 }
 
 export function KeyItem({ keyData, onUpdateNote, onToggleStatus, onDelete }: KeyItemProps) {

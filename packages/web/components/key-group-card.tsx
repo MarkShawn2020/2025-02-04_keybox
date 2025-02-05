@@ -9,28 +9,21 @@ import { ChevronDown, ChevronRight, Trash2, Pencil, Check, X, Tag as TagIcon, Pl
 import { CreateKeyValueDialog } from './create-key-value-dialog';
 import { KeyItem } from './key-item';
 import type { KeyGroup } from '@keybox/shared';
+import { useCreateKey, useDeleteKey, useDeleteKeyGroup, useToggleKeyStatus, useUpdateKeyGroup, useUpdateKeyNote } from '@/hooks/usePlatforms';
 
 interface KeyGroupCardProps {
   group: KeyGroup;
   platformId: string;
-  onKeyCreated: () => Promise<void>;
-  onUpdateNote: (keyId: string, note: string) => Promise<void>;
-  onToggleKeyStatus: (keyId: string) => Promise<void>;
-  onDeleteKey: (keyId: string) => Promise<void>;
-  onDeleteGroup: (groupId: string) => Promise<void>;
-  onUpdateGroup: (groupId: string, data: { name: string; description?: string; tags?: string[] }) => Promise<void>;
 }
 
-export function KeyGroupCard({ 
-  group, 
-  platformId,
-  onKeyCreated,
-  onUpdateNote,
-  onToggleKeyStatus,
-  onDeleteKey,
-  onDeleteGroup,
-  onUpdateGroup,
-}: KeyGroupCardProps) {
+export function KeyGroupCard({ group, platformId }: KeyGroupCardProps) {
+  const { mutate: updateGroup } = useUpdateKeyGroup();
+  const { mutate: deleteGroup } = useDeleteKeyGroup();
+  const { mutate: createKey } = useCreateKey();
+  const { mutate: updateNote } = useUpdateKeyNote();
+  const { mutate: toggleKeyStatus } = useToggleKeyStatus();
+  const { mutate: deleteKey } = useDeleteKey();
+
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(group.name);
@@ -150,14 +143,8 @@ export function KeyGroupCard({
                 </div>
               </div>
             ) : (
-              <>
+              <div className="flex items-center gap-2">
                 <span className="font-medium">{group.name}</span>
-                <span className="text-xs text-muted-foreground">
-                  {new Date(group.created_at).toLocaleDateString()}
-                </span>
-                {group.description && (
-                  <p className="text-sm text-muted-foreground">{group.description}</p>
-                )}
                 {group.tags && group.tags.length > 0 && (
                   <div className="flex items-center gap-1">
                     <TagIcon className="h-3 w-3 text-muted-foreground" />
@@ -174,7 +161,10 @@ export function KeyGroupCard({
                     </div>
                   </div>
                 )}
-              </>
+                {group.description && (
+                  <p className="text-sm text-muted-foreground">{group.description}</p>
+                )}
+              </div>
             )}
           </div>
         </div>
@@ -192,10 +182,13 @@ export function KeyGroupCard({
                       .map(([tag]) => tag),
                     ...editTags.filter(tag => !defaultTags.includes(tag as any))
                   ];
-                  await onUpdateGroup(group.id, {
-                    name: editName,
-                    description: editDescription || undefined,
-                    tags: finalTags.length > 0 ? finalTags : undefined,
+                  updateGroup({ 
+                    groupId: group.id, 
+                    data: {
+                      name: editName,
+                      description: editDescription || undefined,
+                      tags: finalTags.length > 0 ? finalTags : undefined,
+                    }
                   });
                   setIsEditing(false);
                 }}
@@ -210,6 +203,10 @@ export function KeyGroupCard({
                   setEditName(group.name);
                   setEditDescription(group.description || '');
                   setEditTags(group.tags || []);
+                  setSpecialTags(defaultTags.reduce((acc, tag) => ({
+                    ...acc,
+                    [tag]: (group.tags || []).includes(tag)
+                  }), {}));
                   setIsEditing(false);
                 }}
               >
@@ -229,7 +226,6 @@ export function KeyGroupCard({
                 <Pencil className="h-4 w-4" />
               </Button>
               <CreateKeyValueDialog 
-                onKeyCreated={onKeyCreated}
                 platformId={platformId}
                 groupId={group.id}
               />
@@ -238,7 +234,7 @@ export function KeyGroupCard({
                 size="icon"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onDeleteGroup(group.id);
+                  deleteGroup(group.id);
                 }}
               >
                 <Trash2 className="h-4 w-4" />
@@ -253,9 +249,15 @@ export function KeyGroupCard({
           <KeyItem
             key={key.id}
             keyData={key}
-            onUpdateNote={onUpdateNote}
-            onToggleStatus={onToggleKeyStatus}
-            onDelete={onDeleteKey}
+            onUpdateNote={(keyId, note) => {
+              updateNote({ keyId, note })
+            }}
+            onToggleStatus={(keyId) => {
+              toggleKeyStatus(keyId)
+            }}
+            onDelete={(keyId) => {
+              deleteKey(keyId)
+            }}
           />
         ))}
       </div>

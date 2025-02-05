@@ -9,12 +9,6 @@ export function KeysList() {
     platforms,
     loading,
     fetchPlatforms,
-    deleteKey,
-    deleteKeyGroup,
-    updateNote,
-    toggleKeyStatus,
-    deletePlatform,
-    updateGroup,
   } = useKeys();
 
   if (loading) {
@@ -33,13 +27,6 @@ export function KeysList() {
           <PlatformCard
             key={platform.id}
             platform={platform}
-            onKeyCreated={fetchPlatforms}
-            onUpdateNote={updateNote}
-            onToggleKeyStatus={toggleKeyStatus}
-            onDeleteKey={deleteKey}
-            onDeleteGroup={deleteKeyGroup}
-            onDeletePlatform={deletePlatform}
-            onUpdateGroup={updateGroup}
           />
         ))}
       </div>

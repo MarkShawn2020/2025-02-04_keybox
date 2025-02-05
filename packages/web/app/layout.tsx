@@ -7,7 +7,7 @@ import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 import { Inter } from "next/font/google";
 import Link from "next/link";
 import { Suspense } from "react";
-import { ThemeProvider } from "next-themes";
+import { Providers } from "./providers";
 import "./globals.css";
 import JoinSVG from '@/public/join.svg'
 
@@ -37,12 +37,7 @@ export default async function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </head>
       <body className="bg-background text-foreground">
-        <ThemeProvider
-        attribute="class"
-                  defaultTheme="system"
-                  enableSystem
-                  disableTransitionOnChange
-        >
+        <Providers>
           <main className="min-h-screen flex flex-col items-center">
             <div className="flex-1 w-full flex flex-col gap-8 md:gap-20 items-center">
               <nav className="w-full flex justify-center border-b border-b-foreground/10">
@@ -93,7 +88,7 @@ export default async function RootLayout({
               </footer>
             </div>
           </main>
-        </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );

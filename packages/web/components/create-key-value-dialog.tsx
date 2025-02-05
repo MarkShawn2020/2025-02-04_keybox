@@ -11,15 +11,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { createClient } from '@/utils/supabase/client';
+import { useCreateKey } from "@/hooks/usePlatforms";
 
 type CreateKeyValueDialogProps = {
-  onKeyCreated: () => void;
   platformId: string;
   groupId: string;
 };
 
-export function CreateKeyValueDialog({ onKeyCreated, platformId, groupId }: CreateKeyValueDialogProps) {
+export function CreateKeyValueDialog({ platformId, groupId }: CreateKeyValueDialogProps) {
+  const { mutate: createKey } = useCreateKey();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -45,30 +45,17 @@ export function CreateKeyValueDialog({ onKeyCreated, platformId, groupId }: Crea
 
     setLoading(true);
     try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error('Not authenticated');
-      }
-
-      const { error } = await supabase
-        .from('keys')
-        .insert({
-          note: formData.note,
-          value: formData.value,
-          key_group_id: groupId,
-          user_id: user.id,
-        });
-
-      if (error) {
-        throw error;
-      }
+      createKey({
+        platformId,
+        groupId,
+        value: formData.value,
+        note: formData.note || undefined,
+      });
 
       toast({
         title: "Success",
         description: "Key created successfully",
       });
-      onKeyCreated();
       handleClose();
     } catch (error) {
       toast({
