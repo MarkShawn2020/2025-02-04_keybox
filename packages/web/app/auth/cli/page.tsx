@@ -24,10 +24,6 @@ function AuthContent() {
         } catch (error: any) {
           setError(error.message)
         }
-        } catch (error: any) {
-          console.error('Auth error:', error)
-          setError(error.message || 'Authentication failed')
-        }
       }
     }
     handleAuth()

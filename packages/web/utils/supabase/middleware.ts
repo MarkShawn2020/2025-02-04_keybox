@@ -17,19 +17,21 @@ export const updateSession = async (request: NextRequest) => {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
-          getAll() {
-            return request.cookies.getAll();
+          get(name: string) {
+            return request.cookies.get(name)?.value;
           },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value }) =>
-              request.cookies.set(name, value),
-            );
-            response = NextResponse.next({
-              request,
+          set(name: string, value: string, options: { path?: string; maxAge?: number; domain?: string; secure?: boolean }) {
+            response.cookies.set(name, value, {
+              ...options,
+              httpOnly: true,
+              sameSite: 'lax',
             });
-            cookiesToSet.forEach(({ name, value, options }) =>
-              response.cookies.set(name, value, options),
-            );
+          },
+          remove(name: string, options: { path?: string }) {
+            response.cookies.set(name, '', {
+              ...options,
+              maxAge: 0,
+            });
           },
         },
       },
