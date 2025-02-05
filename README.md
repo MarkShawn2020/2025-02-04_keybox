@@ -22,7 +22,11 @@ A secure and user-friendly environment variable management solution that combine
 - 📝 Detailed audit logging
 
 ### CLI Tool
-- 🔑 Secure authentication
+- 🔑 Secure device-based authentication
+  - No password input required
+  - Secure token storage in system keychain
+  - Automatic browser verification
+  - See [CLI Auth Flow](docs/auth/cli-auth-flow.md)
 - ⚡ Quick .env file generation
 - 📦 Solution-based environment setup
 - 🔄 Auto-sync with web platform
