@@ -1,11 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import axios from 'axios'
 import type { Platform } from '@keybox/shared'
+import { api } from '@/utils/axios'
 
 export function usePlatforms() {
   return useQuery<Platform[]>({
     queryKey: ['platforms'],
-    queryFn: () => axios.get('/api/platforms').then(res => res.data)
+    queryFn: () => api.get('/platforms').then(res => res.data)
   })
 }
 
@@ -13,17 +13,14 @@ export function useUpdateKeyGroup() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: ({ 
-      groupId, 
-      data 
-    }: { 
+    mutationFn: ({ groupId, data }: { 
       groupId: string; 
       data: { 
         name: string; 
         description?: string; 
         tags?: string[] 
       } 
-    }) => axios.patch(`/api/key-groups/${groupId}`, data),
+    }) => api.patch(`/keys/groups/${groupId}`, data),
     onSuccess: () => {
       // 更新成功后使缓存失效，触发重新获取
       queryClient.invalidateQueries({ queryKey: ['platforms'] })
@@ -35,8 +32,7 @@ export function useDeleteKeyGroup() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: (groupId: string) => 
-      axios.delete(`/api/key-groups/${groupId}`),
+    mutationFn: (groupId: string) => api.delete(`/keys/groups/${groupId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['platforms'] })
     }
@@ -47,13 +43,10 @@ export function useUpdateKeyNote() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: ({ 
-      keyId, 
-      note 
-    }: { 
+    mutationFn: ({ keyId, note }: { 
       keyId: string; 
       note: string 
-    }) => axios.patch(`/api/keys/${keyId}/note`, { note }),
+    }) => api.patch(`/keys/${keyId}/note`, { note }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['platforms'] })
     }
@@ -64,8 +57,7 @@ export function useToggleKeyStatus() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: (keyId: string) => 
-      axios.post(`/api/keys/${keyId}/toggle`),
+    mutationFn: (keyId: string) => api.post(`/keys/${keyId}/toggle`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['platforms'] })
     }
@@ -76,8 +68,7 @@ export function useDeleteKey() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: (keyId: string) => 
-      axios.delete(`/api/keys/${keyId}`),
+    mutationFn: (keyId: string) => api.delete(`/keys/${keyId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['platforms'] })
     }
@@ -93,7 +84,7 @@ export function useCreateKey() {
       groupId: string;
       value: string;
       note?: string;
-    }) => axios.post('/api/keys', data),
+    }) => api.post('/keys', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['platforms'] })
     }
@@ -104,8 +95,7 @@ export function useDeletePlatform() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: (platformId: string) => 
-      axios.delete(`/api/platforms/${platformId}`),
+    mutationFn: (platformId: string) => api.delete(`/platforms/${platformId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['platforms'] })
     }
@@ -120,7 +110,7 @@ export function useCreateKeyGroup() {
       platformId: string;
       name: string;
       description?: string;
-    }) => axios.post('/api/key-groups', data),
+    }) => api.post('/keys/groups', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['platforms'] })
     }

@@ -29,9 +29,6 @@ export function PlatformCard({ platform }: PlatformCardProps) {
           }
           <div className="flex items-center gap-2">
             <span className="font-medium">{platform.name}</span>
-            <span className="text-xs text-muted-foreground">
-              {new Date(platform.created_at).toLocaleDateString()}
-            </span>
           </div>
           {platform.description && (
             <p className="text-sm text-muted-foreground">{platform.description}</p>
