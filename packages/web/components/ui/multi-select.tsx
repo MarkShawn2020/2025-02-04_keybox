@@ -1,8 +1,8 @@
 import * as React from "react";
 import { X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
-import { Command as CommandPrimitive } from "cmdk";
+import { Command, CommandGroup, CommandItem, CommandInput } from "@/components/ui/command";
+import { CommandList, Command as CommandPrimitive } from "cmdk";
 
 type Option = {
   value: string;
@@ -52,6 +52,9 @@ export function MultiSelect({
 
   const selectables = options.filter((option) => !value.includes(option.value));
 
+  console.log({value, selectables});
+  
+
   return (
     <Command
       onKeyDown={handleKeyDown}
@@ -99,11 +102,14 @@ export function MultiSelect({
           />
         </div>
       </div>
-      <div className="relative mt-2">
+
+<CommandList>
+<div className="relative mt-2">
         {open && selectables.length > 0 ? (
           <div className="absolute w-full z-10 top-0 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
             <CommandGroup className="h-full overflow-auto">
               {selectables.map((option) => {
+        
                 return (
                   <CommandItem
                     key={option.value}
@@ -125,6 +131,7 @@ export function MultiSelect({
           </div>
         ) : null}
       </div>
+</CommandList>
     </Command>
   );
 }
