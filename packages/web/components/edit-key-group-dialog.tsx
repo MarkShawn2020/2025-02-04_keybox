@@ -12,7 +12,8 @@ import type { KeyGroup } from '@keybox/shared';
 import { useUpdateKeyGroup } from '@/hooks/usePlatforms';
 
 const dangerousTags = ["server"] as string[];
-const defaultTags = [...dangerousTags, 'client'] as string[];
+const primaryTags = ["client"] as string[];
+const defaultTags = [...dangerousTags, ...primaryTags] as string[];
 
 interface EditKeyGroupDialogProps {
   group: KeyGroup;
@@ -137,7 +138,7 @@ export function EditKeyGroupDialog({ group }: EditKeyGroupDialogProps) {
                       />
                       <label
                         htmlFor={`tag-${tag}`}
-                        className={`text-sm font-medium leading-none ${dangerousTags.includes(tag) ? 'text-destructive' : ''}`}
+                        className={`text-sm font-medium leading-none ${dangerousTags.includes(tag) ? 'text-destructive' : primaryTags.includes(tag) ? 'text-primary' : ''}`}
                       >
                         {tag}
                       </label>
@@ -150,7 +151,7 @@ export function EditKeyGroupDialog({ group }: EditKeyGroupDialogProps) {
                     {editTags.filter(tag => !defaultTags.includes(tag as any)).map((tag, index) => (
                       <Badge
                         key={index}
-                        variant="secondary"
+                        variant={dangerousTags.includes(tag) ? "destructive" : primaryTags.includes(tag) ? "default" : "secondary"}
                         className="flex items-center gap-1 px-2 py-1"
                       >
                         {tag}
