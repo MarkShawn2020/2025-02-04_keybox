@@ -9,7 +9,7 @@ import { stringify as stringifyEnv } from 'dotenv-stringify';
 export const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
-import { keyGroupSchema, platformSchema, keySchema } from '@keybox/shared'
+import { createPlatformSchema, createKeyGroupSchema, createKeySchema } from '@keybox/shared'
 
 // List all keys for the authenticated user
 router.get('/', authenticate, async (req, res) => {
@@ -53,7 +53,7 @@ router.get('/', authenticate, async (req, res) => {
 // Create a new platform
 router.post('/platforms', authenticate, async (req, res) => {
   try {
-    const data = platformSchema.parse(req.body);
+    const data = createPlatformSchema.parse(req.body);
     
     const { data: platform, error } = await supabase
       .from('platforms')
@@ -77,7 +77,7 @@ router.post('/platforms', authenticate, async (req, res) => {
 // Create a new key group under a platform
 router.post('/platforms/:platformId/groups', authenticate, async (req, res) => {
   try {
-    const data = keyGroupSchema.parse(req.body);
+    const data = createKeyGroupSchema.parse(req.body);
     
     const { data: group, error } = await supabase
       .from('key_groups')
@@ -102,7 +102,7 @@ router.post('/platforms/:platformId/groups', authenticate, async (req, res) => {
 // Add a new key to a key group
 router.post('/groups/:groupId/keys', authenticate, async (req, res) => {
   try {
-    const data = keySchema.parse(req.body);
+    const data = createKeySchema.parse(req.body);
     
     const { data: key, error } = await supabase
       .from('keys')
