@@ -1,109 +1,109 @@
-# KeyBox - Environment Variable Manager
+# KeyBox
 
-A secure and user-friendly environment variable management solution that combines a web interface with CLI capabilities for seamless secret management.
+🔐 下一代环境变量管理系统，集成 Web 界面与命令行工具，让配置管理更简单、更安全。
 
-![alt text](./assets/images/landing-page.png)
+![Landing Page](./assets/images/landing-page.png)
 
-## 🎯 Project Goals
+## ✨ 核心特性
 
-- Provide a centralized platform for managing environment variables and API keys
-- Offer both web UI and CLI interfaces for maximum flexibility
-- Ensure secure storage and transmission of sensitive data
-- Support team collaboration with proper access control
+### 🛡️ 零信任加密
+- 端到端加密技术，确保环境变量的绝对安全
+- 支持密钥轮换和访问审计
+- 满足企业级安全标准
 
-## ✨ Key Features
+### 🔄 多值变量管理
+- 突破传统限制，支持同一变量维护多个值版本
+- 灵活切换不同环境配置
+- 简化开发和部署流程
 
-### Web Interface
-- 🔐 Secure key management with support for:
-  - Description and metadata
-  - Revocation capabilities
-  - Unique ID tracking
-  - Version history
-- 🎨 Solution builder for combining multiple keys
-- 👥 User authentication and authorization
-- 📝 Detailed audit logging
+### ⚡️ CLI 自动集成
+- 基于项目角色智能生成环境变量文件
+- 支持多种格式导出
+- 无缝对接开发工作流，提升团队效率
 
-### CLI Tool
-- 🔑 Secure device-based authentication
-  - No password input required
-  - Secure token storage in system keychain
-  - Automatic browser verification
-  - See [CLI Auth Flow](docs/auth/cli-auth-flow.md)
-- ⚡ Quick .env file generation
-- 📦 Solution-based environment setup
-- 🔄 Auto-sync with web platform
+### 🌐 开源私有部署
+- 完全开源，支持一键私有化部署
+- 掌控数据主权，按需定制功能
+- 打造专属配置管理平台
 
-## 🏗️ Technical Architecture
+## 🏗️ 技术架构
 
-- **Frontend**: Modern web application (React/Next.js)
-- **Backend**: RESTful API server
-- **CLI**: Native command-line tool
-- **Database**: Supabase (PostgreSQL)
-- **Authentication**: Supabase Auth
+本项目采用 monorepo 架构：
 
-## 🛠️ Development Setup
+- **包管理器**：pnpm
+- **前端**：@packages/web (Next.js 14 + App Router)
+- **后端**：@packages/api (Express)
+- **数据库**：Supabase
+- **状态管理**：Jotai + React Query
 
-### Supabase Configuration
+## 🚀 快速开始
 
-1. Create a new Supabase project at [https://supabase.com](https://supabase.com)
-2. Configure environment variables:
-   ```bash
-   # API Package (.env)
-   PORT=3001
-   SUPABASE_URL=your-project-url
-   SUPABASE_SERVICE_KEY=your-service-role-key
+### 开发环境配置
 
-   # Web Package (.env)
-   NEXT_PUBLIC_SUPABASE_URL=your-project-url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-   ```
+1. 克隆仓库
+```bash
+git clone https://github.com/your-username/keybox.git
+cd keybox
+```
 
-3. Install Supabase CLI:
-   ```bash
-   brew install supabase/tap/supabase
-   ```
+2. 安装依赖
+```bash
+pnpm install
+```
 
-4. Link to your Supabase project:
-   ```bash
-   # Get your access token from: https://supabase.com/dashboard/account/tokens
-   export SUPABASE_ACCESS_TOKEN=your-access-token
-   
-   # Link to your project
-   supabase link --project-ref your-project-ref
-   
-   # Push database migrations
-   supabase db push
-   ```
+3. 配置环境变量
+```bash
+# API 包 (.env)
+PORT=3001
+SUPABASE_URL=your-project-url
+SUPABASE_SERVICE_KEY=your-service-role-key
 
-### Database Schema
+# Web 包 (.env)
+NEXT_PUBLIC_SUPABASE_URL=your-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```
 
-The project uses the following tables:
+4. 启动开发服务器
+```bash
+pnpm dev
+```
 
-- **keys**: Stores environment variables and API keys
-  - `id`: UUID (Primary Key)
-  - `name`: Text (Required)
-  - `value`: Text (Required)
-  - `description`: Text
-  - `tags`: Text Array
-  - `revoked`: Boolean
-  - `user_id`: UUID (Foreign Key to auth.users)
-  - `created_at`, `updated_at`: Timestamps
+### 数据库结构
 
-- **solutions**: Groups of related keys
-  - `id`: UUID (Primary Key)
-  - `name`: Text (Required)
-  - `description`: Text
-  - `user_id`: UUID (Foreign Key to auth.users)
-  - `created_at`, `updated_at`: Timestamps
+本项目使用以下数据表：
 
-- **solution_keys**: Many-to-many relationship between solutions and keys
-  - `solution_id`: UUID (Foreign Key to solutions)
-  - `key_id`: UUID (Foreign Key to keys)
+#### keys
+环境变量和 API 密钥存储
+- `id`: UUID (主键)
+- `name`: 变量名称
+- `value`: 变量值
+- `description`: 描述
+- `tags`: 标签数组
+- `revoked`: 是否已失效
+- `user_id`: 用户ID
+- `created_at`, `updated_at`: 时间戳
 
-### Security Features
+#### solutions
+解决方案（变量组）
+- `id`: UUID (主键)
+- `name`: 方案名称
+- `description`: 描述
+- `user_id`: 用户ID
+- `created_at`, `updated_at`: 时间戳
 
-- Row Level Security (RLS) policies ensure users can only access their own data
-- Automatic timestamps for auditing
+#### solution_keys
+解决方案与变量的多对多关系
+- `solution_id`: 解决方案ID
+- `key_id`: 变量ID
+
+## 🤝 贡献
+
+欢迎提交 Pull Request 或创建 Issue！
+
+## 📄 许可证
+
+[MIT License](./LICENSE)
+
 - Service role key for admin operations
 - Anonymous key for public operations
 
