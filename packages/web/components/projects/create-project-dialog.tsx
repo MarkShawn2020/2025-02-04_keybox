@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -25,7 +25,14 @@ export function CreateProjectDialog({ onProjectCreated }: CreateProjectDialogPro
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
-  const { platforms } = useKeys();
+  const { platforms, fetchPlatforms } = useKeys();
+
+  // Refresh platforms data when dialog opens
+  useEffect(() => {
+    if (open) {
+      fetchPlatforms();
+    }
+  }, [open, fetchPlatforms]);
 
   // Flatten all keys from all platforms
   const allKeys = platforms.flatMap(platform => 
