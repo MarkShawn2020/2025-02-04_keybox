@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { CreateProjectDialog } from './create-project-dialog';
 import { ProjectCard } from './project-card';
 import { useProjects } from '@/hooks/use-projects';
@@ -16,6 +16,14 @@ export function ProjectsList() {
   } = useProjects();
 
   const [previewContent, setPreviewContent] = useState<{ [key: string]: string | undefined }>({});
+
+  const handlePreviewGenerated = useCallback((projectId: string, content: string) => {
+    setPreviewContent(prev => {
+      // Only update if content has changed
+      if (prev[projectId] === content) return prev;
+      return { ...prev, [projectId]: content };
+    });
+  }, []);
 
   useEffect(() => {
     fetchProjects();
@@ -42,9 +50,7 @@ export function ProjectsList() {
             onDownloadEnv={async (id) => {
               await downloadEnvFile(id, false);
             }}
-            onPreviewGenerated={(content) => {
-              setPreviewContent(prev => ({ ...prev, [project.id]: content }));
-            }}
+            onPreviewGenerated={(content) => handlePreviewGenerated(project.id, content)}
           />
         ))}
         {projects.length === 0 && (

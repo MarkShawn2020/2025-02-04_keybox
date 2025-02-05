@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,18 +36,27 @@ export function ProjectCard({
   // console.log({platforms});
   
   // Flatten all keys from all platforms for MultiSelect
-  const allKeys = platforms.flatMap(platform => 
+  const allKeys = useMemo(() => platforms.flatMap(platform => 
     platform.key_groups?.flatMap(group => 
       group.keys?.map(key => ({
         value: key.id,
         label: `${platform.name} - ${group.name} - ${key.value}`
       })) || []
     ) || []
-  );
+  ), [platforms]);
 
-  // Generate preview content based on selected keys
-  const previewContent = generateEnvContent(platforms, selectedKeys);
-  onPreviewGenerated?.(previewContent);
+  // Generate preview content
+  const previewContent = useMemo(() => {
+    if (!isPreviewVisible) return '';
+    return generateEnvContent(platforms, selectedKeys);
+  }, [isPreviewVisible, platforms, selectedKeys]);
+
+  // Notify parent of preview content changes only when visibility changes
+  useEffect(() => {
+    if (isPreviewVisible && previewContent) {
+      onPreviewGenerated?.(previewContent);
+    }
+  }, [isPreviewVisible]); // Only re-run when visibility changes
 
 
   const handleSave = async () => {
