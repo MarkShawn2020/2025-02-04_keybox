@@ -9,7 +9,11 @@ export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
   const supabase = await createClient();
-  const origin = (await headers()).get("origin");
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (await headers()).get("origin");
+  
+  if (!siteUrl) {
+    throw new Error("NEXT_PUBLIC_SITE_URL or Origin header is required");
+  }
 
   if (!email || !password) {
     return encodedRedirect(
@@ -23,7 +27,7 @@ export const signUpAction = async (formData: FormData) => {
     email,
     password,
     options: {
-      emailRedirectTo: `${origin}/auth/callback`,
+      emailRedirectTo: `${siteUrl}/auth/callback`,
     },
   });
 
