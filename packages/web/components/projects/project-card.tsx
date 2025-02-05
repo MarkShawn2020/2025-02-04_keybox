@@ -9,13 +9,14 @@ import { MultiSelect } from '../ui/multi-select';
 import type { ProjectWithKeys } from '@keybox/shared';
 import { Pencil, Trash, Download, Check, X, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { generateEnvContent } from '@/lib/env-utils';
 
 interface ProjectCardProps {
   project: ProjectWithKeys;
   onUpdate: (id: string, name: string, description?: string, keys?: string[]) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   onDownloadEnv: (id: string) => Promise<void>;
-  previewContent?: string;
+  onPreviewGenerated?: (content: string) => void;
 }
 
 export function ProjectCard({ 
@@ -23,7 +24,7 @@ export function ProjectCard({
   onUpdate, 
   onDelete,
   onDownloadEnv,
-  previewContent
+  onPreviewGenerated,
 }: ProjectCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
@@ -32,7 +33,9 @@ export function ProjectCard({
   const [selectedKeys, setSelectedKeys] = useState<string[]>(project.keys);
   const { platforms } = useKeys();
 
-  // Flatten all keys from all platforms
+  // console.log({platforms});
+  
+  // Flatten all keys from all platforms for MultiSelect
   const allKeys = platforms.flatMap(platform => 
     platform.key_groups?.flatMap(group => 
       group.keys?.map(key => ({
@@ -41,6 +44,11 @@ export function ProjectCard({
       })) || []
     ) || []
   );
+
+  // Generate preview content based on selected keys
+  const previewContent = generateEnvContent(platforms, selectedKeys);
+  onPreviewGenerated?.(previewContent);
+
 
   const handleSave = async () => {
     await onUpdate(project.id, name, description, selectedKeys);
@@ -143,7 +151,7 @@ export function ProjectCard({
                 <Label className="text-xs">Environment Variables</Label>
                 <div className="flex flex-wrap gap-1">
                   {selectedKeys.map(keyId => {
-                    const keyInfo = allKeys.find(k => k.value === keyId);
+                    const keyInfo = allKeys.find((k: { value: string; label: string }) => k.value === keyId);
                     return keyInfo ? (
                       <div 
                         key={keyId}
@@ -158,7 +166,7 @@ export function ProjectCard({
             )}
             {isPreviewVisible && previewContent && (
               <div className="space-y-1">
-                <Label className="text-xs">.env Preview</Label>
+                <Label className="text-xs">{project.name}.env Preview</Label>
                 <pre className="text-xs bg-muted p-2 rounded overflow-x-auto">
                   {previewContent}
                 </pre>

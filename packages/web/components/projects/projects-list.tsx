@@ -40,12 +40,11 @@ export function ProjectsList() {
             onUpdate={updateProject}
             onDelete={deleteProject}
             onDownloadEnv={async (id) => {
-              const content = await downloadEnvFile(id, true);
-              if (content) {
-                setPreviewContent(prev => ({ ...prev, [id]: content }));
-              }
+              await downloadEnvFile(id, false);
             }}
-            previewContent={previewContent[project.id]}
+            onPreviewGenerated={(content) => {
+              setPreviewContent(prev => ({ ...prev, [project.id]: content }));
+            }}
           />
         ))}
         {projects.length === 0 && (
