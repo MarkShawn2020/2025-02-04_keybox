@@ -65,10 +65,10 @@ export default async function RootLayout({
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/site.webmanifest" />
       </head>
-      <body className="bg-background text-foreground antialiased">
+      <body className="bg-background text-foreground antialiased min-h-screen flex flex-col">
         <Providers>
-          <main className="min-h-screen flex flex-col items-center">
-            <div className="flex-1 w-full flex flex-col gap-8 md:gap-20 items-center">
+          <main className="flex-1 flex flex-col items-center">
+            <div className="w-full flex flex-col gap-8 md:gap-20 items-center">
               <nav className="w-full flex justify-center border-b border-b-foreground/10">
                 <div className="w-full max-w-5xl flex flex-col md:flex-row justify-between items-stretch md:items-center py-4 px-5 md:py-3">
                   <div className="flex flex-col md:flex-row items-center justify-center md:justify-start gap-4 md:gap-6">
@@ -107,8 +107,9 @@ export default async function RootLayout({
               <div className="flex flex-col gap-8 md:gap-20 w-full max-w-5xl px-4 md:px-5">
                 {children}
               </div>
-
-              <footer className="w-full border-t border-border/40 bg-muted/50">
+            </div>
+          </main>
+          <footer className="w-full border-t border-border/40 bg-muted/50">
                 <div className="mx-auto max-w-5xl px-4 py-8 md:py-12">
                   <div className="flex flex-col gap-8">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-6">
@@ -159,8 +160,6 @@ export default async function RootLayout({
               </footer>
               <Analytics />
               <SpeedInsights />
-            </div>
-          </main>
         </Providers>
       </body>
     </html>
