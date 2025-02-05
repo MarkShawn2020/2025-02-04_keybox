@@ -14,6 +14,7 @@ exports.keyGroupSchema = zod_1.z.object({
     id: zod_1.z.string(),
     name: zod_1.z.string().min(1), // e.g. API_KEY
     description: zod_1.z.string().optional(),
+    tags: zod_1.z.array(zod_1.z.string()).optional(),
     created_at: zod_1.z.string(),
     updated_at: zod_1.z.string(),
     keys: zod_1.z.array(exports.keySchema).optional(),

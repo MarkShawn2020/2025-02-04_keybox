@@ -43,8 +43,12 @@ export const signInAction = async (formData: FormData) => {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const supabase = await createClient();
+  const origin = (await headers()).get("origin");
+  if (!origin) {
+    throw new Error("Origin header is required");
+  }
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { error, data } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
@@ -53,7 +57,10 @@ export const signInAction = async (formData: FormData) => {
     return encodedRedirect("error", "/sign-in", error.message);
   }
 
-  return redirect("/");
+  // 使用 auth/callback 路由来确保客户端 session 更新
+  const callbackUrl = new URL("/auth/callback", origin);
+  callbackUrl.searchParams.set("redirect_to", "/");
+  return redirect(callbackUrl.toString());
 };
 
 export const forgotPasswordAction = async (formData: FormData) => {

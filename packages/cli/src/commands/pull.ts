@@ -41,7 +41,7 @@ export async function pull(options: PullOptions) {
     let errorMessage = 'Failed to pull environment variables';
     
     if (error.message.includes('Project not found')) {
-      errorMessage = `Project '${projectName}' not found. Please create it first using 'keybox create'.`;
+      errorMessage = `Project not found. Please create it first using 'keybox create'.`;
     } else if (error.message.includes('Not logged in')) {
       errorMessage = 'Not logged in. Please run `keybox login` first.';
     } else {

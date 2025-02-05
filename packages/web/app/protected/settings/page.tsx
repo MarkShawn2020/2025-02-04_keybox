@@ -1,48 +1,14 @@
 import { Suspense } from "react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Bell, Key, Lock, User } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-
-// Profile Settings Section
-const ProfileSettings = async () => {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
-  if (!user) return null;
-
-  return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="email">邮箱地址</Label>
-        <Input
-          id="email"
-          type="email"
-          value={user.email}
-          disabled
-          className="max-w-md"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="name">显示名称</Label>
-        <Input
-          id="name"
-          type="text"
-          placeholder="请输入您的名称"
-          className="max-w-md"
-        />
-      </div>
-
-      <Button>保存更改</Button>
-    </div>
-  );
-};
+import { ProfileSettings } from "./profile-settings";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 // Security Settings Section
 const SecuritySettings = () => (

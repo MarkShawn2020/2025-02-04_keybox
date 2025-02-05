@@ -25,6 +25,7 @@ export declare const keyGroupSchema: z.ZodObject<{
     id: z.ZodString;
     name: z.ZodString;
     description: z.ZodOptional<z.ZodString>;
+    tags: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     created_at: z.ZodString;
     updated_at: z.ZodString;
     keys: z.ZodOptional<z.ZodArray<z.ZodObject<{
@@ -63,6 +64,7 @@ export declare const keyGroupSchema: z.ZodObject<{
         note?: string | undefined;
     }[] | undefined;
     description?: string | undefined;
+    tags?: string[] | undefined;
 }, {
     id: string;
     created_at: string;
@@ -77,6 +79,7 @@ export declare const keyGroupSchema: z.ZodObject<{
         revoked?: boolean | undefined;
     }[] | undefined;
     description?: string | undefined;
+    tags?: string[] | undefined;
 }>;
 export declare const platformSchema: z.ZodObject<{
     id: z.ZodString;
@@ -89,6 +92,7 @@ export declare const platformSchema: z.ZodObject<{
         id: z.ZodString;
         name: z.ZodString;
         description: z.ZodOptional<z.ZodString>;
+        tags: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
         created_at: z.ZodString;
         updated_at: z.ZodString;
         keys: z.ZodOptional<z.ZodArray<z.ZodObject<{
@@ -127,6 +131,7 @@ export declare const platformSchema: z.ZodObject<{
             note?: string | undefined;
         }[] | undefined;
         description?: string | undefined;
+        tags?: string[] | undefined;
     }, {
         id: string;
         created_at: string;
@@ -141,6 +146,7 @@ export declare const platformSchema: z.ZodObject<{
             revoked?: boolean | undefined;
         }[] | undefined;
         description?: string | undefined;
+        tags?: string[] | undefined;
     }>, "many">>;
 }, "strip", z.ZodTypeAny, {
     id: string;
@@ -163,6 +169,7 @@ export declare const platformSchema: z.ZodObject<{
             note?: string | undefined;
         }[] | undefined;
         description?: string | undefined;
+        tags?: string[] | undefined;
     }[] | undefined;
 }, {
     id: string;
@@ -185,6 +192,7 @@ export declare const platformSchema: z.ZodObject<{
             revoked?: boolean | undefined;
         }[] | undefined;
         description?: string | undefined;
+        tags?: string[] | undefined;
     }[] | undefined;
 }>;
 export declare const createKeySchema: z.ZodObject<Omit<{
@@ -207,6 +215,7 @@ export declare const createKeyGroupSchema: z.ZodObject<Omit<{
     id: z.ZodString;
     name: z.ZodString;
     description: z.ZodOptional<z.ZodString>;
+    tags: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     created_at: z.ZodString;
     updated_at: z.ZodString;
     keys: z.ZodOptional<z.ZodArray<z.ZodObject<{
@@ -234,9 +243,11 @@ export declare const createKeyGroupSchema: z.ZodObject<Omit<{
 }, "id" | "created_at" | "updated_at" | "keys">, "strip", z.ZodTypeAny, {
     name: string;
     description?: string | undefined;
+    tags?: string[] | undefined;
 }, {
     name: string;
     description?: string | undefined;
+    tags?: string[] | undefined;
 }>;
 export declare const createPlatformSchema: z.ZodObject<Omit<{
     id: z.ZodString;
@@ -249,6 +260,7 @@ export declare const createPlatformSchema: z.ZodObject<Omit<{
         id: z.ZodString;
         name: z.ZodString;
         description: z.ZodOptional<z.ZodString>;
+        tags: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
         created_at: z.ZodString;
         updated_at: z.ZodString;
         keys: z.ZodOptional<z.ZodArray<z.ZodObject<{
@@ -287,6 +299,7 @@ export declare const createPlatformSchema: z.ZodObject<Omit<{
             note?: string | undefined;
         }[] | undefined;
         description?: string | undefined;
+        tags?: string[] | undefined;
     }, {
         id: string;
         created_at: string;
@@ -301,6 +314,7 @@ export declare const createPlatformSchema: z.ZodObject<Omit<{
             revoked?: boolean | undefined;
         }[] | undefined;
         description?: string | undefined;
+        tags?: string[] | undefined;
     }>, "many">>;
 }, "id" | "created_at" | "updated_at" | "key_groups">, "strip", z.ZodTypeAny, {
     name: string;
