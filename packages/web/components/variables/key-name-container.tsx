@@ -1,6 +1,6 @@
 'use client';
 
-import {useDeleteKey, useUpdateKeyName} from '@/hooks/usePlatforms';
+import {useDeleteKeyName, useUpdateKeyName} from '@/hooks/usePlatforms';
 import type {KeyName} from '@keybox/shared';
 import {ChevronDown, ChevronRight, Trash2} from 'lucide-react';
 import {useState} from 'react';
@@ -20,7 +20,7 @@ const dangerousTags = ["server"] as const
 const defaultTags = [...dangerousTags, 'client'] as const;
 
 export function KeyNameCard({group, platformId, showRevokedKeys}: KeyNameCardProps) {
-  const {mutate: deleteGroup} = useDeleteKey();
+  const {mutate: deleteGroup} = useDeleteKeyName();
   const {mutate: updateGroup} = useUpdateKeyName();
   
   const [isCollapsed, setIsCollapsed] = useState(false);

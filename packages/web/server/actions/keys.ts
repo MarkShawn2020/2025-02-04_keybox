@@ -325,6 +325,57 @@ export async function toggleKeyStatus(keyId: string) {
   return { success: true };
 }
 
+export async function deleteKeyName(groupId: string) {
+  const cookieStore = cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        async get(name: string) {
+          const cookieStore = await cookies();
+          const cookie = await cookieStore.get(name);
+          return cookie?.value;
+        },
+      },
+    }
+  );
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error('Not authenticated');
+  }
+
+  // 验证 groupId
+  const { data: group, error: groupError } = await supabase
+    .from('key_groups')
+    .select('id, user_id')
+    .eq('id', groupId)
+    .single();
+
+  if (groupError) {
+    throw new Error(`Group error: ${groupError.message}`);
+  }
+
+  if (!group) {
+    throw new Error('Group not found');
+  }
+
+  if (group.user_id !== user.id) {
+    throw new Error('Access denied: group belongs to another user');
+  }
+
+  const { error } = await supabase
+    .from('key_groups')
+    .delete()
+    .eq('id', groupId);
+
+  if (error) throw error;
+  return { success: true };
+}
+
 export async function deletePlatform(platformId: string) {
   const cookieStore = cookies();
   const supabase = createServerClient(

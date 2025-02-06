@@ -3,6 +3,7 @@ import {
   createKeyName,
   createKey,
   deleteKey,
+  deleteKeyName,
   listKeys,
   updateKeyName,
   updateKeyNote,
@@ -23,6 +24,7 @@ export const actions = {
   updateKeyNote,
   toggleKeyStatus,
   deletePlatform,
+  deleteKeyName,
   
   // Projects
   createProject,

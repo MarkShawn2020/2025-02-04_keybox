@@ -133,6 +133,33 @@ export function useCreateKey() {
   });
 }
 
+export function useDeleteKeyName() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (groupId: string) => {
+      try {
+        return await actions.deleteKeyName(groupId);
+      } catch (error: any) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['platforms'] });
+      toast({
+        title: 'Success',
+        description: 'Key Name deleted successfully',
+      });
+    }
+  });
+}
+
 export function useDeleteKey() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
