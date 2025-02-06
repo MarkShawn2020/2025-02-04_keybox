@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
-import { Session } from '@supabase/supabase-js'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -13,36 +12,15 @@ export default function VerifyDevice() {
   const [code, setCode] = useState('')
   const [error, setError] = useState('')
   const [isVerifying, setIsVerifying] = useState(false)
-  const [session, setSession] = useState<Session | null>(null)
   const supabase = createClient()
   const router = useRouter()
-
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const { data: { session: currentSession } } = await supabase.auth.getSession()
-        setSession(currentSession)
-      } catch (error) {
-        console.error('Session check error:', error)
-        setError('Failed to check authentication status')
-      }
-    }
-
-    checkSession()
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setIsVerifying(true)
+
+    const {data: {session}} = await supabase.auth.getSession()
 
     if (!session) {
       setError('Please login first')
@@ -50,7 +28,8 @@ export default function VerifyDevice() {
     }
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/device/verify`, {
+      // 验证设备码
+      const res = await fetch(`/api/auth/device/verify`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -65,7 +44,17 @@ export default function VerifyDevice() {
         throw new Error('Invalid verification code')
       }
 
-      router.push('/verify-device/success')
+      // 获取验证结果
+      const { callback_url, access_token } = await res.json()
+      
+      // 调用 CLI 回调
+      await fetch(callback_url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ access_token })
+      })
+
+      router.push('/cli/verify-device/success')
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Verification failed')
     } finally {
