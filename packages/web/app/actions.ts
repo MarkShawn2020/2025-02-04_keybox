@@ -23,7 +23,7 @@ export const signUpAction = async (formData: FormData) => {
     );
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { error, data } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -31,14 +31,18 @@ export const signUpAction = async (formData: FormData) => {
     },
   });
 
+  console.log({data, error});
+  // console.log(JSON.stringify(data.user, null, 2));
+
   if (error) {
     console.error(error.code + " " + error.message);
+    
     return encodedRedirect("error", "/sign-up", error.message);
   } else {
     return encodedRedirect(
       "success",
       "/sign-up",
-      "Thanks for signing up! Please check your email for a verification link.",
+      "Thanks for signing up! Please check your email for a verification link. If you don't receive the email, it might be due to network issues or the email is already registered - in that case, please try signing in directly."
     );
   }
 };
