@@ -1,0 +1,14 @@
+{
+  "name": "KeyBox",
+  "short_name": "KeyBox",
+  "icons": [
+    {
+      "src": "/cs-magic_logo_1280.svg",
+      "sizes": "1280x1280",
+      "type": "image/svg+xml"
+    }
+  ],
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}
