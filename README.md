@@ -36,6 +36,9 @@
 - **数据库**：Supabase
 - **状态管理**：Jotai + React Query
 
+详细文档：
+- [NPM 发布指南](./docs/npm-publishing.md) - CLI 包发布流程和最佳实践
+
 ## 🚀 快速开始
 
 ### 开发环境配置

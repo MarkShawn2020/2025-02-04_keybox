@@ -1,5 +1,5 @@
 {
-  "name": "@keybox/cli",
+  "name": "keybox-cli",
   "version": "0.1.0",
   "description": "KeyBox CLI - Manage your environment variables with ease",
   "main": "dist/index.js",
