@@ -8,26 +8,26 @@ import { Checkbox } from './ui/checkbox';
 import { Textarea } from './ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Pencil, Tag as TagIcon, Plus, X } from 'lucide-react';
-import type { KeyGroup } from '@keybox/shared';
-import { useCreateKeyGroup, useUpdateKeyGroup } from '@/hooks/usePlatforms';
+import type { KeyName } from '@keybox/shared';
+import { useCreateKeyName, useUpdateKeyName } from '@/hooks/usePlatforms';
 import { useToast } from '@/hooks/use-toast';
 
 const dangerousTags = ['server'] as const;
 const primaryTags = ['client'] as const;
 const defaultTags = [...dangerousTags, ...primaryTags] as const;
 
-interface KeyGroupDialogProps {
+interface KeyNameDialogProps {
   mode: 'create' | 'edit';
   platformId?: string;  // 仅创建模式需要
-  group?: KeyGroup;     // 仅编辑模式需要
-  onSuccess?: (data: { name: string; description?: string; tags?: string[] }) => void;
+  group?: KeyName;     // 仅编辑模式需要
+  onSuccess?: (data: { name: string; description?: string; tags?: string[]; groupId?: string }) => void;
   /** 是否只渲染对话框内容，不包含触发按钮和对话框容器 */
   renderContent?: boolean;
 }
 
-export function KeyGroupDialog({ mode, platformId, group, onSuccess, renderContent }: KeyGroupDialogProps) {
-  const { mutate: createKeyGroup } = useCreateKeyGroup();
-  const { mutate: updateKeyGroup } = useUpdateKeyGroup();
+export function KeyNameDialog({ mode, platformId, group, onSuccess, renderContent }: KeyNameDialogProps) {
+  const { mutateAsync: createKeyName } = useCreateKeyName();
+  const { mutateAsync: updateKeyName } = useUpdateKeyName();
   const { toast } = useToast();
   
   const [isOpen, setIsOpen] = useState(false);
@@ -110,7 +110,7 @@ export function KeyGroupDialog({ mode, platformId, group, onSuccess, renderConte
     setLoading(true);
     try {
       if (mode === 'create') {
-        await createKeyGroup({
+        const result = await createKeyName({
           platformId: platformId!,
           data
         });
@@ -118,8 +118,9 @@ export function KeyGroupDialog({ mode, platformId, group, onSuccess, renderConte
           title: 'Success',
           description: 'Key Name created successfully',
         });
+        onSuccess?.({ ...data, groupId: result.groupId! });
       } else {
-        await updateKeyGroup({
+        await updateKeyName({
           groupId: group!.id,
           data
         });
@@ -133,7 +134,6 @@ export function KeyGroupDialog({ mode, platformId, group, onSuccess, renderConte
       } else {
         handleClose();
       }
-      onSuccess?.(data);
     } catch (error: any) {
       console.error('Error handling Key Name:', error);
       const errorMessage = error?.message || 

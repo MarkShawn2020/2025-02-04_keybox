@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import { parse as parseEnv } from 'dotenv';
 
-import { createPlatformSchema, createKeyGroupSchema, createKeySchema, keyGroupSchema } from '@keybox/shared';
+import { createPlatformSchema, createKeyNameSchema, createKeySchema, KeyNameSchema } from '@keybox/shared';
 
 export async function listKeys() {
   const cookieStore = cookies();
@@ -93,7 +93,7 @@ export async function createPlatform(data: any) {
   return { success: true };
 }
 
-export async function createKeyGroup(platformId: string, data: any) {
+export async function createKeyName(platformId: string, data: any) {
   console.log('Creating Key Name with platformId:', platformId);
   console.log('Data:', data);
 
@@ -142,16 +142,18 @@ export async function createKeyGroup(platformId: string, data: any) {
     throw new Error('Access denied: platform belongs to another user');
   }
 
-  const validatedData = createKeyGroupSchema.parse(data);
+  const validatedData = createKeyNameSchema.parse(data);
   console.log('Validated data:', validatedData);
 
-  const { error } = await supabase
+  const { data: newGroup, error } = await supabase
     .from('key_groups')
     .insert({
       ...validatedData,
       platform_id: platformId,
       user_id: user.id
-    });
+    })
+    .select('id')
+    .single();
 
   if (error) {
     console.error('Error creating Key Name:', error);
@@ -159,7 +161,7 @@ export async function createKeyGroup(platformId: string, data: any) {
   }
 
   console.log('Key Name created successfully');
-  return { success: true };
+  return { success: true, groupId: newGroup?.id };
 }
 
 export async function createKey(groupId: string, data: any) {
@@ -178,10 +180,17 @@ export async function createKey(groupId: string, data: any) {
     }
   );
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error('Not authenticated');
+  }
+
   const validatedData = createKeySchema.parse(data);
   const { error } = await supabase
     .from('keys')
-    .insert({ ...validatedData, key_group_id: groupId });
+    .insert({ ...validatedData, key_group_id: groupId, user_id: user.id });
 
   if (error) throw error;
   return { success: true };
@@ -229,7 +238,7 @@ export async function exportEnvFile(env: Record<string, string>) {
   }
 }
 
-export async function updateKeyGroup(groupId: string, data: any) {
+export async function updateKeyName(groupId: string, data: any) {
   const cookieStore = cookies();
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -245,7 +254,7 @@ export async function updateKeyGroup(groupId: string, data: any) {
     }
   );
 
-  const validatedData = keyGroupSchema.omit({ id: true, created_at: true, updated_at: true, keys: true }).parse(data);
+  const validatedData = KeyNameSchema.omit({ id: true, created_at: true, updated_at: true, keys: true }).parse(data);
   const { error } = await supabase
     .from('key_groups')
     .update(validatedData)

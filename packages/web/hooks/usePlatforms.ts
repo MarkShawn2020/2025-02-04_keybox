@@ -57,7 +57,7 @@ export function useCreatePlatform() {
   });
 }
 
-export function useCreateKeyGroup() {
+export function useCreateKeyName() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -69,9 +69,10 @@ export function useCreateKeyGroup() {
         description?: string;
         tags?: string[];
       };
-    }) => {
+    }): Promise<{ success: boolean; groupId?: string }> => {
       try {
-        return await actions.createKeyGroup(platformId, data);
+        const result = await actions.createKeyName(platformId, data);
+        return result;
       } catch (error: any) {
         toast({
           title: 'Error',
@@ -152,7 +153,7 @@ export function useDeleteKey() {
   });
 }
 
-export function useUpdateKeyGroup() {
+export function useUpdateKeyName() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -166,7 +167,7 @@ export function useUpdateKeyGroup() {
       };
     }) => {
       try {
-        return await actions.updateKeyGroup(groupId, data);
+        return await actions.updateKeyName(groupId, data);
       } catch (error: any) {
         toast({
           title: 'Error',

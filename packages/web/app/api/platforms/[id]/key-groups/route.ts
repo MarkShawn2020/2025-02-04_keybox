@@ -1,5 +1,5 @@
 
-import { createKeyGroup } from '@/server/actions/keys';
+import { createKeyName } from '@/server/actions/keys';
 
 export async function POST(
   request: Request,
@@ -8,7 +8,7 @@ export async function POST(
   try {
     const data = await request.json();
     const id = (await params).id;
-    await createKeyGroup(id, data);
+    await createKeyName(id, data);
     return Response.json({ success: true });
   } catch (error: any) {
     if (error.message === 'Not authenticated') {

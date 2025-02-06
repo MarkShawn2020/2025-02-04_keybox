@@ -9,7 +9,7 @@ export const keySchema = z.object({
   updated_at: z.string(),
 });
 
-export const keyGroupSchema = z.object({
+export const KeyNameSchema = z.object({
   id: z.string(),
   name: z.string().min(1),  // e.g. API_KEY
   description: z.string().optional(),
@@ -26,7 +26,7 @@ export const platformSchema = z.object({
   tags: z.array(z.string()).optional(),
   created_at: z.string(),
   updated_at: z.string(),
-  key_groups: z.array(keyGroupSchema).optional(),
+  key_groups: z.array(KeyNameSchema).optional(),
 });
 
 // Request schemas
@@ -36,7 +36,7 @@ export const createKeySchema = keySchema.omit({
   updated_at: true 
 });
 
-export const createKeyGroupSchema = keyGroupSchema.omit({ 
+export const createKeyNameSchema = KeyNameSchema.omit({ 
   id: true, 
   created_at: true, 
   updated_at: true,
@@ -52,5 +52,5 @@ export const createPlatformSchema = platformSchema.omit({
 
 // Response types
 export type Key = z.infer<typeof keySchema>;
-export type KeyGroup = z.infer<typeof keyGroupSchema>;
+export type KeyName = z.infer<typeof KeyNameSchema>;
 export type Platform = z.infer<typeof platformSchema>;

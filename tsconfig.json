@@ -27,7 +27,6 @@
   "exclude": ["node_modules"],
   "references": [
     {"path": "./packages/shared/tsconfig.json"},
-    {"path": "./packages/api/tsconfig.json"},
     {"path": "./packages/web/tsconfig.json"},
     {"path": "./packages/cli/tsconfig.json"},
   ]

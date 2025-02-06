@@ -5,22 +5,22 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
 import { CreateKeyValueDialog } from './create-key-value-dialog';
-import { KeyGroupDialog } from './key-group-dialog';
+import { KeyNameDialog } from './key-group-dialog';
 import { KeyItem } from './key-item';
-import type { KeyGroup } from '@keybox/shared';
-import { useDeleteKey, useToggleKeyStatus, useUpdateKeyNote, useUpdateKeyGroup } from '@/hooks/usePlatforms';
+import type { KeyName } from '@keybox/shared';
+import { useDeleteKey, useToggleKeyStatus, useUpdateKeyNote, useUpdateKeyName } from '@/hooks/usePlatforms';
 
-interface KeyGroupCardProps {
-  group: KeyGroup;
+interface KeyNameCardProps {
+  group: KeyName;
   platformId: string;
 }
 
 const dangerousTags = ["server"] as const
 const defaultTags = [...dangerousTags, 'client'] as const;
 
-export function KeyNameCard({ group, platformId }: KeyGroupCardProps) {
+export function KeyNameCard({ group, platformId }: KeyNameCardProps) {
   const { mutate: deleteGroup } = useDeleteKey();
-  const { mutate: updateGroup } = useUpdateKeyGroup();
+  const { mutate: updateGroup } = useUpdateKeyName();
   const { mutate: updateNote } = useUpdateKeyNote();
   const { mutate: toggleKeyStatus } = useToggleKeyStatus();
   const { mutate: deleteKey } = useDeleteKey();
@@ -70,7 +70,7 @@ export function KeyNameCard({ group, platformId }: KeyGroupCardProps) {
             onClick={(e) => e.stopPropagation()}
             className="flex items-center gap-1"
           >
-            <KeyGroupDialog 
+            <KeyNameDialog 
               mode="edit"
               group={group} 
               onSuccess={() => updateGroup({ groupId: group.id, data: { name: group.name, description: group.description, tags: group.tags } })}

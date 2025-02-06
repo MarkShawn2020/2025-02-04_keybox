@@ -3,7 +3,7 @@
 import { useAtom } from 'jotai';
 import { createKeyFlowAtom } from '@/atoms/create-key-flow';
 import { BaseDialog } from './ui/base-dialog';
-import { KeyGroupDialog } from './key-group-dialog';
+import { KeyNameDialog } from './key-group-dialog';
 import { KeyValueForm } from './forms/key-value-form';
 import { useCreateKey } from '@/hooks/usePlatforms';
 import { useToast } from '@/hooks/use-toast';
@@ -28,11 +28,15 @@ export function CreateKeyFlowDialog({ platformId }: CreateKeyFlowDialogProps) {
     }));
   };
 
-  const handleKeyNameCreated = (data: { name: string; description?: string; tags?: string[] }) => {
+  const handleKeyNameCreated = (data: { name: string; description?: string; tags?: string[]; groupId?: string }) => {
+    if (!data.groupId) {
+      console.error('No groupId returned from createKeyName');
+      return;
+    }
     setFlowState(prev => ({
       ...prev,
       step: 'key-value',
-      groupId: data.id, // 这里会从 onSuccess 回调中获取新创建的 groupId
+      groupId: data.groupId,
     }));
   };
 
@@ -111,7 +115,7 @@ export function CreateKeyFlowDialog({ platformId }: CreateKeyFlowDialogProps) {
     >
       <div className="p-4">
         {flowState.step === 'key-name' && (
-          <KeyGroupDialog
+          <KeyNameDialog
             mode="create"
             platformId={platformId}
             onSuccess={handleKeyNameCreated}

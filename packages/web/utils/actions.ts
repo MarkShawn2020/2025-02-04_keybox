@@ -1,10 +1,10 @@
 import {
   createPlatform,
-  createKeyGroup,
+  createKeyName,
   createKey,
   deleteKey,
   listKeys,
-  updateKeyGroup,
+  updateKeyName,
   updateKeyNote,
   toggleKeyStatus,
   deletePlatform,
@@ -15,11 +15,11 @@ import { createProject, deleteProject, getProjectKeys } from '@/server/actions/p
 export const actions = {
   // Keys & Platforms
   createPlatform,
-  createKeyGroup,
+  createKeyName,
   createKey,
   deleteKey,
   listKeys,
-  updateKeyGroup,
+  updateKeyName,
   updateKeyNote,
   toggleKeyStatus,
   deletePlatform,

@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import { useAtom } from 'jotai';
 import { useToast } from '@/hooks/use-toast';
-import { useCreatePlatform, useCreateKeyGroup, useCreateKey } from '@/hooks/usePlatforms';
+import { useCreatePlatform, useCreateKeyName, useCreateKey } from '@/hooks/usePlatforms';
 import { BaseDialog } from './ui/base-dialog';
 import { PlatformForm } from './forms/platform-form';
-import { KeyGroupDialog } from './key-group-dialog';
+import { KeyNameDialog } from './key-group-dialog';
 import { KeyValueForm } from './forms/key-value-form';
 import { createVariableDialogAtom, CreateVariableDialogState } from '@/atoms/dialog';
 import { actions } from '@/utils/actions';
@@ -17,7 +17,7 @@ export function CreateVariableDialog() {
   const { toast } = useToast();
 
   const { mutate: createPlatform, isPending: isCreatingPlatform } = useCreatePlatform();
-  const { mutate: createKeyGroup, isPending: isCreatingGroup } = useCreateKeyGroup();
+  const { mutate: createKeyName, isPending: isCreatingGroup } = useCreateKeyName();
   const { mutate: createKey, isPending: isCreatingKey } = useCreateKey();
 
   const handlePlatformSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -58,7 +58,7 @@ export function CreateVariableDialog() {
 
   const handleGroupSubmit = async (data: { name: string; description?: string; tags?: string[] }) => {
     try {
-      await createKeyGroup({ platformId: dialogState.platformId!, data });
+      await createKeyName({ platformId: dialogState.platformId!, data });
       // After creating group, fetch the latest data to get the new ID
       const platforms = await actions.listKeys();
       const platform = platforms.find(p => p.id === dialogState.platformId);
@@ -163,7 +163,7 @@ export function CreateVariableDialog() {
 
       {dialogState.step === 'group' && (
         <div className="p-4">
-          <KeyGroupDialog
+          <KeyNameDialog
             mode="create"
             platformId={dialogState.platformId}
             onSuccess={handleGroupSubmit}
@@ -181,4 +181,3 @@ export function CreateVariableDialog() {
     </BaseDialog>
   );
 }
-         
