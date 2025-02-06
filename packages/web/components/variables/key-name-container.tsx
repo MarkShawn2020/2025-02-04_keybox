@@ -13,12 +13,13 @@ import { KeyValue } from './key-value-container';
 interface KeyNameCardProps {
   group: KeyName;
   platformId: string;
+  showRevokedKeys: boolean;
 }
 
 const dangerousTags = ["server"] as const
 const defaultTags = [...dangerousTags, 'client'] as const;
 
-export function KeyNameCard({group, platformId}: KeyNameCardProps) {
+export function KeyNameCard({group, platformId, showRevokedKeys}: KeyNameCardProps) {
   const {mutate: deleteGroup} = useDeleteKey();
   const {mutate: updateGroup} = useUpdateKeyName();
   
@@ -101,7 +102,9 @@ export function KeyNameCard({group, platformId}: KeyNameCardProps) {
       </div>
       
       <div className="space-y-1 mt-2" style={{display: isCollapsed ? 'none' : 'block'}}>
-        {group.keys?.map((key) => (
+        {group.keys
+          ?.filter(key => showRevokedKeys || !key.revoked)
+          .map((key) => (
           <KeyValue
             key={key.id}
             keyData={key}

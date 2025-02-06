@@ -5,10 +5,22 @@ import { useAtom } from 'jotai';
 import React from "react";
 import { usePlatforms } from '../../hooks/usePlatforms';
 import { keyCreationFlowAtom } from '@/atoms/key-creation-flow';
+import { Settings } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 
 export function VariablesContainer() {
   const {data: platforms, isLoading} = usePlatforms();
   const [, setFlowState] = useAtom(keyCreationFlowAtom);
+  const [showRevokedKeys, setShowRevokedKeys] = React.useState(true);
   
   if (isLoading) {
     return <div>Loading...</div>;
@@ -58,7 +70,28 @@ export function VariablesContainer() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Environment Variables</h2>
-        {createVariableButton("Add New")}
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Display Settings</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="flex items-center justify-between cursor-pointer">
+                Show Revoked Keys
+                <Switch
+                  checked={showRevokedKeys}
+                  onCheckedChange={setShowRevokedKeys}
+                  className="ml-2"
+                />
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {createVariableButton("Add New")}
+        </div>
       </div>
       
       <div className="space-y-2">
@@ -66,6 +99,7 @@ export function VariablesContainer() {
           <PlatformContainer
             key={platform.id}
             platform={platform}
+            showRevokedKeys={showRevokedKeys}
           />
         ))}
       </div>

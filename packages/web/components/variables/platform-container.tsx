@@ -10,9 +10,10 @@ import { useDeletePlatform } from '@/hooks/usePlatforms';
 
 interface PlatformCardProps {
   platform: Platform;
+  showRevokedKeys: boolean;
 }
 
-export function PlatformContainer({ platform }: PlatformCardProps) {
+export function PlatformContainer({ platform, showRevokedKeys }: PlatformCardProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { mutate: deletePlatform } = useDeletePlatform();
 
@@ -78,6 +79,7 @@ export function PlatformContainer({ platform }: PlatformCardProps) {
               key={group.id}
               group={group}
               platformId={platform.id}
+              showRevokedKeys={showRevokedKeys}
             />
           ))}
       </div>
