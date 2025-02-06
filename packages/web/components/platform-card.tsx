@@ -55,7 +55,9 @@ export function PlatformCard({ platform }: PlatformCardProps) {
             size="icon"
             onClick={(e) => {
               e.stopPropagation();
-              deletePlatform(platform.id);
+              if (confirm('Are you sure you want to delete this platform?')) {
+                deletePlatform(platform.id);
+              }
             }}
           >
             <Trash2 className="h-4 w-4" />

@@ -47,8 +47,10 @@ export function CreateKeyGroupDialog({ platformId }: CreateKeyGroupDialogProps) 
     try {
       createKeyGroup({
         platformId,
-        name: formData.name,
-        description: formData.description || undefined,
+        data: {
+          name: formData.name,
+          description: formData.description || undefined,
+        }
       });
 
       toast({

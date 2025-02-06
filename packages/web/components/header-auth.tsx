@@ -1,62 +1,13 @@
-'use client';
-
 import { signOutAction } from "@/app/actions";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
+import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import { createClient } from "@/utils/supabase/client";
-import { useEffect } from 'react';
-import { atom, useAtom } from 'jotai';
-import { User } from '@supabase/supabase-js';
 
-// 创建全局用户状态
-export const userAtom = atom<User | null>(null);
-export const userLoadingAtom = atom<boolean>(true);
-
-export default function HeaderAuth() {
-  const [user, setUser] = useAtom(userAtom);
-  const [loading, setLoading] = useAtom(userLoadingAtom);
-
-  useEffect(() => {
-    const supabase = createClient();
-
-    async function initializeAuth() {
-      try {
-        // 初始化用户状态
-        const { data: { user } } = await supabase.auth.getUser();
-        console.log('Current user:', user); // Debug log
-        setUser(user);
-        setLoading(false);
-
-        // 监听认证状态变化
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-          console.log('Auth state changed:', event, session?.user); // Debug log
-          if (event === 'SIGNED_IN') {
-            const { data: { user } } = await supabase.auth.getUser();
-            setUser(user);
-          } else if (event === 'SIGNED_OUT') {
-            setUser(null);
-          }
-          setLoading(false);
-        });
-
-        return () => {
-          subscription.unsubscribe();
-        };
-      } catch (error) {
-        console.error('Auth initialization error:', error);
-        setLoading(false);
-      }
-    }
-
-    initializeAuth();
-  }, [setUser, setLoading]);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
+export default async function HeaderAuth() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!hasEnvVars) {
     return (

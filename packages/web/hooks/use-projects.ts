@@ -1,190 +1,97 @@
-import { useState, useCallback } from 'react';
-import { createClient } from '@/utils/supabase/client';
+'use client';
+
+import { useCallback } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from './use-toast';
-import type { Project, ProjectWithKeys } from '@keybox/shared';
+import type { ProjectWithKeys } from '@keybox/shared';
+import { actions } from '@/utils/actions';
 
 export function useProjects() {
-  const [projects, setProjects] = useState<ProjectWithKeys[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+  
+  const query = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
+      try {
+        const data = await actions.getProjectKeys('');
+        return data;
+      } catch (error: any) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+        throw error;
+      }
+    }
+  });
+
+  return {
+    ...query,
+    loading: query.isLoading,
+    projects: query.data || [],
+  };
+}
+
+export function useCreateProject() {
+  const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const fetchProjects = useCallback(async () => {
-    try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('No active session');
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`, {
-        credentials: 'include',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`
-        }
-      });
-
-      if (!response.ok) throw new Error('Failed to fetch projects');
-
-      const data = await response.json();
-      setProjects(data);
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [toast]);
-
-  const createProject = async (name: string, description?: string, keys: string[] = []) => {
-    try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('No active session');
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, description, keys }),
-      });
-
-      if (!response.ok) throw new Error('Failed to create project');
-
-      await fetchProjects();
+  return useMutation({
+    mutationFn: async (data: { name: string; description?: string; keys?: string[] }) => {
+      try {
+        const result = await actions.createProject({
+          user_id: '',  // Will be set by server
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          id: '',  // Will be set by server
+          name: data.name,
+          description: data.description || '',
+          keys: data.keys || [],
+        });
+        return result;
+      } catch (error: any) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
       toast({
         title: 'Success',
         description: 'Project created successfully',
       });
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
     }
-  };
+  });
+}
 
-  const updateProject = async (id: string, name: string, description?: string, keys?: string[]) => {
-    try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('No active session');
+export function useDeleteProject() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${id}`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, description, keys }),
-      });
-
-      if (!response.ok) throw new Error('Failed to update project');
-
-      await fetchProjects();
-      toast({
-        title: 'Success',
-        description: 'Project updated successfully',
-      });
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const deleteProject = async (id: string) => {
-    try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('No active session');
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${id}`, {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error('Failed to delete project');
-
-      await fetchProjects();
+  return useMutation({
+    mutationFn: async (projectId: string) => {
+      try {
+        return await actions.deleteProject(projectId);
+      } catch (error: any) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
       toast({
         title: 'Success',
         description: 'Project deleted successfully',
       });
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
     }
-  };
-
-  const downloadEnvFile = async (id: string, preview: boolean = false) => {
-    try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('No active session');
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${id}/env`, {
-        credentials: 'include',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error('Failed to fetch .env file');
-
-      // 如果是预览模式，返回文本内容
-      if (preview) {
-        const content = await response.text();
-        return content;
-      }
-
-      // 否则下载文件
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      const project = projects.find(p => p.id === id);
-      if (!project) throw new Error('Project not found');
-      a.download = `${project.name}.env`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-
-      toast({
-        title: 'Success',
-        description: '.env file downloaded successfully',
-      });
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-      return '';
-    }
-  };
-
-  return {
-    projects,
-    loading,
-    fetchProjects,
-    createProject,
-    updateProject,
-    deleteProject,
-    downloadEnvFile,
-  };
+  });
 }

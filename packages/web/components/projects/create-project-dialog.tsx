@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { usePlatforms } from '@/hooks/usePlatforms';
-import { useProjects } from '@/hooks/use-projects';
+import { useCreateProject } from '@/hooks/use-projects';
 import { MultiSelect } from '../ui/multi-select';
 
 interface CreateProjectDialogProps {
@@ -44,12 +44,16 @@ export function CreateProjectDialog({ onProjectCreated }: CreateProjectDialogPro
     ) || []
   ) || [];
 
-  const { createProject } = useProjects();
+  const { mutate: createProject } = useCreateProject();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await createProject(name, description, selectedKeys);
+      await createProject({
+        name,
+        description,
+        keys: selectedKeys
+      });
       setOpen(false);
       setName('');
       setDescription('');

@@ -6,7 +6,7 @@ import express from 'express';
 import cors from 'cors';
 import { router as authRouter } from './routes/auth';
 import { router as keysRouter } from './routes/keys';
-import { router as solutionsRouter } from './routes/solutions';
+
 import { router as projectsRouter } from './routes/projects';
 
 const app = express();
@@ -23,7 +23,6 @@ app.use(express.json());
 // Routes
 app.use('/auth', authRouter);
 app.use('/keys', keysRouter);
-app.use('/solutions', solutionsRouter);
 app.use('/projects', projectsRouter);
 
 app.listen(port, () => {

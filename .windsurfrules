@@ -3,6 +3,6 @@
 架构：
 - 包管理器：pnpm
 - 前端 @packages/web， nextjs 14 app router
-- 后端 @packages/api, express
+- [DEPRECATED] 后端 @packages/api, express
 - 数据库：supabase，在根目录，通过 `supabase db push` 与远程同步
 - 状态管理：jotai + react-query

@@ -13,7 +13,7 @@ import { generateEnvContent } from '@/lib/env-utils';
 
 interface ProjectCardProps {
   project: ProjectWithKeys;
-  onUpdate: (id: string, name: string, description?: string, keys?: string[]) => Promise<void>;
+  onUpdate: (id: string, data: { name: string; description?: string; keys?: string[] }) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   onDownloadEnv: (id: string) => Promise<void>;
   onPreviewGenerated?: (content: string) => void;
@@ -60,7 +60,11 @@ export function ProjectCard({
 
 
   const handleSave = async () => {
-    await onUpdate(project.id, name, description, selectedKeys);
+    await onUpdate(project.id, {
+      name,
+      description,
+      keys: selectedKeys
+    });
     setIsEditing(false);
   };
 

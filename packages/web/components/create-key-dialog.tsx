@@ -29,9 +29,12 @@ export function CreateKeyDialog() {
       tags: formData.get('tags') ? (formData.get('tags') as string).split(',').map(t => t.trim()) : [],
     };
 
-    createPlatform(data, {
+    createPlatform({ data }, {
       onSuccess: (platform) => {
-        setPlatformId(platform.id);
+        if (platform && typeof platform === 'object' && 'id' in platform && typeof platform.id === 'string') {
+          setPlatformId(platform.id);
+          setStep('group');
+        }
         setStep('group');
         toast({
           title: 'Success',
@@ -59,9 +62,15 @@ export function CreateKeyDialog() {
       description: formData.get('description') as string || undefined,
     };
 
-    createKeyGroup(data, {
+    createKeyGroup({ platformId: platformId!, data: {
+      name: data.name,
+      description: data.description,
+    }}, {
       onSuccess: (group) => {
-        setGroupId(group.id);
+        if (group && typeof group === 'object' && 'id' in group && typeof group.id === 'string') {
+          setGroupId(group.id);
+          setStep('key');
+        }
         setStep('key');
         toast({
           title: 'Success',

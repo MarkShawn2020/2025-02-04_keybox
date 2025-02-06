@@ -6,19 +6,21 @@ import { Input } from './ui/input';
 import { Eye, EyeOff, Copy, Trash2 } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import type { Key } from '@keybox/shared';
+import { useUpdateKeyNote, useToggleKeyStatus, useDeleteKey } from '@/hooks/usePlatforms';
 
 interface KeyItemProps {
   keyData: Key;
-  onUpdateNote: (keyId: string, note: string) => void;
-  onToggleStatus: (keyId: string) => void;
-  onDelete: (keyId: string) => void;
 }
 
-export function KeyItem({ keyData, onUpdateNote, onToggleStatus, onDelete }: KeyItemProps) {
+export function KeyItem({ keyData }: KeyItemProps) {
   const [showValue, setShowValue] = useState(false);
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [noteValue, setNoteValue] = useState(keyData.note || "");
   const { toast } = useToast();
+
+  const { mutate: updateNote } = useUpdateKeyNote();
+  const { mutate: toggleStatus } = useToggleKeyStatus();
+  const { mutate: deleteKey } = useDeleteKey();
 
   const maskValue = (value: string) => {
     if (value.length <= 2) value = value.replace(/./g, '•');
@@ -57,7 +59,7 @@ export function KeyItem({ keyData, onUpdateNote, onToggleStatus, onDelete }: Key
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                onUpdateNote(keyData.id, noteValue);
+                updateNote({ keyId: keyData.id, note: noteValue });
                 setIsEditingNote(false);
               }}
               className="flex items-center gap-1"
@@ -69,7 +71,7 @@ export function KeyItem({ keyData, onUpdateNote, onToggleStatus, onDelete }: Key
                 autoFocus
                 onBlur={() => {
                   if (noteValue !== keyData.note) {
-                    onUpdateNote(keyData.id, noteValue);
+                    updateNote({ keyId: keyData.id, note: noteValue });
                   }
                   setIsEditingNote(false);
                 }}
@@ -119,7 +121,7 @@ export function KeyItem({ keyData, onUpdateNote, onToggleStatus, onDelete }: Key
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => onToggleStatus(keyData.id)}
+          onClick={() => toggleStatus(keyData.id)}
           className={keyData.revoked ? 'text-red-500 hover:text-red-600' : 'text-green-500 hover:text-green-600'}
         >
           <span className="sr-only">{keyData.revoked ? 'Activate' : 'Revoke'} key</span>
@@ -128,7 +130,7 @@ export function KeyItem({ keyData, onUpdateNote, onToggleStatus, onDelete }: Key
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => onDelete(keyData.id)}
+          onClick={() => deleteKey(keyData.id)}
         >
           <Trash2 className="h-3 w-3" />
         </Button>

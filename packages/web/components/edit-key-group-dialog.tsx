@@ -17,9 +17,10 @@ const defaultTags = [...dangerousTags, ...primaryTags] as string[];
 
 interface EditKeyGroupDialogProps {
   group: KeyGroup;
+  onUpdate: (data: { name: string; description?: string; tags?: string[] }) => void;
 }
 
-export function EditKeyGroupDialog({ group }: EditKeyGroupDialogProps) {
+export function EditKeyGroupDialog({ group, onUpdate }: EditKeyGroupDialogProps) {
   const { mutate: updateGroup } = useUpdateKeyGroup();
   const [isOpen, setIsOpen] = useState(false);
   const [editName, setEditName] = useState(group.name);
@@ -45,18 +46,13 @@ export function EditKeyGroupDialog({ group }: EditKeyGroupDialogProps) {
       ...editTags.filter(tag => !defaultTags.includes(tag as any))
     ];
 
-    updateGroup({ 
-      groupId: group.id, 
-      data: {
-        name: editName.trim(),
-        description: editDescription.trim() || undefined,
-        tags: finalTags.length > 0 ? finalTags : undefined,
-      }
-    }, {
-      onSuccess: () => {
-        setIsOpen(false);
-      }
+    onUpdate({
+      name: editName.trim(),
+      description: editDescription.trim() || undefined,
+      tags: finalTags.length > 0 ? finalTags : undefined,
     });
+
+    setIsOpen(false);
   };
 
   const handleCancel = () => {

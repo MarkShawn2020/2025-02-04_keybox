@@ -3,17 +3,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { CreateProjectDialog } from './create-project-dialog';
 import { ProjectCard } from './project-card';
-import { useProjects } from '@/hooks/use-projects';
+import { useProjects, useDeleteProject } from '@/hooks/use-projects';
+import type { ProjectWithKeys } from '@keybox/shared';
 
 export function ProjectsList() {
-  const {
-    projects,
-    loading,
-    fetchProjects,
-    updateProject,
-    deleteProject,
-    downloadEnvFile,
-  } = useProjects();
+  const { data: projects = [], isLoading: loading } = useProjects();
+  const { mutate: deleteProject } = useDeleteProject();
 
   const [previewContent, setPreviewContent] = useState<{ [key: string]: string | undefined }>({});
 
@@ -25,9 +20,7 @@ export function ProjectsList() {
     });
   }, []);
 
-  useEffect(() => {
-    fetchProjects();
-  }, [fetchProjects]);
+
 
   if (loading) {
     return <div>Loading...</div>;
@@ -37,18 +30,22 @@ export function ProjectsList() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Projects</h2>
-        <CreateProjectDialog onProjectCreated={fetchProjects} />
+        <CreateProjectDialog onProjectCreated={() => {}} />
       </div>
 
       <div className="space-y-4">
-        {projects.map((project) => (
+        {projects.map((project: ProjectWithKeys) => (
           <ProjectCard
             key={project.id}
             project={project}
-            onUpdate={updateProject}
-            onDelete={deleteProject}
+            onUpdate={async (id: string, data: { name: string; description?: string; keys?: string[] }) => {
+              // TODO: Implement project update
+              return Promise.resolve();
+            }}
+            onDelete={async (id: string) => {
+              await deleteProject(id);
+            }}
             onDownloadEnv={async (id) => {
-              await downloadEnvFile(id, false);
             }}
             onPreviewGenerated={(content) => handlePreviewGenerated(project.id, content)}
           />

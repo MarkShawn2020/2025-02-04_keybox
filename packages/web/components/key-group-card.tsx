@@ -8,7 +8,7 @@ import { CreateKeyValueDialog } from './create-key-value-dialog';
 import { EditKeyGroupDialog } from './edit-key-group-dialog';
 import { KeyItem } from './key-item';
 import type { KeyGroup } from '@keybox/shared';
-import { useDeleteKey, useDeleteKeyGroup, useToggleKeyStatus, useUpdateKeyNote } from '@/hooks/usePlatforms';
+import { useDeleteKey, useToggleKeyStatus, useUpdateKeyNote, useUpdateKeyGroup } from '@/hooks/usePlatforms';
 
 interface KeyGroupCardProps {
   group: KeyGroup;
@@ -19,7 +19,8 @@ const dangerousTags = ["server"] as const
 const defaultTags = [...dangerousTags, 'client'] as const;
 
 export function KeyGroupCard({ group, platformId }: KeyGroupCardProps) {
-  const { mutate: deleteGroup } = useDeleteKeyGroup();
+  const { mutate: deleteGroup } = useDeleteKey();
+  const { mutate: updateGroup } = useUpdateKeyGroup();
   const { mutate: updateNote } = useUpdateKeyNote();
   const { mutate: toggleKeyStatus } = useToggleKeyStatus();
   const { mutate: deleteKey } = useDeleteKey();
@@ -65,7 +66,10 @@ export function KeyGroupCard({ group, platformId }: KeyGroupCardProps) {
         </div>
 
         <div className="flex items-center gap-1">
-          <EditKeyGroupDialog group={group} />
+          <EditKeyGroupDialog 
+            group={group} 
+            onUpdate={(data: { name: string; description?: string }) => updateGroup({ groupId: group.id, data })}
+          />
           <CreateKeyValueDialog 
             platformId={platformId}
             groupId={group.id}
@@ -88,15 +92,6 @@ export function KeyGroupCard({ group, platformId }: KeyGroupCardProps) {
           <KeyItem
             key={key.id}
             keyData={key}
-            onUpdateNote={(keyId, note) => {
-              updateNote({ keyId, note })
-            }}
-            onToggleStatus={(keyId) => {
-              toggleKeyStatus(keyId)
-            }}
-            onDelete={(keyId) => {
-              deleteKey(keyId)
-            }}
           />
         ))}
       </div>

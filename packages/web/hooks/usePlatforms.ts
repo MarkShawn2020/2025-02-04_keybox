@@ -1,137 +1,271 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import type { Platform } from '@keybox/shared'
-import { api } from '@/utils/axios'
+'use client';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import type { Platform } from '@keybox/shared';
+import { useToast } from './use-toast';
+import { actions } from '@/utils/actions';
 
 export function usePlatforms() {
+  const { toast } = useToast();
   return useQuery<Platform[]>({
     queryKey: ['platforms'],
-    queryFn: () => api.get('/keys').then(res => res.data)
-  })
+    queryFn: async () => {
+      try {
+        return await actions.listKeys();
+      } catch (error: any) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+        throw error;
+      }
+    }
+  });
 }
 
-export function useUpdateKeyGroup() {
-  const queryClient = useQueryClient()
-  
+export function useCreatePlatform() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
   return useMutation({
-    mutationFn: async ({ groupId, data }: { 
-      groupId: string; 
-      data: { 
-        name: string; 
-        description?: string; 
-        tags?: string[] 
-      } 
+    mutationFn: async ({ data }: {
+      data: {
+        name: string;
+        description?: string;
+        tags?: string[];
+      };
     }) => {
-      const response = await api.patch(`/keys/groups/${groupId}`, data);
-      return response.data;
+      try {
+        return await actions.createPlatform(data);
+      } catch (error: any) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+        throw error;
+      }
     },
     onSuccess: () => {
-      // 更新成功后使缓存失效，触发重新获取
-      queryClient.invalidateQueries({ queryKey: ['platforms'] })
+      queryClient.invalidateQueries({ queryKey: ['platforms'] });
+      toast({
+        title: 'Success',
+        description: 'Platform created successfully',
+      });
     }
-  })
-}
-
-export function useDeleteKeyGroup() {
-  const queryClient = useQueryClient()
-  
-  return useMutation({
-    mutationFn: (groupId: string) => api.delete(`/keys/groups/${groupId}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['platforms'] })
-    }
-  })
-}
-
-export function useUpdateKeyNote() {
-  const queryClient = useQueryClient()
-  
-  return useMutation({
-    mutationFn: ({ keyId, note }: { 
-      keyId: string; 
-      note: string 
-    }) => api.patch(`/keys/${keyId}/note`, { note }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['platforms'] })
-    }
-  })
-}
-
-export function useToggleKeyStatus() {
-  const queryClient = useQueryClient()
-  
-  return useMutation({
-    mutationFn: (keyId: string) => api.post(`/keys/${keyId}/toggle`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['platforms'] })
-    }
-  })
-}
-
-export function useDeleteKey() {
-  const queryClient = useQueryClient()
-  
-  return useMutation({
-    mutationFn: (keyId: string) => api.delete(`/keys/${keyId}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['platforms'] })
-    }
-  })
-}
-
-export function useDeletePlatform() {
-  const queryClient = useQueryClient()
-  
-  return useMutation({
-    mutationFn: (platformId: string) => api.delete(`/platforms/${platformId}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['platforms'] })
-    }
-  })
+  });
 }
 
 export function useCreateKeyGroup() {
-  const queryClient = useQueryClient()
-  
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
   return useMutation({
-    mutationFn: (data: { 
+    mutationFn: async ({ platformId, data }: {
       platformId: string;
-      name: string;
-      description?: string;
-    }) => api.post('/keys/groups', data).then(res => res.data),
+      data: {
+        name: string;
+        description?: string;
+        tags?: string[];
+      };
+    }) => {
+      try {
+        return await actions.createKeyGroup(platformId, data);
+      } catch (error: any) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+        throw error;
+      }
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['platforms'] })
+      queryClient.invalidateQueries({ queryKey: ['platforms'] });
+      toast({
+        title: 'Success',
+        description: 'Key group created successfully',
+      });
     }
-  })
+  });
 }
 
 export function useCreateKey() {
-  const queryClient = useQueryClient()
-  
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
   return useMutation({
-    mutationFn: ({ groupId, data }: { 
+    mutationFn: async ({ groupId, data }: {
       groupId: string;
       data: {
         value: string;
         note?: string;
+        tags?: string[];
       };
-    }) => api.post(`/keys/groups/${groupId}/keys`, data).then(res => res.data),
+    }) => {
+      try {
+        return await actions.createKey(groupId, data);
+      } catch (error: any) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+        throw error;
+      }
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['platforms'] })
+      queryClient.invalidateQueries({ queryKey: ['platforms'] });
+      toast({
+        title: 'Success',
+        description: 'Key created successfully',
+      });
     }
-  })
+  });
 }
 
-export function useCreatePlatform() {
-  const queryClient = useQueryClient()
-  
+export function useDeleteKey() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
   return useMutation({
-    mutationFn: (data: { 
-      name: string;
-      description?: string;
-      tags?: string[];
-    }) => api.post('/keys/platforms', data).then(res => res.data),
+    mutationFn: async (keyId: string) => {
+      try {
+        return await actions.deleteKey(keyId);
+      } catch (error: any) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+        throw error;
+      }
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['platforms'] })
+      queryClient.invalidateQueries({ queryKey: ['platforms'] });
+      toast({
+        title: 'Success',
+        description: 'Key deleted successfully',
+      });
     }
-  })
+  });
+}
+
+export function useUpdateKeyGroup() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async ({ groupId, data }: {
+      groupId: string;
+      data: {
+        name: string;
+        description?: string;
+        tags?: string[];
+      };
+    }) => {
+      try {
+        return await actions.updateKeyGroup(groupId, data);
+      } catch (error: any) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['platforms'] });
+      toast({
+        title: 'Success',
+        description: 'Key group updated successfully',
+      });
+    }
+  });
+}
+
+export function useUpdateKeyNote() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async ({ keyId, note }: {
+      keyId: string;
+      note: string;
+    }) => {
+      try {
+        return await actions.updateKeyNote(keyId, note);
+      } catch (error: any) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['platforms'] });
+      toast({
+        title: 'Success',
+        description: 'Key note updated successfully',
+      });
+    }
+  });
+}
+
+export function useToggleKeyStatus() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (keyId: string) => {
+      try {
+        return await actions.toggleKeyStatus(keyId);
+      } catch (error: any) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['platforms'] });
+      toast({
+        title: 'Success',
+        description: 'Key status toggled successfully',
+      });
+    }
+  });
+}
+
+export function useDeletePlatform() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (platformId: string) => {
+      try {
+        return await actions.deletePlatform(platformId);
+      } catch (error: any) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['platforms'] });
+      toast({
+        title: 'Success',
+        description: 'Platform deleted successfully',
+      });
+    }
+  });
 }
