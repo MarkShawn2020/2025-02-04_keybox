@@ -80,7 +80,12 @@ export function VariablesContainer() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Display Settings</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="flex items-center justify-between cursor-pointer">
+              <DropdownMenuItem 
+                className="flex items-center justify-between cursor-pointer"
+                onSelect={(e) => {
+                  e.preventDefault();
+                }}
+              >
                 Show Revoked Keys
                 <Switch
                   checked={showRevokedKeys}
