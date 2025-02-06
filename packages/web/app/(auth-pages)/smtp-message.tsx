@@ -1,7 +1,15 @@
 import { ArrowUpRight, InfoIcon } from "lucide-react";
 import Link from "next/link";
 
+/**
+ * it's conifugured at:
+ * - https://supabase.com/docs/guides/auth/auth-smtp
+ * - https://app.loops.so/transactional/cm6s8ygnr000wfol33mkpdzlc?stepName=Compose
+ * @returns 
+ */
 export function SmtpMessage() {
+  return null
+
   return (
     <div className="bg-muted/50 px-5 py-3 border rounded-md flex gap-4">
       <InfoIcon size={16} className="mt-0.5" />
