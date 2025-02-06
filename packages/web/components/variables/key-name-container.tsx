@@ -104,6 +104,7 @@ export function KeyNameCard({group, platformId, showRevokedKeys}: KeyNameCardPro
       <div className="space-y-1 mt-2" style={{display: isCollapsed ? 'none' : 'block'}}>
         {group.keys
           ?.filter(key => showRevokedKeys || !key.revoked)
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
           .map((key) => (
           <KeyValue
             key={key.id}

@@ -48,7 +48,7 @@ export function KeyValue({ keyData }: KeyItemProps) {
   };
 
   return (
-    <div className="flex items-center justify-between py-1 pl-4">
+    <div className={`flex items-center justify-between py-1 pl-4 ${keyData.revoked ? 'opacity-50' : ''}`}>
       <div className="flex items-center gap-2 flex-1 min-w-0">
         <Switch
           checked={isValid}
@@ -56,12 +56,10 @@ export function KeyValue({ keyData }: KeyItemProps) {
             setIsValid(checked);
             toggleStatus(keyData.id);
           }}
-          className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
+          // className="h-4 w-7 data-[state=checked]:bg-primary/20 data-[state=unchecked]:bg-muted"
+          // thumbClassName="h-3 w-3 data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted-foreground/50"
           aria-label="Toggle key validity"
         />
-        {/* <span className={`px-1.5 py-0.5 text-xs rounded ${keyData.revoked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
-          {keyData.revoked ? 'Revoked' : 'Active'}
-        </span> */}
 
         <span className="text-xs text-muted-foreground">
           {new Date(keyData.created_at).toLocaleDateString()}
