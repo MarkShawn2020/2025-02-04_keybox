@@ -42,7 +42,7 @@
 
 1. 克隆仓库
 ```bash
-git clone https://github.com/your-username/keybox.git
+git clone https://github.com/MarkShawn2020/2025-02-04_keybox.git
 cd keybox
 ```
 
