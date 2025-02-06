@@ -27,10 +27,12 @@ export function KeyNameDialog() {
 
   // 表单状态
   const [name, setName] = useState('');
+  const [init, setInit] = useState(false)
 
   useEffect(() => {
-    if (platform?.name && !name) {
+    if (platform?.name && !name && !init) {
       setName(`${platform.name.toUpperCase()}_API_KEY`);
+      setInit(true)
     }
   }, [platform?.name, name]);
   const [description, setDescription] = useState('');
