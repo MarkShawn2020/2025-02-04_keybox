@@ -24,18 +24,13 @@ export function BaseDialog({
   trigger,
   open,
   onOpenChange,
-  triggerText = "Add New",
+  triggerText = "Base Dialog Triger Text",
 }: BaseDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {/* <DialogTrigger asChild>
-        {trigger || (
-          <Button onClick={() => onOpenChange?.(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            {triggerText}
-          </Button>
-        )}
-      </DialogTrigger> */}
+      <DialogTrigger asChild>
+        {trigger}
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>

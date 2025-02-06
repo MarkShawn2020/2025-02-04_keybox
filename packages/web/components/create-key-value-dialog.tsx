@@ -1,17 +1,10 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCreateKey } from "@/hooks/usePlatforms";
+import { BaseDialog } from "./ui/base-dialog";
+import { KeyValueForm } from "./forms/key-value-form";
+import { Plus } from "lucide-react";
+import { Button } from "./ui/button";
 
 type CreateKeyValueDialogProps = {
   platformId: string;
@@ -23,18 +16,20 @@ export function CreateKeyValueDialog({ platformId, groupId }: CreateKeyValueDial
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  const [formData, setFormData] = useState({
-    note: "",
-    value: "",
-  });
 
   const handleClose = () => {
     setOpen(false);
-    setFormData({ note: "", value: "" });
   };
 
-  const handleSubmit = async () => {
-    if (!formData.value.trim()) {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      value: formData.get('value') as string,
+      note: formData.get('note') as string || undefined,
+    };
+
+    if (!data.value.trim()) {
       toast({
         title: "Error",
         description: "Please enter a value",
@@ -47,10 +42,7 @@ export function CreateKeyValueDialog({ platformId, groupId }: CreateKeyValueDial
     try {
       createKey({
         groupId,
-        data: {
-          value: formData.value,
-          note: formData.note || undefined,
-        }
+        data
       });
 
       toast({
@@ -70,7 +62,7 @@ export function CreateKeyValueDialog({ platformId, groupId }: CreateKeyValueDial
   };
 
   return (
-    <Dialog
+    <BaseDialog
       open={open}
       onOpenChange={(newOpen) => {
         if (!newOpen) {
@@ -79,8 +71,8 @@ export function CreateKeyValueDialog({ platformId, groupId }: CreateKeyValueDial
           setOpen(true);
         }
       }}
-    >
-      <DialogTrigger asChild>
+      title="Create New Key"
+      trigger={
         <Button
           variant="ghost"
           size="icon"
@@ -88,46 +80,12 @@ export function CreateKeyValueDialog({ platformId, groupId }: CreateKeyValueDial
         >
           <Plus className="h-4 w-4" />
         </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Create New Key</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-
-
-            <Label>Note</Label>
-            <Input
-              placeholder="Enter note (required)"
-              value={formData.note}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, note: e.target.value }))
-              }
-            />
-
-<div className="space-y-2">
-            <Label>Key Value</Label>
-            <Input
-              placeholder="Enter value (required)"
-              value={formData.value}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, value: e.target.value }))
-              }
-            />
-          </div>
-          </div>
-
-        </div>
-        <div className="flex justify-end space-x-2">
-          <Button variant="outline" onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} disabled={loading}>
-            {loading ? "Creating..." : "Create"}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+      }
+    >
+      <KeyValueForm
+        onSubmit={handleSubmit}
+        isLoading={loading}
+      />
+    </BaseDialog>
   );
 }

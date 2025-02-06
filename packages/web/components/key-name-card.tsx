@@ -18,7 +18,7 @@ interface KeyGroupCardProps {
 const dangerousTags = ["server"] as const
 const defaultTags = [...dangerousTags, 'client'] as const;
 
-export function KeyGroupCard({ group, platformId }: KeyGroupCardProps) {
+export function KeyNameCard({ group, platformId }: KeyGroupCardProps) {
   const { mutate: deleteGroup } = useDeleteKey();
   const { mutate: updateGroup } = useUpdateKeyGroup();
   const { mutate: updateNote } = useUpdateKeyNote();
@@ -65,25 +65,35 @@ export function KeyGroupCard({ group, platformId }: KeyGroupCardProps) {
           </div>
         </div>
 
-        <div className="flex items-center gap-1">
-          <EditKeyGroupDialog 
-            group={group} 
-            onUpdate={(data: { name: string; description?: string }) => updateGroup({ groupId: group.id, data })}
-          />
-          <CreateKeyValueDialog 
-            platformId={platformId}
-            groupId={group.id}
-          />
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={(e) => {
-              e.stopPropagation();
-              deleteGroup(group.id);
-            }}
+        <div className="flex items-center gap-2">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-1"
           >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+            <EditKeyGroupDialog 
+              group={group} 
+              onUpdate={(data: { name: string; description?: string }) => updateGroup({ groupId: group.id, data })}
+            />
+            <CreateKeyValueDialog 
+              platformId={platformId}
+              groupId={group.id}
+            />
+          </div>
+          <div
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                if (confirm('Are you sure you want to delete this key group?')) {
+                  deleteGroup(group.id);
+                }
+              }}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
       

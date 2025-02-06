@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from './ui/button';
 import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
 import { CreateKeyNameDialog } from './create-key-name-dialog';
-import { KeyGroupCard } from './key-group-card';
+import { KeyNameCard } from './key-name-card';
 import type { Platform } from '@keybox/shared';
 import { useDeletePlatform } from '@/hooks/usePlatforms';
 
@@ -46,22 +46,30 @@ export function PlatformCard({ platform }: PlatformCardProps) {
             </div>
           )}
         </div>
-        <div className="flex items-center gap-1">
-          <CreateKeyNameDialog
-            platformId={platform.id}
-          />
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={(e) => {
-              e.stopPropagation();
-              if (confirm('Are you sure you want to delete this platform?')) {
-                deletePlatform(platform.id);
-              }
-            }}
+        <div className="flex items-center gap-2">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-1"
           >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+            <CreateKeyNameDialog
+              platformId={platform.id}
+            />
+          </div>
+          <div
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                if (confirm('Are you sure you want to delete this platform?')) {
+                  deletePlatform(platform.id);
+                }
+              }}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
       
@@ -69,7 +77,7 @@ export function PlatformCard({ platform }: PlatformCardProps) {
         {[...(platform.key_groups || [])]
           .sort((a, b) => a.name.localeCompare(b.name))
           .map((group) => (
-            <KeyGroupCard
+            <KeyNameCard
               key={group.id}
               group={group}
               platformId={platform.id}

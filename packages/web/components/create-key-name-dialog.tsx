@@ -1,18 +1,10 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCreateKeyGroup } from "@/hooks/usePlatforms";
-import { Textarea } from "./ui/textarea";
+import { BaseDialog } from "./ui/base-dialog";
+import { KeyNameForm } from "./forms/key-name-form";
+import { Plus } from "lucide-react";
+import { Button } from "./ui/button";
 
 type CreateKeyGroupDialogProps = {
   platformId: string;
@@ -23,18 +15,20 @@ export function CreateKeyNameDialog({ platformId }: CreateKeyGroupDialogProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-  });
 
   const handleClose = () => {
     setOpen(false);
-    setFormData({ name: "", description: "" });
   };
 
-  const handleSubmit = async () => {
-    if (!formData.name) {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      name: formData.get('name') as string,
+      description: formData.get('description') as string || undefined,
+    };
+
+    if (!data.name) {
       toast({
         title: "Error",
         description: "Please enter a group name",
@@ -54,20 +48,20 @@ export function CreateKeyNameDialog({ platformId }: CreateKeyGroupDialogProps) {
 
     console.log('Creating key group:', {
       platformId,
-      name: formData.name,
-      description: formData.description
+      ...data
     });
 
     setLoading(true);
     try {
       await createKeyGroup({
         platformId,
-        data: {
-          name: formData.name,
-          description: formData.description || undefined,
-        }
+        data
       });
       handleClose();
+      toast({
+        title: "Success",
+        description: "Key group created successfully",
+      });
     } catch (error: any) {
       console.error('Error creating key group:', error);
       const errorMessage = error?.message || 
@@ -85,7 +79,7 @@ export function CreateKeyNameDialog({ platformId }: CreateKeyGroupDialogProps) {
   };
 
   return (
-    <Dialog
+    <BaseDialog
       open={open}
       onOpenChange={(newOpen) => {
         if (!newOpen) {
@@ -94,8 +88,8 @@ export function CreateKeyNameDialog({ platformId }: CreateKeyGroupDialogProps) {
           setOpen(true);
         }
       }}
-    >
-      <DialogTrigger asChild>
+      title="Create New Key Name"
+      trigger={
         <Button
           variant="ghost"
           size="icon"
@@ -103,42 +97,12 @@ export function CreateKeyNameDialog({ platformId }: CreateKeyGroupDialogProps) {
         >
           <Plus className="h-4 w-4" />
         </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Create New Key Name</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label>Key Name</Label>
-            <Input
-              placeholder="OPENAI_API_KEY"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, name: e.target.value }))
-              }
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Key Description</Label>
-            <Textarea
-              placeholder="Enter key description (optional)"
-              value={formData.description}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, description: e.target.value }))
-              }
-            />
-          </div>
-        </div>
-        <div className="flex justify-end space-x-2">
-          <Button variant="outline" onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} disabled={loading}>
-            {loading ? "Creating..." : "Create"}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+      }
+    >
+      <KeyNameForm
+        onSubmit={handleSubmit}
+        isLoading={loading}
+      />
+    </BaseDialog>
   );
 }
