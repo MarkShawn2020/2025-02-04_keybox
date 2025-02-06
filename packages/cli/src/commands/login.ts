@@ -4,7 +4,7 @@ import { Spinner } from 'cli-spinner';
 import keytar from 'keytar';
 import chalk from 'chalk';
 
-const API_URL = process.env.KEYBOX_API_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000/api';
+const API_URL = process.env.KEYBOX_API_URL || process.env.NEXT_PUBLIC_APP_URL || "https://keybox.cs-magic.cn"
 console.log(chalk.gray(`Using API URL: ${API_URL}`));
 const SERVICE_NAME = 'keybox-cli';
 const POLL_INTERVAL = 5000; // 5 seconds
@@ -54,13 +54,11 @@ export async function login() {
       console.log(chalk.blue('🔄 Starting device authentication...'));
       
       // Request device code
-      const response = await axios.post(`${API_URL}/device/code`);
-      const { device_code, verification_uri, user_code } = response.data;
+      const response = await axios.post(`${API_URL}/api/device/code`);
+      const { device_code, user_code } = response.data;
       
       // Add API_URL if verification_uri is a relative path
-      const verificationUrl = verification_uri.startsWith('http')
-        ? verification_uri
-        : `${API_URL}${verification_uri}`;
+      const verificationUrl = `${API_URL}/cli/verify-device`;
       
       console.log(chalk.green('\n✓ Device code generated!'));
       console.log('\nPlease visit:');
