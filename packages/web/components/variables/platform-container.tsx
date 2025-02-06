@@ -7,6 +7,8 @@ import { ChevronDown, ChevronRight, Plus, Trash2 } from 'lucide-react';
 import { KeyCreationTrigger } from './key-creation-flow/trigger';
 import type { Platform } from '@keybox/shared';
 import { useDeletePlatform } from '@/hooks/usePlatforms';
+import { useToast } from '@/hooks/use-toast';
+import { ToastAction } from '@/components/ui/toast';
 
 interface PlatformCardProps {
   platform: Platform;
@@ -16,6 +18,7 @@ interface PlatformCardProps {
 export function PlatformContainer({ platform, showRevokedKeys }: PlatformCardProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { mutate: deletePlatform } = useDeletePlatform();
+  const { toast } = useToast();
 
   return (
     <div className="border rounded-lg">
@@ -60,9 +63,19 @@ export function PlatformContainer({ platform, showRevokedKeys }: PlatformCardPro
               variant="ghost"
               size="icon"
               onClick={() => {
-                if (confirm('Are you sure you want to delete this platform?')) {
-                  deletePlatform(platform.id);
-                }
+                toast({
+                  title: 'Delete Platform',
+                  description: 'Are you sure you want to delete this platform?',
+                  action: (
+                    <ToastAction
+                      altText='delete platform'
+                      onClick={() => deletePlatform(platform.id)}
+                    >
+                      Delete
+                    </ToastAction>
+                  ),
+                  variant: 'destructive'
+                });
               }}
             >
               <Trash2 className="h-4 w-4" />

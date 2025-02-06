@@ -1,6 +1,8 @@
 'use client';
 
 import {useDeleteKeyName, useUpdateKeyName} from '@/hooks/usePlatforms';
+import { useToast } from '@/hooks/use-toast';
+import { ToastAction } from '@/components/ui/toast';
 import type {KeyName} from '@keybox/shared';
 import {ChevronDown, ChevronRight, Trash2} from 'lucide-react';
 import {useState} from 'react';
@@ -21,6 +23,7 @@ const defaultTags = [...dangerousTags, 'client'] as const;
 
 export function KeyNameCard({group, platformId, showRevokedKeys}: KeyNameCardProps) {
   const {mutate: deleteGroup} = useDeleteKeyName();
+  const { toast } = useToast();
   const {mutate: updateGroup} = useUpdateKeyName();
   
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -90,9 +93,18 @@ export function KeyNameCard({group, platformId, showRevokedKeys}: KeyNameCardPro
               variant="ghost"
               size="icon"
               onClick={() => {
-                if (confirm('Are you sure you want to delete this Key Name?')) {
-                  deleteGroup(group.id);
-                }
+                toast({
+                  title: 'Delete Key Name',
+                  description: 'Are you sure you want to delete this Key Name?',
+                  action: (
+                    <ToastAction
+                    altText='delete key name'
+                    onClick={() => deleteGroup(group.id)}>
+                      Delete
+                    </ToastAction>
+                  ),
+                  variant: 'destructive'
+                });
               }}
             >
               <Trash2 className="h-4 w-4"/>
