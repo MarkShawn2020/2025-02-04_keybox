@@ -5,6 +5,13 @@ import type { Platform } from '@keybox/shared';
 import { useToast } from './use-toast';
 import { actions } from '@/utils/actions';
 
+export function usePlatform(platformId?: string) {
+  const { data: platforms } = usePlatforms();
+  return {
+    data: platformId ? platforms?.find(p => p.id === platformId) : undefined
+  };
+}
+
 export function usePlatforms() {
   const { toast } = useToast();
   return useQuery<Platform[]>({

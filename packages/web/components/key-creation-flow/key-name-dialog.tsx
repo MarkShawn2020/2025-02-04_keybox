@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAtom } from 'jotai';
 import { useToast } from '@/hooks/use-toast';
-import { useCreateKeyName } from '@/hooks/usePlatforms';
+import { useCreateKeyName, usePlatform } from '@/hooks/usePlatforms';
 import { BaseDialog } from '../ui/base-dialog';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -23,8 +23,16 @@ export function KeyNameDialog() {
   const { mutateAsync: createKeyName, isPending } = useCreateKeyName();
   const { toast } = useToast();
 
+  const { data: platform } = usePlatform(flowState.platformId);  
+
   // 表单状态
   const [name, setName] = useState('');
+
+  useEffect(() => {
+    if (platform?.name && !name) {
+      setName(`${platform.name.toUpperCase()}_API_KEY`);
+    }
+  }, [platform?.name, name]);
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState('');
