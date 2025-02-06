@@ -1,17 +1,25 @@
 'use client';
 
-import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
-import { useAtom } from "jotai";
-import { userAtom } from "@/components/header-auth";
+import { createClient } from "@/utils/supabase/client";
+import { User } from '@supabase/supabase-js';
 
 export function ProfileSettings() {
-  const [user] = useAtom(userAtom);
+  const client = createClient();
+  const [user, setUser] = useState<User | null>(null);
   const [name, setName] = useState("");
-  
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const { data: { user } } = await client.auth.getUser();
+      setUser(user);
+    };
+    loadUser();
+  }, [client]);
+
   if (!user) return null;
 
   return (

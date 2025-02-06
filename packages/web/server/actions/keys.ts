@@ -94,6 +94,9 @@ export async function createPlatform(data: any) {
 }
 
 export async function createKeyGroup(platformId: string, data: any) {
+  console.log('Creating key group with platformId:', platformId);
+  console.log('Data:', data);
+
   const cookieStore = cookies();
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -109,12 +112,53 @@ export async function createKeyGroup(platformId: string, data: any) {
     }
   );
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error('Not authenticated');
+  }
+  console.log('Current user:', user.id);
+
+  // 验证 platformId
+  const { data: platform, error: platformError } = await supabase
+    .from('platforms')
+    .select('id, user_id')
+    .eq('id', platformId)
+    .single();
+
+  console.log('Platform query result:', { platform, error: platformError });
+
+  if (platformError) {
+    console.error('Platform error:', platformError);
+    throw new Error(`Platform error: ${platformError.message}`);
+  }
+
+  if (!platform) {
+    throw new Error('Platform not found');
+  }
+
+  if (platform.user_id !== user.id) {
+    throw new Error('Access denied: platform belongs to another user');
+  }
+
   const validatedData = createKeyGroupSchema.parse(data);
+  console.log('Validated data:', validatedData);
+
   const { error } = await supabase
     .from('key_groups')
-    .insert({ ...validatedData, platform_id: platformId });
+    .insert({
+      ...validatedData,
+      platform_id: platformId,
+      user_id: user.id
+    });
 
-  if (error) throw error;
+  if (error) {
+    console.error('Error creating key group:', error);
+    throw error;
+  }
+
+  console.log('Key group created successfully');
   return { success: true };
 }
 

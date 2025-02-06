@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
-import { CreateKeyGroupDialog } from './create-key-group-dialog';
+import { CreateKeyNameDialog } from './create-key-name-dialog';
 import { KeyGroupCard } from './key-group-card';
 import type { Platform } from '@keybox/shared';
 import { useDeletePlatform } from '@/hooks/usePlatforms';
@@ -47,7 +47,7 @@ export function PlatformCard({ platform }: PlatformCardProps) {
           )}
         </div>
         <div className="flex items-center gap-1">
-          <CreateKeyGroupDialog 
+          <CreateKeyNameDialog
             platformId={platform.id}
           />
           <Button

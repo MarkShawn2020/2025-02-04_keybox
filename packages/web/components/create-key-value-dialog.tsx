@@ -99,7 +99,7 @@ export function CreateKeyValueDialog({ platformId, groupId }: CreateKeyValueDial
 
             <Label>Note</Label>
             <Input
-              placeholder="Enter note"
+              placeholder="Enter note (required)"
               value={formData.note}
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, note: e.target.value }))

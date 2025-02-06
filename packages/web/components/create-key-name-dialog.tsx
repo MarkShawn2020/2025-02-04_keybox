@@ -18,7 +18,7 @@ type CreateKeyGroupDialogProps = {
   platformId: string;
 };
 
-export function CreateKeyGroupDialog({ platformId }: CreateKeyGroupDialogProps) {
+export function CreateKeyNameDialog({ platformId }: CreateKeyGroupDialogProps) {
   const { mutate: createKeyGroup } = useCreateKeyGroup();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -43,25 +43,40 @@ export function CreateKeyGroupDialog({ platformId }: CreateKeyGroupDialogProps) 
       return;
     }
 
+    if (!platformId) {
+      toast({
+        title: "Error",
+        description: "Platform ID is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    console.log('Creating key group:', {
+      platformId,
+      name: formData.name,
+      description: formData.description
+    });
+
     setLoading(true);
     try {
-      createKeyGroup({
+      await createKeyGroup({
         platformId,
         data: {
           name: formData.name,
           description: formData.description || undefined,
         }
       });
-
-      toast({
-        title: "Success",
-        description: "Key group created successfully",
-      });
       handleClose();
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error creating key group:', error);
+      const errorMessage = error?.message || 
+        (error?.cause?.message) || 
+        JSON.stringify(error) || 
+        "Failed to create key group";
       toast({
         title: "Error",
-        description: "Failed to create key group",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -91,13 +106,13 @@ export function CreateKeyGroupDialog({ platformId }: CreateKeyGroupDialogProps) 
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create New Key Group</DialogTitle>
+          <DialogTitle>Create New Key Name</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label>Group Name</Label>
+            <Label>Key Name</Label>
             <Input
-              placeholder="Enter group name"
+              placeholder="OPENAI_API_KEY"
               value={formData.name}
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, name: e.target.value }))
@@ -105,9 +120,9 @@ export function CreateKeyGroupDialog({ platformId }: CreateKeyGroupDialogProps) 
             />
           </div>
           <div className="space-y-2">
-            <Label>Description</Label>
+            <Label>Key Description</Label>
             <Textarea
-              placeholder="Enter group description (optional)"
+              placeholder="Enter key description (optional)"
               value={formData.description}
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, description: e.target.value }))
