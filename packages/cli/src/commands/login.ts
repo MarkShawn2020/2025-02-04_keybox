@@ -4,9 +4,11 @@ import { Spinner } from 'cli-spinner';
 import keytar from 'keytar';
 import chalk from 'chalk';
 
-const API_URL = process.env.API_URL || 'http://localhost:3001';
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+const API_URL = process.env.KEYBOX_API_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000/api';
+console.log(chalk.gray(`Using API URL: ${API_URL}`));
 const SERVICE_NAME = 'keybox-cli';
+const POLL_INTERVAL = 5000; // 5 seconds
+const MAX_RETRIES = 60; // 5 minutes total
 
 async function getCurrentUser(token: string) {
   try {
@@ -35,9 +37,9 @@ export async function login() {
         const user = await getCurrentUser(existingToken);
         if (user) {
           console.log(chalk.green('\n✓ Successfully verified existing login!'));
-          console.log(`Username: ${chalk.cyan(user.username)}`);
-          if (user.lastLoginAt) {
-            console.log(`Last login: ${chalk.cyan(new Date(user.lastLoginAt).toLocaleString())}`);
+          console.log(`Email: ${chalk.cyan(user.email)}`);
+          if (user.last_sign_in_at) {
+            console.log(`Last login: ${chalk.cyan(new Date(user.last_sign_in_at).toLocaleString())}`);
           }
           return;
         }
@@ -46,28 +48,27 @@ export async function login() {
         // Token exists but is invalid - clear it
         await keytar.deletePassword(SERVICE_NAME, 'token');
         console.log(chalk.yellow('✓ Invalid token cleared'));
-      } else {
-        console.log(chalk.blue('ℹ No existing login found'));
-      }
-    
-      console.log('Connecting to API server...');
-      // Step 1: Get device code
-      const { data: deviceData } = await axios.post(`${API_URL}/auth/device/code`);
-      
-      if (!deviceData?.verification_uri) {
-        throw new Error('Invalid response from server');
       }
       
-      // Add FRONTEND_URL if verification_uri is a relative path
-      const verificationUrl = deviceData.verification_uri.startsWith('http')
-        ? deviceData.verification_uri
-        : `${FRONTEND_URL}${deviceData.verification_uri}`;
+      // Start device flow
+      console.log(chalk.blue('🔄 Starting device authentication...'));
       
-      console.log('\nTo login, please enter this code on the verification page:');
-      console.log(`\n    ${deviceData.user_code}\n`);
+      // Request device code
+      const response = await axios.post(`${API_URL}/device/code`);
+      const { device_code, verification_uri, user_code } = response.data;
       
-      // Open browser for verification
-      console.log(`Opening browser to ${verificationUrl}...`);
+      // Add API_URL if verification_uri is a relative path
+      const verificationUrl = verification_uri.startsWith('http')
+        ? verification_uri
+        : `${API_URL}${verification_uri}`;
+      
+      console.log(chalk.green('\n✓ Device code generated!'));
+      console.log('\nPlease visit:');
+      console.log(chalk.cyan(verificationUrl));
+      console.log('\nAnd enter the code:');
+      console.log(chalk.yellow(user_code));
+      
+      // Open browser
       try {
         await open(verificationUrl);
       } catch (error) {
@@ -75,45 +76,74 @@ export async function login() {
         console.log(`Please open this URL manually: ${verificationUrl}`);
       }
       
-      // Step 2: Poll for token
-      const spinner = new Spinner('Waiting for device verification... %s');
+      // Start polling
+      const spinner = new Spinner('Waiting for authentication... %s');
       spinner.setSpinnerString('|/-\\');
       spinner.start();
       
-      while (true) {
+      let retries = 0;
+      while (retries < MAX_RETRIES) {
         try {
-          const { data: tokenData } = await axios.post(`${API_URL}/auth/device/token`, {
-            device_code: deviceData.device_code
+          const tokenResponse = await axios.post(`${API_URL}/device/token`, {
+            device_code
           });
           
-          if (tokenData.token) {
-            // Store token in system keychain
-            await keytar.setPassword(SERVICE_NAME, 'token', tokenData.token);
-            
+          if (tokenResponse.data.access_token) {
             spinner.stop(true);
-            console.log('✓ Successfully logged in!');
-            break;
+            await keytar.setPassword(SERVICE_NAME, 'token', tokenResponse.data.access_token);
+            
+            // Get user info
+            const user = await getCurrentUser(tokenResponse.data.access_token);
+            console.log(chalk.green('\n✓ Successfully logged in!'));
+            console.log(`Email: ${chalk.cyan(user.email)}`);
+            return;
           }
         } catch (error) {
-          if (axios.isAxiosError(error) && error.response?.status === 400) {
-            if (error.response.data.error === 'Device code expired') {
-              spinner.stop(true);
-              console.log('✗ Login timeout. Please try again.');
-              return;
+          if (axios.isAxiosError(error)) {
+            if (error.response?.status === 400) {
+              if (error.response.data.error === 'device_code_expired') {
+                spinner.stop(true);
+                console.log(chalk.red('\n✗ Login timeout. Please try again.'));
+                return;
+              }
+              if (error.response.data.error === 'authorization_pending') {
+                // Continue polling
+                await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL));
+                retries++;
+                continue;
+              }
             }
-          }
-          if (axios.isAxiosError(error) && error.response?.data.error === 'Authorization pending') {
-            // Continue polling if authorization is pending
-            await new Promise(resolve => setTimeout(resolve, deviceData.interval * 1000));
-          } else {
             spinner.stop(true);
-            console.error('Error while polling:', error instanceof Error ? error.message : 'Unknown error');
+            console.error('Error while polling:', error.response?.data?.error || error.message);
             process.exit(1);
           }
+          // Ignore other polling errors
+          await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL));
+          retries++;
         }
       }
+      
+      spinner.stop(true);
+      console.log(chalk.red('\n❌ Authentication timed out. Please try again.'));
     } catch (error) {
-      console.error('Failed to login:', error instanceof Error ? error.message : 'Unknown error');
+      if (axios.isAxiosError(error)) {
+        console.error(chalk.red('Failed to login:'));
+        if (error.response) {
+          console.error(chalk.yellow(`Status: ${error.response.status} ${error.response.statusText}`));
+          console.error(chalk.yellow(`URL: ${error.config?.url}`));
+          if (error.response.data) {
+            console.error(chalk.yellow('Response:', JSON.stringify(error.response.data, null, 2)));
+          }
+        } else if (error.request) {
+          console.error(chalk.yellow('No response received from server'));
+          console.error(chalk.yellow(`URL: ${error.config?.url}`));
+        } else {
+          console.error(chalk.yellow(error.message));
+        }
+      } else {
+        console.error(chalk.red('Failed to login:'), 
+          error instanceof Error ? error.message : 'Unknown error');
+      }
       process.exit(1);
     }
 }

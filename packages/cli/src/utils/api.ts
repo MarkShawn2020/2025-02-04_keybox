@@ -2,7 +2,7 @@ import keytar from 'keytar';
 
 const KEYBOX_SERVICE = 'keybox-cli';
 const TOKEN_KEY = 'token';
-const API_BASE_URL = process.env.API_URL || 'http://localhost:3001';
+const API_BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000/api';
 
 export async function getAuthToken(): Promise<string | null> {
   return keytar.getPassword(KEYBOX_SERVICE, TOKEN_KEY);
