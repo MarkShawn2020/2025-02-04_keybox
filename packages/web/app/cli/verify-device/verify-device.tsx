@@ -17,12 +17,8 @@ export function VerifyDevice() {
     const checkSession = async () => {
       try {
         const { data: { session: currentSession } } = await supabase.auth.getSession()
-        console.log('Current session:', currentSession)
+  
         setSession(currentSession)
-        if (!currentSession) {
-          // 重定向到登录页面
-          router.push('/sign-in')
-        }
       } catch (error) {
         console.error('Session check error:', error)
         setError('Failed to check authentication status')

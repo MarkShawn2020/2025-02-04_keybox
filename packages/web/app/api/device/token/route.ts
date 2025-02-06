@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyDeviceCode } from '@/server/actions/auth';
+import { verifyDeviceCode } from '@/utils/actions/auth';
 
 export async function POST(request: NextRequest) {
   try {

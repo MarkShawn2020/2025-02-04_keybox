@@ -37,7 +37,6 @@ export async function generateDeviceCode() {
   return {
     device_code: deviceCode,
     user_code: userCode,
-    verification_uri: `/verify-device`,
     expires_in: 600, // 10 minutes
     interval: 5, // poll every 5 seconds
   };

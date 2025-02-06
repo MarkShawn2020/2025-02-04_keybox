@@ -1,6 +1,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
-import { importEnvFile } from '@/server/actions/keys';
+import { importEnvFile } from '@/utils/actions/keys';
 
 export async function POST(request: NextRequest) {
   try {

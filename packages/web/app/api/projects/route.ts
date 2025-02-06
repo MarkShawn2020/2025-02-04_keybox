@@ -1,6 +1,6 @@
 
 
-import { createProject } from '@/server/actions/projects';
+import { createProject } from '@/utils/actions/projects';
 
 export async function POST(request: Request) {
   try {

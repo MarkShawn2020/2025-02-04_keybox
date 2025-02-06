@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { generateDeviceCode } from '@/server/actions/auth';
+import { generateDeviceCode } from '@/utils/actions/auth';
 
 export async function POST() {
   try {

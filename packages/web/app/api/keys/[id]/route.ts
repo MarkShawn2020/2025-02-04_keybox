@@ -1,5 +1,5 @@
 
-import { deleteKey } from '@/server/actions/keys';
+import { deleteKey } from '@/utils/actions/keys';
 
 export async function DELETE(
   request: Request,

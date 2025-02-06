@@ -1,6 +1,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createPlatform } from '@/server/actions/keys';
+import { createPlatform } from '@/utils/actions/keys';
 
 export async function POST(request: NextRequest) {
   try {

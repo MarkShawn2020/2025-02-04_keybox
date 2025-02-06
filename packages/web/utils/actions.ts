@@ -9,8 +9,8 @@ import {
   updateKeyNote,
   toggleKeyStatus,
   deletePlatform,
-} from '@/server/actions/keys';
-import { createProject, deleteProject, getProjectKeys } from '@/server/actions/projects';
+} from '@/utils/actions/keys';
+import { createProject, deleteProject, getProjectKeys } from '@/utils/actions/projects';
 
 // Re-export server actions for client use
 export const actions = {

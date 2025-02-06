@@ -1,6 +1,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
-import { listKeys } from '@/server/actions/keys';
+import { listKeys } from '@/utils/actions/keys';
 
 export async function GET() {
   try {

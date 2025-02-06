@@ -1,4 +1,4 @@
-import { createKey } from '@/server/actions/keys';
+import { createKey } from '@/utils/actions/keys';
 
 export async function POST(
   request: Request,

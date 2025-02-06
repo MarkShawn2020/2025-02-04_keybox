@@ -7,7 +7,10 @@ import { Button } from "../ui/button";
 
 export default async function HeaderAuth() {
   const supabase = await createClient();
+  const {data: {session}} = await supabase.auth.getSession()
   const { data: { user } } = await supabase.auth.getUser();
+  console.log({user, session});
+  
 
   if (!hasEnvVars) {
     return (

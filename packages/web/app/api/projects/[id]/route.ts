@@ -1,6 +1,6 @@
 
 
-import { deleteProject } from '@/server/actions/projects';
+import { deleteProject } from '@/utils/actions/projects';
 
 
 export async function DELETE(
