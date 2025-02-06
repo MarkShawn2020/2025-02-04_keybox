@@ -34,17 +34,7 @@ export function PlatformForm({ onSubmit, isLoading }: PlatformFormProps) {
           What this platform is used for
         </p>
       </div>
-      <div>
-        <Label htmlFor="tags">Tags (comma separated)</Label>
-        <Input
-          id="tags"
-          name="tags"
-          placeholder="ai, ml, api"
-        />
-        <p className="text-sm text-muted-foreground mt-1">
-          Optional tags for filtering and organization
-        </p>
-      </div>
+
       <Button type="submit" disabled={isLoading} className="w-full">
         {isLoading ? "Creating..." : "Next"}
       </Button>

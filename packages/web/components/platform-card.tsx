@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { Button } from './ui/button';
-import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
-import { CreateKeyFlowDialog } from './create-key-flow-dialog';
+import { ChevronDown, ChevronRight, Plus, Trash2 } from 'lucide-react';
+import { KeyCreationTrigger } from './key-creation-flow/trigger';
 import { KeyNameCard } from './key-name-card';
 import type { Platform } from '@keybox/shared';
 import { useDeletePlatform } from '@/hooks/usePlatforms';
@@ -19,7 +19,7 @@ export function PlatformCard({ platform }: PlatformCardProps) {
   return (
     <div className="border rounded-lg">
       <div 
-        className="flex items-center justify-between p-2 bg-muted/50 cursor-pointer hover:bg-muted/70 transition-colors"
+        className="flex items-center justify-between p-2 bg-muted/50 cursor-pointer hover:bg-muted/70 transition-colors border-b"
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
         <div className="flex items-center gap-2">
@@ -33,27 +33,24 @@ export function PlatformCard({ platform }: PlatformCardProps) {
           {platform.description && (
             <p className="text-sm text-muted-foreground">{platform.description}</p>
           )}
-          {platform.tags && platform.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-1">
-              {platform.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-1.5 py-0.5 text-xs rounded bg-secondary"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
         <div className="flex items-center gap-2">
           <div
             onClick={(e) => e.stopPropagation()}
             className="flex items-center gap-1"
           >
-            <CreateKeyFlowDialog
+            <KeyCreationTrigger
+              startStep="key-name"
               platformId={platform.id}
-            />
+              
+            >
+                    <Button
+        variant="ghost"
+        size="icon"
+      >
+          <Plus className="h-4 w-4" />
+      </Button>
+              </KeyCreationTrigger>
           </div>
           <div
             onClick={(e) => e.stopPropagation()}

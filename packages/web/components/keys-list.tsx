@@ -3,11 +3,11 @@
 import { useAtom } from 'jotai';
 import { usePlatforms } from '../hooks/usePlatforms';
 import { PlatformCard } from './platform-card';
-import { createVariableDialogAtom } from '@/atoms/dialog';
+import { keyCreationFlowAtom } from '@/atoms/key-creation-flow';
 
 export function KeysList() {
   const {data: platforms, isLoading} = usePlatforms();
-  const [, setDialogState] = useAtom(createVariableDialogAtom);
+  const [, setFlowState] = useAtom(keyCreationFlowAtom);
   
   if (isLoading) {
     return <div>Loading...</div>;
@@ -16,7 +16,7 @@ export function KeysList() {
   // 创建一个按钮来控制对话框的显示
   const createVariableButton = (name: string) => (
     <button
-      onClick={() => setDialogState(prev => ({ ...prev, isOpen: true, name, step: 'platform' }))}
+      onClick={() => setFlowState({ isOpen: true, step: 'platform' })}
       className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
     >
       {name}

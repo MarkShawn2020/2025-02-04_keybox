@@ -1,5 +1,5 @@
-import { EnvVarActions } from "@/components/env-var-actions";
 import { KeysList } from "@/components/keys-list";
+import { KeyCreationTrigger } from "@/components/key-creation-flow/trigger";
 
 export default function VariablesPage() {
   return (
