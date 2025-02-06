@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useCreatePlatform, useCreateKeyGroup, useCreateKey } from '@/hooks/usePlatforms';
 import { BaseDialog } from './ui/base-dialog';
 import { PlatformForm } from './forms/platform-form';
-import { KeyNameForm } from './forms/key-name-form';
+import { KeyGroupDialog } from './key-group-dialog';
 import { KeyValueForm } from './forms/key-value-form';
 import { createVariableDialogAtom, CreateVariableDialogState } from '@/atoms/dialog';
 import { actions } from '@/utils/actions';
@@ -56,40 +56,31 @@ export function CreateVariableDialog() {
     });
   };
 
-  const handleGroupSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data = {
-      name: formData.get('name') as string,
-      description: formData.get('description') as string || undefined,
-    };
-
-    createKeyGroup({ platformId: dialogState.platformId!, data }, {
-      onSuccess: async () => {
-        // After creating group, fetch the latest data to get the new ID
-        const platforms = await actions.listKeys();
-        const platform = platforms.find(p => p.id === dialogState.platformId);
-        const newGroup = platform?.key_groups?.find(g => g.name === data.name);
-        if (newGroup?.id) {
-          setDialogState((prev: CreateVariableDialogState) => ({
-            ...prev,
-            groupId: newGroup.id,
-            step: 'key'
-          }));
-        }
-        toast({
-          title: 'Success',
-          description: 'Key group created successfully',
-        });
-      },
-      onError: (error: Error) => {
-        toast({
-          title: 'Error',
-          description: error.message,
-          variant: 'destructive',
-        });
+  const handleGroupSubmit = async (data: { name: string; description?: string; tags?: string[] }) => {
+    try {
+      await createKeyGroup({ platformId: dialogState.platformId!, data });
+      // After creating group, fetch the latest data to get the new ID
+      const platforms = await actions.listKeys();
+      const platform = platforms.find(p => p.id === dialogState.platformId);
+      const newGroup = platform?.key_groups?.find(g => g.name === data.name);
+      if (newGroup?.id) {
+        setDialogState((prev: CreateVariableDialogState) => ({
+          ...prev,
+          groupId: newGroup.id,
+          step: 'key'
+        }));
       }
-    });
+      toast({
+        title: 'Success',
+        description: 'Key Name created successfully',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleKeySubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -171,10 +162,14 @@ export function CreateVariableDialog() {
       )}
 
       {dialogState.step === 'group' && (
-        <KeyNameForm
-          onSubmit={handleGroupSubmit}
-          isLoading={isCreatingGroup}
-        />
+        <div className="p-4">
+          <KeyGroupDialog
+            mode="create"
+            platformId={dialogState.platformId}
+            onSuccess={handleGroupSubmit}
+            renderContent
+          />
+        </div>
       )}
 
       {dialogState.step === 'key' && (

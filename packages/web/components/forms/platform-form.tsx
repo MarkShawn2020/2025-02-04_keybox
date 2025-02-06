@@ -45,7 +45,7 @@ export function PlatformForm({ onSubmit, isLoading }: PlatformFormProps) {
           Optional tags for filtering and organization
         </p>
       </div>
-      <Button type="submit" disabled={isLoading}>
+      <Button type="submit" disabled={isLoading} className="w-full">
         {isLoading ? "Creating..." : "Next"}
       </Button>
     </form>

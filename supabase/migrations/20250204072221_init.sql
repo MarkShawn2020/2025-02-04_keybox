@@ -54,10 +54,10 @@ drop policy if exists "Users can insert their own platforms" on platforms;
 drop policy if exists "Users can update their own platforms" on platforms;
 drop policy if exists "Users can delete their own platforms" on platforms;
 
-drop policy if exists "Users can view their own key groups" on key_groups;
-drop policy if exists "Users can insert their own key groups" on key_groups;
-drop policy if exists "Users can update their own key groups" on key_groups;
-drop policy if exists "Users can delete their own key groups" on key_groups;
+drop policy if exists "Users can view their own Key Names" on key_groups;
+drop policy if exists "Users can insert their own Key Names" on key_groups;
+drop policy if exists "Users can update their own Key Names" on key_groups;
+drop policy if exists "Users can delete their own Key Names" on key_groups;
 
 drop policy if exists "Users can view their own keys" on keys;
 drop policy if exists "Users can insert their own keys" on keys;
@@ -82,19 +82,19 @@ create policy "Users can delete their own platforms"
   using (auth.uid() = user_id);
 
 -- Create RLS policies for key_groups
-create policy "Users can view their own key groups"
+create policy "Users can view their own Key Names"
   on key_groups for select
   using (auth.uid() = user_id);
 
-create policy "Users can insert their own key groups"
+create policy "Users can insert their own Key Names"
   on key_groups for insert
   with check (auth.uid() = user_id);
 
-create policy "Users can update their own key groups"
+create policy "Users can update their own Key Names"
   on key_groups for update
   using (auth.uid() = user_id);
 
-create policy "Users can delete their own key groups"
+create policy "Users can delete their own Key Names"
   on key_groups for delete
   using (auth.uid() = user_id);
 

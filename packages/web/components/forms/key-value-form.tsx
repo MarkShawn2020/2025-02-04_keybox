@@ -27,7 +27,7 @@ export function KeyValueForm({ onSubmit, isLoading }: KeyValueFormProps) {
           placeholder="Enter note"
         />
       </div>
-      <Button type="submit" disabled={isLoading}>
+      <Button type="submit" disabled={isLoading} className="w-full">
         {isLoading ? "Creating..." : "Create"}
       </Button>
     </form>

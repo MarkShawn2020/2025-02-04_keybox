@@ -85,7 +85,7 @@ export function useCreateKeyGroup() {
       queryClient.invalidateQueries({ queryKey: ['platforms'] });
       toast({
         title: 'Success',
-        description: 'Key group created successfully',
+        description: 'Key Name created successfully',
       });
     }
   });
@@ -180,7 +180,7 @@ export function useUpdateKeyGroup() {
       queryClient.invalidateQueries({ queryKey: ['platforms'] });
       toast({
         title: 'Success',
-        description: 'Key group updated successfully',
+        description: 'Key Name updated successfully',
       });
     }
   });

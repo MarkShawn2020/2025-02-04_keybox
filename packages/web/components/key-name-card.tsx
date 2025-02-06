@@ -5,7 +5,7 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
 import { CreateKeyValueDialog } from './create-key-value-dialog';
-import { EditKeyGroupDialog } from './edit-key-group-dialog';
+import { KeyGroupDialog } from './key-group-dialog';
 import { KeyItem } from './key-item';
 import type { KeyGroup } from '@keybox/shared';
 import { useDeleteKey, useToggleKeyStatus, useUpdateKeyNote, useUpdateKeyGroup } from '@/hooks/usePlatforms';
@@ -70,9 +70,10 @@ export function KeyNameCard({ group, platformId }: KeyGroupCardProps) {
             onClick={(e) => e.stopPropagation()}
             className="flex items-center gap-1"
           >
-            <EditKeyGroupDialog 
+            <KeyGroupDialog 
+              mode="edit"
               group={group} 
-              onUpdate={(data: { name: string; description?: string }) => updateGroup({ groupId: group.id, data })}
+              onSuccess={() => updateGroup({ groupId: group.id, data: { name: group.name, description: group.description, tags: group.tags } })}
             />
             <CreateKeyValueDialog 
               platformId={platformId}
@@ -86,7 +87,7 @@ export function KeyNameCard({ group, platformId }: KeyGroupCardProps) {
               variant="ghost"
               size="icon"
               onClick={() => {
-                if (confirm('Are you sure you want to delete this key group?')) {
+                if (confirm('Are you sure you want to delete this Key Name?')) {
                   deleteGroup(group.id);
                 }
               }}

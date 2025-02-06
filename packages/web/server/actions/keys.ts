@@ -94,7 +94,7 @@ export async function createPlatform(data: any) {
 }
 
 export async function createKeyGroup(platformId: string, data: any) {
-  console.log('Creating key group with platformId:', platformId);
+  console.log('Creating Key Name with platformId:', platformId);
   console.log('Data:', data);
 
   const cookieStore = cookies();
@@ -154,11 +154,11 @@ export async function createKeyGroup(platformId: string, data: any) {
     });
 
   if (error) {
-    console.error('Error creating key group:', error);
+    console.error('Error creating Key Name:', error);
     throw error;
   }
 
-  console.log('Key group created successfully');
+  console.log('Key Name created successfully');
   return { success: true };
 }
 
