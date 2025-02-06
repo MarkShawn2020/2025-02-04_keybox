@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { createClient } from './supabase/client'
 
-const API_BASE = 'http://localhost:3001'
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 
 const api = axios.create({
   baseURL: API_BASE,
