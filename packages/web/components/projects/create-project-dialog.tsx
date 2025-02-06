@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { usePlatforms } from '@/hooks/usePlatforms';
 import { useCreateProject } from '@/hooks/use-projects';
-import { MultiSelect } from '../ui/multi-select';
+import { MultiSelect } from '@/components/ui/multi-select';
 
 interface CreateProjectDialogProps {
   onProjectCreated: () => void;

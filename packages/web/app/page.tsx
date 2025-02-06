@@ -1,4 +1,4 @@
-import Logo from "@/components/logo";
+import Logo from "@/components/extra/logo";
 import { createClient } from "@/utils/supabase/server";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Key, Lock, Users, Zap } from "lucide-react";

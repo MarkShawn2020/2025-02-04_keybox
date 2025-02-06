@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { usePlatforms } from '@/hooks/usePlatforms';
-import { MultiSelect } from '../ui/multi-select';
+import { MultiSelect } from '@/components/ui/multi-select';
 import type { ProjectWithKeys } from '@keybox/shared';
 import { Pencil, Trash, Download, Check, X, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';

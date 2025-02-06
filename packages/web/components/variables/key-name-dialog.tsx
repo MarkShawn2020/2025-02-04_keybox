@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Badge } from './ui/badge';
-import { Checkbox } from './ui/checkbox';
-import { Textarea } from './ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Pencil, Tag as TagIcon, Plus, X } from 'lucide-react';
 import type { KeyName } from '@keybox/shared';
 import { useCreateKeyName, useUpdateKeyName } from '@/hooks/usePlatforms';

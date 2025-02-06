@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useCreateKey } from "@/hooks/usePlatforms";
-import { BaseDialog } from "./ui/base-dialog";
-import { KeyValueForm } from "./forms/key-value-form";
+import { BaseDialog } from "../ui/base-dialog";
+import { KeyValueForm } from "@/components/variables/forms/key-value-form";
 import { Plus } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 
 type CreateKeyValueDialogProps = {
   platformId: string;

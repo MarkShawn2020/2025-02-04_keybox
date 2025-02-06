@@ -1,10 +1,10 @@
 'use client';
 
+import {KeyNameCard} from "@/components/variables/key-name-container";
 import { useState } from 'react';
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronRight, Plus, Trash2 } from 'lucide-react';
 import { KeyCreationTrigger } from './key-creation-flow/trigger';
-import { KeyNameCard } from './key-name-card';
 import type { Platform } from '@keybox/shared';
 import { useDeletePlatform } from '@/hooks/usePlatforms';
 
@@ -12,7 +12,7 @@ interface PlatformCardProps {
   platform: Platform;
 }
 
-export function PlatformCard({ platform }: PlatformCardProps) {
+export function PlatformContainer({ platform }: PlatformCardProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { mutate: deletePlatform } = useDeletePlatform();
 

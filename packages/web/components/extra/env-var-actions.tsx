@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import { Upload, Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useCallback } from 'react';

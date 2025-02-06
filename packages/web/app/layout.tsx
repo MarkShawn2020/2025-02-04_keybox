@@ -1,8 +1,8 @@
-import DeployButton from "@/components/deploy-button";
-import { EnvVarWarning } from "@/components/env-var-warning";
-import HeaderAuth from "@/components/header-auth";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import Logo from "@/components/logo";
+import DeployButton from "@/components/extra/deploy-button";
+import { EnvVarWarning } from "@/components/extra/env-var-warning";
+import HeaderAuth from "@/components/extra/header-auth";
+import { ThemeSwitcher } from "@/components/extra/theme-switcher";
+import Logo from "@/components/extra/logo";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
@@ -11,7 +11,7 @@ import { Providers } from "./providers";
 import "./globals.css";
 import JoinSVG from '@/public/join.svg'
 import { createClient } from "@/utils/supabase/server";
-import { NavLinks } from "@/components/nav-links";
+import { NavLinks } from "@/components/extra/nav-links";
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 

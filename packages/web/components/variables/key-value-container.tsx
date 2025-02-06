@@ -1,10 +1,10 @@
 'use client';
 
+import {useToast} from "@/hooks/use-toast";
 import { useState } from 'react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Eye, EyeOff, Copy, Trash2 } from 'lucide-react';
-import { useToast } from '../hooks/use-toast';
 import type { Key } from '@keybox/shared';
 import { useUpdateKeyNote, useToggleKeyStatus, useDeleteKey } from '@/hooks/usePlatforms';
 
@@ -12,7 +12,7 @@ interface KeyItemProps {
   keyData: Key;
 }
 
-export function KeyItem({ keyData }: KeyItemProps) {
+export function KeyValue({ keyData }: KeyItemProps) {
   const [showValue, setShowValue] = useState(false);
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [noteValue, setNoteValue] = useState(keyData.note || "");

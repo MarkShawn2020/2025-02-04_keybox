@@ -1,11 +1,12 @@
 'use client';
 
+import {PlatformContainer} from "@/components/variables/platform-container";
 import { useAtom } from 'jotai';
-import { usePlatforms } from '../hooks/usePlatforms';
-import { PlatformCard } from './platform-card';
+import React from "react";
+import { usePlatforms } from '../../hooks/usePlatforms';
 import { keyCreationFlowAtom } from '@/atoms/key-creation-flow';
 
-export function KeysList() {
+export function VariablesContainer() {
   const {data: platforms, isLoading} = usePlatforms();
   const [, setFlowState] = useAtom(keyCreationFlowAtom);
   
@@ -62,7 +63,7 @@ export function KeysList() {
       
       <div className="space-y-2">
         {[...platforms].sort((a, b) => a.name.localeCompare(b.name)).map((platform) => (
-          <PlatformCard
+          <PlatformContainer
             key={platform.id}
             platform={platform}
           />

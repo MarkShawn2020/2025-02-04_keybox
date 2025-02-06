@@ -5,10 +5,10 @@ import type {KeyName} from '@keybox/shared';
 import {ChevronDown, ChevronRight, Trash2} from 'lucide-react';
 import {useState} from 'react';
 import {CreateKeyValueDialog} from './create-key-value-dialog';
-import {KeyItem} from './key-item';
 import {KeyNameDialog} from './key-name-dialog';
-import {Badge} from './ui/badge';
-import {Button} from './ui/button';
+import {Badge} from '@/components/ui/badge';
+import {Button} from '@/components/ui/button';
+import { KeyValue } from './key-value-container';
 
 interface KeyNameCardProps {
   group: KeyName;
@@ -45,7 +45,7 @@ export function KeyNameCard({group, platformId}: KeyNameCardProps) {
                       {group.tags.map((tag, index) => (
                         <Badge
                           key={index}
-                          variant={dangerousTags.includes(tag as any) ? "destructive" : "secondary"}
+                          variant={dangerousTags.includes(tag as any) ? "default" : "secondary"}
                           className={`text-xs ${defaultTags.includes(tag as any) ? 'hover:bg-destructive/80' : ''}`}
                         >
                           {tag}
@@ -102,7 +102,7 @@ export function KeyNameCard({group, platformId}: KeyNameCardProps) {
       
       <div className="space-y-1 mt-2" style={{display: isCollapsed ? 'none' : 'block'}}>
         {group.keys?.map((key) => (
-          <KeyItem
+          <KeyValue
             key={key.id}
             keyData={key}
           />

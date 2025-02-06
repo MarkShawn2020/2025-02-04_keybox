@@ -1,4 +1,4 @@
-import { EnvVarActions } from "@/components/env-var-actions";
+import { EnvVarActions } from "@/components/extra/env-var-actions";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useAtom } from 'jotai';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { keyCreationFlowAtom } from '@/atoms/key-creation-flow';
 import type { KeyCreationStep } from '@/atoms/key-creation-flow';

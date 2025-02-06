@@ -3,7 +3,7 @@
 import { useAtom } from 'jotai';
 import { useToast } from '@/hooks/use-toast';
 import { useCreatePlatform } from '@/hooks/usePlatforms';
-import { BaseDialog } from '../ui/base-dialog';
+import { BaseDialog } from '@/components/ui/base-dialog';
 import { PlatformForm } from '../forms/platform-form';
 import { keyCreationFlowAtom } from '@/atoms/key-creation-flow';
 import { actions } from '@/utils/actions';
