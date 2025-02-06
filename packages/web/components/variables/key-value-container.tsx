@@ -1,7 +1,8 @@
 'use client';
 
-import {useToast} from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useState } from 'react';
+import { Switch } from "@/components/ui/switch";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Eye, EyeOff, Copy, Trash2 } from 'lucide-react';
@@ -12,10 +13,13 @@ interface KeyItemProps {
   keyData: Key;
 }
 
+
+
 export function KeyValue({ keyData }: KeyItemProps) {
   const [showValue, setShowValue] = useState(false);
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [noteValue, setNoteValue] = useState(keyData.note || "");
+  const [isValid, setIsValid] = useState(!keyData.revoked);
   const { toast } = useToast();
 
   const { mutate: updateNote } = useUpdateKeyNote();
@@ -46,9 +50,18 @@ export function KeyValue({ keyData }: KeyItemProps) {
   return (
     <div className="flex items-center justify-between py-1 pl-4">
       <div className="flex items-center gap-2 flex-1 min-w-0">
-        <span className={`px-1.5 py-0.5 text-xs rounded ${keyData.revoked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+        <Switch
+          checked={isValid}
+          onCheckedChange={(checked) => {
+            setIsValid(checked);
+            toggleStatus(keyData.id);
+          }}
+          className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
+          aria-label="Toggle key validity"
+        />
+        {/* <span className={`px-1.5 py-0.5 text-xs rounded ${keyData.revoked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
           {keyData.revoked ? 'Revoked' : 'Active'}
-        </span>
+        </span> */}
 
         <span className="text-xs text-muted-foreground">
           {new Date(keyData.created_at).toLocaleDateString()}
@@ -118,15 +131,7 @@ export function KeyValue({ keyData }: KeyItemProps) {
         >
           <Copy className="h-3 w-3" />
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => toggleStatus(keyData.id)}
-          className={keyData.revoked ? 'text-red-500 hover:text-red-600' : 'text-green-500 hover:text-green-600'}
-        >
-          <span className="sr-only">{keyData.revoked ? 'Activate' : 'Revoke'} key</span>
-          {keyData.revoked ? '🔓' : '🔒'}
-        </Button>
+
         <Button
           variant="ghost"
           size="icon"
