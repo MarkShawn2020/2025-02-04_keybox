@@ -53,7 +53,10 @@ export async function login() {
         
         // Enable CORS
         app.use(cors({
-          origin: API_URL || 'http://localhost:3000',
+          origin: (origin, callback) => {
+            const allowedOrigins = [API_URL, API_URL?.replace(/\/$/, ''), 'http://localhost:3000'];
+            callback(null, allowedOrigins.includes(origin || ''));
+          },
           methods: ['GET', 'POST'],
           credentials: true,
         }));
