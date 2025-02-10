@@ -1,15 +1,15 @@
 import keytar from 'keytar';
+import {API_URL} from "../settings";
 
 const KEYBOX_SERVICE = 'keybox-cli';
 const TOKEN_KEY = 'token';
-const API_BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000/api';
 
 export async function getAuthToken(): Promise<string | null> {
   return keytar.getPassword(KEYBOX_SERVICE, TOKEN_KEY);
 }
 
 export async function fetchEnvVars(token: string, projectName: string): Promise<Record<string, string>> {
-  const response = await fetch(`${API_BASE_URL}/projects/${encodeURIComponent(projectName)}/keys`, {
+  const response = await fetch(`${API_URL}/projects/${encodeURIComponent(projectName)}/keys`, {
     headers: {
       'Authorization': `Bearer ${token}`
     }
@@ -34,7 +34,7 @@ interface CreateProjectParams {
 }
 
 export async function createProject(token: string, params: CreateProjectParams): Promise<Record<string, string>> {
-  const response = await fetch(`${API_BASE_URL}/projects`, {
+  const response = await fetch(`${API_URL}/projects`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${token}`,
