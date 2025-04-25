@@ -63,7 +63,7 @@ export default async function RootLayout({
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
       </head>
-      <body className="bg-background text-foreground antialiased min-h-screen flex flex-col overflow-x-hidden">
+      <body className="bg-background text-foreground antialiased min-h-screen flex flex-col overflow-x-hidden" suppressHydrationWarning>
         {/* 背景装饰 */}
         <div className="fixed inset-0 -z-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]">
           <div className="absolute inset-0 bg-background/90 [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,transparent_0%,black_100%)]" />
