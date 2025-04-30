@@ -8,6 +8,8 @@ import { keyCreationFlowAtom } from '@/atoms/key-creation-flow';
 import { LayoutGrid, List, Settings } from 'lucide-react';
 import { PlatformCompactView } from "@/components/variables/platform-compact-view";
 import { cn } from "@/lib/utils";
+import { useUserPreferences } from '@/hooks/use-user-preferences';
+import { useLogger } from '@/hooks/use-logger';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,8 +24,8 @@ import { Button } from "@/components/ui/button";
 export function VariablesContainer() {
   const {data: platforms, isLoading} = usePlatforms();
   const [, setFlowState] = useAtom(keyCreationFlowAtom);
-  const [showRevokedKeys, setShowRevokedKeys] = React.useState(true);
-  const [viewMode, setViewMode] = React.useState<'detailed' | 'compact'>('detailed');
+  const { preferences, setVariablesViewMode, setShowRevokedKeys } = useUserPreferences();
+  const logger = useLogger('VariablesContainer');
   
   if (isLoading) {
     return <div>Loading...</div>;
@@ -80,9 +82,12 @@ export function VariablesContainer() {
               size="sm"
               className={cn(
                 'h-8 px-2 rounded-none',
-                viewMode === 'detailed' ? 'bg-secondary' : 'hover:bg-secondary/50'
+                preferences.variables_view_mode === 'detailed' ? 'bg-secondary' : 'hover:bg-secondary/50'
               )}
-              onClick={() => setViewMode('detailed')}
+              onClick={() => {
+                setVariablesViewMode('detailed');
+                logger.info('View mode switched to detailed');
+              }}
             >
               <List className="h-4 w-4 mr-1" />
               <span className="text-xs">Detailed</span>
@@ -92,9 +97,12 @@ export function VariablesContainer() {
               size="sm"
               className={cn(
                 'h-8 px-2 rounded-none',
-                viewMode === 'compact' ? 'bg-secondary' : 'hover:bg-secondary/50'
+                preferences.variables_view_mode === 'compact' ? 'bg-secondary' : 'hover:bg-secondary/50'
               )}
-              onClick={() => setViewMode('compact')}
+              onClick={() => {
+                setVariablesViewMode('compact');
+                logger.info('View mode switched to compact');
+              }}
             >
               <LayoutGrid className="h-4 w-4 mr-1" />
               <span className="text-xs">Compact</span>
@@ -117,7 +125,7 @@ export function VariablesContainer() {
               >
                 Show Revoked Keys
                 <Switch
-                  checked={showRevokedKeys}
+                  checked={preferences.show_revoked_keys}
                   onCheckedChange={setShowRevokedKeys}
                   className="ml-2"
                 />
@@ -128,13 +136,13 @@ export function VariablesContainer() {
         </div>
       </div>
       
-      {viewMode === 'detailed' ? (
+      {preferences.variables_view_mode === 'detailed' ? (
         <div className="space-y-2">
           {[...platforms].sort((a, b) => a.name.localeCompare(b.name)).map((platform) => (
             <PlatformContainer
               key={platform.id}
               platform={platform}
-              showRevokedKeys={showRevokedKeys}
+              showRevokedKeys={preferences.show_revoked_keys}
             />
           ))}
         </div>
@@ -144,7 +152,7 @@ export function VariablesContainer() {
             <PlatformCompactView
               key={platform.id}
               platform={platform}
-              showRevokedKeys={showRevokedKeys}
+              showRevokedKeys={preferences.show_revoked_keys}
             />
           ))}
         </div>

@@ -27,6 +27,7 @@ export const platformSchema = z.object({
   created_at: z.string(),
   updated_at: z.string(),
   key_groups: z.array(KeyNameSchema).optional(),
+  icon: z.string().optional(),
 });
 
 // Request schemas

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { CreateProjectDialog } from './create-project-dialog';
 import { ProjectCard } from './project-card';
 import { ProjectCompactCard } from './project-compact-card';
@@ -9,12 +9,16 @@ import type { ProjectWithKeys } from '@keybox/shared';
 import { Button } from '@/components/ui/button';
 import { LayoutGrid, List } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useUserPreferences } from '@/hooks/use-user-preferences';
+import { useLogger } from '@/hooks/use-logger';
+import { useState } from 'react';
 
 export function ProjectsList() {
   const { data: projects = [], isLoading: loading } = useProjects();
   const { mutate: deleteProject } = useDeleteProject();
+  const { preferences, setProjectsViewMode } = useUserPreferences();
+  const logger = useLogger('ProjectsList');
 
-  const [viewMode, setViewMode] = useState<'detailed' | 'compact'>('detailed');
   const [previewContent, setPreviewContent] = useState<{ [key: string]: string | undefined }>({});
 
   const handlePreviewGenerated = useCallback((projectId: string, content: string) => {
@@ -42,9 +46,12 @@ export function ProjectsList() {
               size="sm"
               className={cn(
                 'h-8 px-2 rounded-none',
-                viewMode === 'detailed' ? 'bg-secondary' : 'hover:bg-secondary/50'
+                preferences.projects_view_mode === 'detailed' ? 'bg-secondary' : 'hover:bg-secondary/50'
               )}
-              onClick={() => setViewMode('detailed')}
+              onClick={() => {
+                setProjectsViewMode('detailed');
+                logger.info('Projects view mode switched to detailed');
+              }}
             >
               <List className="h-4 w-4 mr-1" />
               <span className="text-xs">Detailed</span>
@@ -54,9 +61,12 @@ export function ProjectsList() {
               size="sm"
               className={cn(
                 'h-8 px-2 rounded-none',
-                viewMode === 'compact' ? 'bg-secondary' : 'hover:bg-secondary/50'
+                preferences.projects_view_mode === 'compact' ? 'bg-secondary' : 'hover:bg-secondary/50'
               )}
-              onClick={() => setViewMode('compact')}
+              onClick={() => {
+                setProjectsViewMode('compact');
+                logger.info('Projects view mode switched to compact');
+              }}
             >
               <LayoutGrid className="h-4 w-4 mr-1" />
               <span className="text-xs">Compact</span>
@@ -66,7 +76,7 @@ export function ProjectsList() {
         </div>
       </div>
 
-      {viewMode === 'detailed' ? (
+      {preferences.projects_view_mode === 'detailed' ? (
         <div className="space-y-4">
           {projects.map((project: ProjectWithKeys) => (
             <ProjectCard

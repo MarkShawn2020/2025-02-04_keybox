@@ -10,22 +10,23 @@
     "build": "tsc",
     "dev": "tsc",
     "start": "node dist/index.js",
-    "link-dev": "pnpm link --global"
+    "link-dev": "pnpm link --global",
+    "postinstall": "node-gyp rebuild || echo 'node-gyp rebuild failed, trying electron-rebuild' && npm rebuild keytar --update-binary"
   },
   "dependencies": {
-    "@types/express": "^5.0.0",
+    "@types/express": "^5.0.1",
     "@types/node-fetch": "^2.6.12",
-    "axios": "^1.7.9",
+    "axios": "^1.9.0",
     "chalk": "^4.1.2",
     "cli-spinner": "^0.2.10",
     "commander": "^11.1.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.5.0",
     "express": "^4.21.2",
     "get-port": "^7.1.0",
     "inquirer": "^8.2.6",
     "keytar": "^7.9.0",
-    "node-fetch": "2",
+    "node-fetch": "^2.7.0",
     "open": "^8.4.2"
   },
   "devDependencies": {
@@ -33,7 +34,7 @@
     "@types/cors": "^2.8.17",
     "@types/inquirer": "^9.0.7",
     "@types/keytar": "^4.4.2",
-    "@types/node": "^20.11.5",
-    "typescript": "^5.3.3"
+    "@types/node": "^20.17.32",
+    "typescript": "^5.8.3"
   }
 }
