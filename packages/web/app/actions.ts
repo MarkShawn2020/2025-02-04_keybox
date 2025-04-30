@@ -14,6 +14,8 @@ export const signUpAction = async (formData: FormData) => {
   if (!siteUrl) {
     throw new Error("NEXT_PUBLIC_SITE_URL or Origin header is required");
   }
+  console.log({siteUrl});
+  
 
   if (!email || !password) {
     return encodedRedirect(
@@ -23,11 +25,15 @@ export const signUpAction = async (formData: FormData) => {
     );
   }
 
+const emailRedirectTo = `${siteUrl}/auth/callback`;
+console.log({emailRedirectTo});
+
+
   const { error, data } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: `${siteUrl}/auth/callback`,
+      emailRedirectTo,
     },
   });
 
