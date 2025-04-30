@@ -114,7 +114,7 @@ export default async function RootLayout({
                     ) : (
                       <div className="flex gap-4 items-center">
                         <Suspense fallback={<div>Loading...</div>}>
-                        <DeployButton />
+                        {/* <DeployButton /> */}
  
                           <HeaderAuth />
                         </Suspense>
