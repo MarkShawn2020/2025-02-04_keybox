@@ -5,7 +5,9 @@ import { useAtom } from 'jotai';
 import React from "react";
 import { usePlatforms } from '../../hooks/usePlatforms';
 import { keyCreationFlowAtom } from '@/atoms/key-creation-flow';
-import { Settings } from 'lucide-react';
+import { LayoutGrid, List, Settings } from 'lucide-react';
+import { PlatformCompactView } from "@/components/variables/platform-compact-view";
+import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +23,7 @@ export function VariablesContainer() {
   const {data: platforms, isLoading} = usePlatforms();
   const [, setFlowState] = useAtom(keyCreationFlowAtom);
   const [showRevokedKeys, setShowRevokedKeys] = React.useState(true);
+  const [viewMode, setViewMode] = React.useState<'detailed' | 'compact'>('detailed');
   
   if (isLoading) {
     return <div>Loading...</div>;
@@ -71,6 +74,32 @@ export function VariablesContainer() {
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Environment Variables</h2>
         <div className="flex items-center gap-2">
+          <div className="flex border rounded-md overflow-hidden">
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(
+                'h-8 px-2 rounded-none',
+                viewMode === 'detailed' ? 'bg-secondary' : 'hover:bg-secondary/50'
+              )}
+              onClick={() => setViewMode('detailed')}
+            >
+              <List className="h-4 w-4 mr-1" />
+              <span className="text-xs">Detailed</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(
+                'h-8 px-2 rounded-none',
+                viewMode === 'compact' ? 'bg-secondary' : 'hover:bg-secondary/50'
+              )}
+              onClick={() => setViewMode('compact')}
+            >
+              <LayoutGrid className="h-4 w-4 mr-1" />
+              <span className="text-xs">Compact</span>
+            </Button>
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon">
@@ -99,15 +128,27 @@ export function VariablesContainer() {
         </div>
       </div>
       
-      <div className="space-y-2">
-        {[...platforms].sort((a, b) => a.name.localeCompare(b.name)).map((platform) => (
-          <PlatformContainer
-            key={platform.id}
-            platform={platform}
-            showRevokedKeys={showRevokedKeys}
-          />
-        ))}
-      </div>
+      {viewMode === 'detailed' ? (
+        <div className="space-y-2">
+          {[...platforms].sort((a, b) => a.name.localeCompare(b.name)).map((platform) => (
+            <PlatformContainer
+              key={platform.id}
+              platform={platform}
+              showRevokedKeys={showRevokedKeys}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {[...platforms].sort((a, b) => a.name.localeCompare(b.name)).map((platform) => (
+            <PlatformCompactView
+              key={platform.id}
+              platform={platform}
+              showRevokedKeys={showRevokedKeys}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
