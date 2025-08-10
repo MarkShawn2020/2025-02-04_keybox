@@ -9,10 +9,9 @@ import {
   updateKeyNote,
   toggleKeyStatus,
   deletePlatform,
-} from '@/utils/actions/keys';
-import { createProject, deleteProject, getProjectKeys } from '@/utils/actions/projects';
+} from '@/utils/actions/localStorage';
 
-// Re-export server actions for client use
+// Re-export actions for client use
 export const actions = {
   // Keys & Platforms
   createPlatform,
@@ -25,9 +24,4 @@ export const actions = {
   toggleKeyStatus,
   deletePlatform,
   deleteKeyName,
-  
-  // Projects
-  createProject,
-  deleteProject,
-  getProjectKeys,
 } as const;

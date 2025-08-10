@@ -1,16 +1,19 @@
 'use client';
 
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { useToast } from '@/hooks/use-toast';
-import { useCreateKey } from '@/hooks/usePlatforms';
 import { BaseDialog } from '@/components/ui/base-dialog';
 import { KeyValueForm } from '../forms/key-value-form';
 import { keyCreationFlowAtom } from '@/atoms/key-creation-flow';
+import { addKeyAtom, platformsAtom } from '@/atoms/localStorage';
+import { useState } from 'react';
 
 export function KeyValueDialog() {
   const [flowState, setFlowState] = useAtom(keyCreationFlowAtom);
-  const { mutate: createKey, isPending } = useCreateKey();
   const { toast } = useToast();
+  const addKey = useSetAtom(addKeyAtom);
+  const [platforms] = useAtom(platformsAtom);
+  const [isPending, setIsPending] = useState(false);
 
   const handleClose = () => {
     setFlowState(prev => ({
@@ -38,34 +41,41 @@ export function KeyValueDialog() {
       return;
     }
 
-    if (!flowState.groupId) {
+    if (!flowState.groupId || !flowState.platformId) {
       toast({
         title: "Error",
-        description: "Group ID is required",
+        description: "Platform and Group ID are required",
         variant: "destructive",
       });
       return;
     }
 
-    createKey({
-      groupId: flowState.groupId,
-      data,
-    }, {
-      onSuccess: () => {
-        toast({
-          title: "Success",
-          description: "Key created successfully",
-        });
-        handleClose();
-      },
-      onError: (error: Error) => {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      }
-    });
+    setIsPending(true);
+    try {
+      addKey({
+        platformId: flowState.platformId,
+        groupId: flowState.groupId,
+        key: {
+          value: data.value,
+          note: data.note,
+          revoked: false
+        }
+      });
+      
+      toast({
+        title: "Success",
+        description: "Key created successfully",
+      });
+      handleClose();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to create key",
+        variant: "destructive",
+      });
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (

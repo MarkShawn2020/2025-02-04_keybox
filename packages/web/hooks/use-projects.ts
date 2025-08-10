@@ -12,17 +12,8 @@ export function useProjects() {
   const query = useQuery({
     queryKey: ['projects'],
     queryFn: async () => {
-      try {
-        const data = await actions.getProjectKeys('');
-        return data;
-      } catch (error: any) {
-        toast({
-          title: 'Error',
-          description: error.message,
-          variant: 'destructive',
-        });
-        throw error;
-      }
+      // Projects feature temporarily disabled while migrating to localStorage
+      return [];
     }
   });
 
@@ -39,32 +30,15 @@ export function useCreateProject() {
 
   return useMutation({
     mutationFn: async (data: { name: string; description?: string; keys?: string[] }) => {
-      try {
-        const result = await actions.createProject({
-          user_id: '',  // Will be set by server
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          id: '',  // Will be set by server
-          name: data.name,
-          description: data.description || '',
-          keys: data.keys || [],
-        });
-        return result;
-      } catch (error: any) {
-        toast({
-          title: 'Error',
-          description: error.message,
-          variant: 'destructive',
-        });
-        throw error;
-      }
+      // Projects feature temporarily disabled while migrating to localStorage
+      toast({
+        title: 'Info',
+        description: 'Projects feature is temporarily unavailable',
+      });
+      return { success: false };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
-      toast({
-        title: 'Success',
-        description: 'Project created successfully',
-      });
     }
   });
 }
@@ -75,23 +49,15 @@ export function useDeleteProject() {
 
   return useMutation({
     mutationFn: async (projectId: string) => {
-      try {
-        return await actions.deleteProject(projectId);
-      } catch (error: any) {
-        toast({
-          title: 'Error',
-          description: error.message,
-          variant: 'destructive',
-        });
-        throw error;
-      }
+      // Projects feature temporarily disabled while migrating to localStorage
+      toast({
+        title: 'Info',
+        description: 'Projects feature is temporarily unavailable',
+      });
+      return { success: false };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
-      toast({
-        title: 'Success',
-        description: 'Project deleted successfully',
-      });
     }
   });
 }

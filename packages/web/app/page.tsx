@@ -1,5 +1,4 @@
 import Logo from "@/components/extra/logo";
-import { createClient } from "@/utils/supabase/server";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Key, Lock, Users, Zap } from "lucide-react";
 import Link from "next/link";
@@ -49,7 +48,7 @@ const LandingPage = () => (
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 pt-4">
-        <Link href="/sign-in">
+        <Link href="/variables">
           <Button 
             size="lg" 
             className="w-full sm:w-auto gap-2 bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary relative overflow-hidden group"
@@ -58,16 +57,6 @@ const LandingPage = () => (
             立即开始使用 <ArrowRight className="w-4 h-4 animate-bounce-x" />
           </Button>
         </Link>
-        {/* <Link href="/docs">
-          <Button 
-            size="lg" 
-            variant="outline" 
-            className="w-full sm:w-auto relative overflow-hidden group border-primary/30 hover:border-primary/50"
-          >
-            <span className="absolute inset-0 bg-gradient-to-r from-primary/10 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            了解更多
-          </Button>
-        </Link> */}
       </div>
     </div>
 
@@ -115,7 +104,7 @@ const Dashboard = () => (
 
     {/* Quick Actions */}
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <Link href="/protected/variables" className="group">
+      <Link href="/variables" className="group">
         <div className="p-6 rounded-lg border border-border/50 group-hover:border-border/80 transition-all bg-card hover:shadow-sm">
           <h3 className="font-semibold flex items-center gap-2 mb-2">
             <Key className="w-5 h-5" /> 创建环境变量
@@ -123,7 +112,7 @@ const Dashboard = () => (
           <p className="text-sm text-muted-foreground">添加新的环境变量或从文件导入</p>
         </div>
       </Link>
-      <Link href="/protected/projects" className="group">
+      <Link href="/projects" className="group">
         <div className="p-6 rounded-lg border border-border/50 group-hover:border-border/80 transition-all bg-card hover:shadow-sm">
           <h3 className="font-semibold flex items-center gap-2 mb-2">
             <Users className="w-5 h-5" /> 管理解决方案
@@ -131,7 +120,7 @@ const Dashboard = () => (
           <p className="text-sm text-muted-foreground">查看和管理您的解决方案</p>
         </div>
       </Link>
-      <Link href="/protected/settings" className="group">
+      <Link href="/settings" className="group">
         <div className="p-6 rounded-lg border border-border/50 group-hover:border-border/80 transition-all bg-card hover:shadow-sm">
           <h3 className="font-semibold flex items-center gap-2 mb-2">
             <Lock className="w-5 h-5" /> 安全设置
@@ -143,16 +132,7 @@ const Dashboard = () => (
   </div>
 );
 
-export default async function Home() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  console.log({user});
-  
-
-  if (!user) {
-    return <LandingPage />;
-  }
-
+export default function Home() {
   return (
     <main className="flex-1 w-full">
       <Dashboard />

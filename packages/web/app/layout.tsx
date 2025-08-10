@@ -1,19 +1,15 @@
-import DeployButton from "@/components/extra/deploy-button";
-import { EnvVarWarning } from "@/components/extra/env-var-warning";
-import HeaderAuth from "@/components/extra/header-auth";
 import { ThemeSwitcher } from "@/components/extra/theme-switcher";
 import Logo from "@/components/extra/logo";
-import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Providers } from "./providers";
 import "./globals.css";
 import JoinSVG from '@/public/join.svg'
-import { createClient } from "@/utils/supabase/server";
 import { NavLinks } from "@/components/extra/nav-links";
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { ImportExportControls } from "@/components/extra/import-export-controls";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -51,7 +47,7 @@ const jetbrainsMono = JetBrains_Mono({
   variable: '--font-mono',
 });
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -109,17 +105,11 @@ export default async function RootLayout({
                   </div>
                   
                   <div className="mt-4 md:mt-0 flex justify-center items-center">
-                    {!hasEnvVars ? (
-                      <EnvVarWarning />
-                    ) : (
-                      <div className="flex gap-4 items-center">
-                        <Suspense fallback={<div>Loading...</div>}>
-                        {/* <DeployButton /> */}
- 
-                          <HeaderAuth />
-                        </Suspense>
-                      </div>
-                    )}
+                    <div className="flex gap-4 items-center">
+                      <Suspense fallback={<div>Loading...</div>}>
+                        <ImportExportControls />
+                      </Suspense>
+                    </div>
                   </div>
                 </div>
               </nav>
@@ -166,8 +156,8 @@ export default async function RootLayout({
                       {/* <Link href="/docs" className="hover:text-foreground transition-colors">
                         文档中心
                       </Link> */}
-                      <Link href="/protected/settings" className="hover:text-foreground transition-colors">
-                        账户设置
+                      <Link href="/settings" className="hover:text-foreground transition-colors">
+                        配置设置
                       </Link>
                       <a 
                         href="mailto:support@csmagic.com"

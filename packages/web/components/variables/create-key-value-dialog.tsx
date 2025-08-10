@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useCreateKey } from "@/hooks/usePlatforms";
 import { BaseDialog } from "../ui/base-dialog";
 import { KeyValueForm } from "@/components/variables/forms/key-value-form";
 import { Plus } from "lucide-react";
 import { Button } from "../ui/button";
+import { useSetAtom } from 'jotai';
+import { addKeyAtom } from '@/atoms/localStorage';
 
 type CreateKeyValueDialogProps = {
   platformId: string;
@@ -12,7 +13,7 @@ type CreateKeyValueDialogProps = {
 };
 
 export function CreateKeyValueDialog({ platformId, groupId }: CreateKeyValueDialogProps) {
-  const { mutate: createKey } = useCreateKey();
+  const addKey = useSetAtom(addKeyAtom);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -40,9 +41,14 @@ export function CreateKeyValueDialog({ platformId, groupId }: CreateKeyValueDial
 
     setLoading(true);
     try {
-      createKey({
+      addKey({
+        platformId,
         groupId,
-        data
+        key: {
+          value: data.value,
+          note: data.note,
+          revoked: false
+        }
       });
 
       toast({
@@ -53,7 +59,7 @@ export function CreateKeyValueDialog({ platformId, groupId }: CreateKeyValueDial
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to create key",
+        description: error instanceof Error ? error.message : "Failed to create key",
         variant: "destructive",
       });
     } finally {

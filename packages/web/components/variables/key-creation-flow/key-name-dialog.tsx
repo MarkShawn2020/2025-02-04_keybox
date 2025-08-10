@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { useToast } from '@/hooks/use-toast';
-import { useCreateKeyName, usePlatform } from '@/hooks/usePlatforms';
 import { BaseDialog } from '@/components/ui/base-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, X } from 'lucide-react';
 import { keyCreationFlowAtom } from '@/atoms/key-creation-flow';
-import { actions } from '@/utils/actions';
+import { addKeyGroupAtom, platformsAtom } from '@/atoms/localStorage';
 
 const dangerousTags = ['server'] as const;
 const primaryTags = ['client'] as const;
@@ -20,10 +19,12 @@ const defaultTags = [...dangerousTags, ...primaryTags] as const;
 
 export function KeyNameDialog() {
   const [flowState, setFlowState] = useAtom(keyCreationFlowAtom);
-  const { mutateAsync: createKeyName, isPending } = useCreateKeyName();
   const { toast } = useToast();
-
-  const { data: platform } = usePlatform(flowState.platformId);  
+  const addKeyGroup = useSetAtom(addKeyGroupAtom);
+  const [platforms] = useAtom(platformsAtom);
+  const [isPending, setIsPending] = useState(false);
+  
+  const platform = platforms.find(p => p.id === flowState.platformId);  
 
   // 表单状态
   const [name, setName] = useState('');
@@ -88,38 +89,35 @@ export function KeyNameDialog() {
       ...tags.filter(tag => !defaultTags.includes(tag as any))
     ];
 
+    setIsPending(true);
     try {
-      await createKeyName({
+      const newGroup = addKeyGroup({
         platformId: flowState.platformId,
-        data: {
+        keyGroup: {
           name,
           description: description || undefined,
           tags: finalTags,
         }
       });
-
-      // After creating group, fetch the latest data to get the new ID
-      const platforms = await actions.listKeys();
-      const platform = platforms.find(p => p.id === flowState.platformId);
-      const newGroup = platform?.key_groups?.find(g => g.name === name);
       
-      if (newGroup?.id) {
-        setFlowState(prev => ({
-          ...prev,
-          groupId: newGroup.id,
-          step: 'key-value'
-        }));
-        toast({
-          title: 'Success',
-          description: 'Key Name created successfully',
-        });
-      }
+      setFlowState(prev => ({
+        ...prev,
+        groupId: newGroup.id,
+        step: 'key-value'
+      }));
+      
+      toast({
+        title: 'Success',
+        description: 'Key Name created successfully',
+      });
     } catch (error: any) {
       toast({
         title: 'Error',
         description: error.message,
         variant: 'destructive',
       });
+    } finally {
+      setIsPending(false);
     }
   };
 

@@ -6,9 +6,10 @@ import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronRight, Plus, Trash2 } from 'lucide-react';
 import { KeyCreationTrigger } from './key-creation-flow/trigger';
 import type { Platform } from '@keybox/shared';
-import { useDeletePlatform } from '@/hooks/usePlatforms';
 import { useToast } from '@/hooks/use-toast';
 import { ToastAction } from '@/components/ui/toast';
+import { useSetAtom } from 'jotai';
+import { deletePlatformAtom } from '@/atoms/localStorage';
 
 interface PlatformCardProps {
   platform: Platform;
@@ -17,7 +18,7 @@ interface PlatformCardProps {
 
 export function PlatformContainer({ platform, showRevokedKeys }: PlatformCardProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { mutate: deletePlatform } = useDeletePlatform();
+  const deletePlatform = useSetAtom(deletePlatformAtom);
   const { toast } = useToast();
 
   return (

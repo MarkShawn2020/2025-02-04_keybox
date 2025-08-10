@@ -1,6 +1,5 @@
 'use client';
 
-import {useDeleteKeyName, useUpdateKeyName} from '@/hooks/usePlatforms';
 import { useToast } from '@/hooks/use-toast';
 import { ToastAction } from '@/components/ui/toast';
 import type {KeyName} from '@keybox/shared';
@@ -11,6 +10,8 @@ import {KeyNameDialog} from './key-name-dialog';
 import {Badge} from '@/components/ui/badge';
 import {Button} from '@/components/ui/button';
 import { KeyValue } from './key-value-container';
+import { useSetAtom } from 'jotai';
+import { deleteKeyGroupAtom, updateKeyGroupAtom } from '@/atoms/localStorage';
 
 interface KeyNameCardProps {
   group: KeyName;
@@ -22,9 +23,9 @@ const dangerousTags = ["server"] as const
 const defaultTags = [...dangerousTags, 'client'] as const;
 
 export function KeyNameCard({group, platformId, showRevokedKeys}: KeyNameCardProps) {
-  const {mutate: deleteGroup} = useDeleteKeyName();
+  const deleteGroup = useSetAtom(deleteKeyGroupAtom);
   const { toast } = useToast();
-  const {mutate: updateGroup} = useUpdateKeyName();
+  const updateGroup = useSetAtom(updateKeyGroupAtom);
   
   const [isCollapsed, setIsCollapsed] = useState(false);
   
@@ -76,9 +77,10 @@ export function KeyNameCard({group, platformId, showRevokedKeys}: KeyNameCardPro
             <KeyNameDialog
               mode="edit"
               group={group}
-              onSuccess={() => updateGroup({
+              onSuccess={(data: any) => updateGroup({
+                platformId,
                 groupId: group.id,
-                data: {name: group.name, description: group.description, tags: group.tags}
+                data
               })}
             />
             <CreateKeyValueDialog
@@ -99,7 +101,7 @@ export function KeyNameCard({group, platformId, showRevokedKeys}: KeyNameCardPro
                   action: (
                     <ToastAction
                     altText='delete key name'
-                    onClick={() => deleteGroup(group.id)}>
+                    onClick={() => deleteGroup({ platformId, groupId: group.id })}>
                       Delete
                     </ToastAction>
                   ),
@@ -121,6 +123,9 @@ export function KeyNameCard({group, platformId, showRevokedKeys}: KeyNameCardPro
           <KeyValue
             key={key.id}
             keyData={key}
+            platformId={platformId}
+            groupId={group.id}
+            keyName={group.name}
           />
         ))}
       </div>

@@ -1,42 +1,71 @@
 'use client';
 
 import { useToast } from "@/hooks/use-toast";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Switch } from "@/components/ui/switch";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Eye, EyeOff, Copy, Trash2 } from 'lucide-react';
+import { Eye, EyeOff, Copy, Trash2, FileText } from 'lucide-react';
 import type { Key } from '@keybox/shared';
-import { useUpdateKeyNote, useToggleKeyStatus, useDeleteKey } from '@/hooks/usePlatforms';
+import { useSetAtom } from 'jotai';
+import { updateKeyNoteAtom, toggleKeyStatusAtom, deleteKeyAtom } from '@/atoms/localStorage';
+import { cn } from '@/lib/utils';
 
 interface KeyItemProps {
   keyData: Key;
+  platformId: string;
+  groupId: string;
+  keyName?: string;
 }
 
 
 
-export function KeyValue({ keyData }: KeyItemProps) {
+export function KeyValue({ keyData, platformId, groupId, keyName }: KeyItemProps) {
   const [showValue, setShowValue] = useState(false);
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [noteValue, setNoteValue] = useState(keyData.note || "");
   const [isValid, setIsValid] = useState(!keyData.revoked);
+  const [isAltPressed, setIsAltPressed] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
   const { toast } = useToast();
 
-  const { mutate: updateNote } = useUpdateKeyNote();
-  const { mutate: toggleStatus } = useToggleKeyStatus();
-  const { mutate: deleteKey } = useDeleteKey();
+  const updateNote = useSetAtom(updateKeyNoteAtom);
+  const toggleStatus = useSetAtom(toggleKeyStatusAtom);
+  const deleteKey = useSetAtom(deleteKeyAtom);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.altKey && !isAltPressed) {
+        setIsAltPressed(true);
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (!e.altKey && isAltPressed) {
+        setIsAltPressed(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [isAltPressed]);
 
   const maskValue = (value: string) => {
     if (value.length <= 2) value = value.replace(/./g, '•');
     return `${value.slice(0, 2)}••••${value.slice(-2)}`;
   };
 
-  const copyToClipboard = async (text: string) => {
+  const copyToClipboard = async (text: string, format: string) => {
     try {
       await navigator.clipboard.writeText(text);
       toast({
         title: 'Copied!',
-        description: 'Value copied to clipboard',
+        description: `${format} copied to clipboard`,
       });
     } catch (err) {
       toast({
@@ -54,7 +83,7 @@ export function KeyValue({ keyData }: KeyItemProps) {
           checked={isValid}
           onCheckedChange={(checked) => {
             setIsValid(checked);
-            toggleStatus(keyData.id);
+            toggleStatus({ platformId, groupId, keyId: keyData.id });
           }}
           // className="h-4 w-7 data-[state=checked]:bg-primary/20 data-[state=unchecked]:bg-muted"
           // thumbClassName="h-3 w-3 data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted-foreground/50"
@@ -70,7 +99,7 @@ export function KeyValue({ keyData }: KeyItemProps) {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                updateNote({ keyId: keyData.id, note: noteValue });
+                updateNote({ platformId, groupId, keyId: keyData.id, note: noteValue });
                 setIsEditingNote(false);
               }}
               className="flex items-center gap-1"
@@ -82,7 +111,7 @@ export function KeyValue({ keyData }: KeyItemProps) {
                 autoFocus
                 onBlur={() => {
                   if (noteValue !== keyData.note) {
-                    updateNote({ keyId: keyData.id, note: noteValue });
+                    updateNote({ platformId, groupId, keyId: keyData.id, note: noteValue });
                   }
                   setIsEditingNote(false);
                 }}
@@ -125,15 +154,34 @@ export function KeyValue({ keyData }: KeyItemProps) {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => copyToClipboard(keyData.value)}
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
+          onClick={(e) => {
+            // Check if Option/Alt key is pressed
+            if (e.altKey && keyName) {
+              // Copy in KEY=VALUE format
+              copyToClipboard(`${keyName}=${keyData.value}`, 'Key=Value');
+            } else {
+              // Copy only the value
+              copyToClipboard(keyData.value, 'Value');
+            }
+          }}
+          className={cn(
+            isHovering && isAltPressed && keyName && "bg-primary/10 text-primary hover:bg-primary/20"
+          )}
+          title={keyName ? "Click to copy value, Option+Click to copy KEY=VALUE" : "Click to copy value"}
         >
-          <Copy className="h-3 w-3" />
+          {isHovering && isAltPressed && keyName ? (
+            <FileText className="h-3 w-3" />
+          ) : (
+            <Copy className="h-3 w-3" />
+          )}
         </Button>
 
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => deleteKey(keyData.id)}
+          onClick={() => deleteKey({ platformId, groupId, keyId: keyData.id })}
         >
           <Trash2 className="h-3 w-3" />
         </Button>

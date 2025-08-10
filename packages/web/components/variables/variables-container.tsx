@@ -2,8 +2,8 @@
 
 import {PlatformContainer} from "@/components/variables/platform-container";
 import { useAtom } from 'jotai';
-import React from "react";
-import { usePlatforms } from '../../hooks/usePlatforms';
+import React, { useEffect, useState } from "react";
+import { platformsAtom } from '@/atoms/localStorage';
 import { keyCreationFlowAtom } from '@/atoms/key-creation-flow';
 import { LayoutGrid, List, Settings } from 'lucide-react';
 import { PlatformCompactView } from "@/components/variables/platform-compact-view";
@@ -22,12 +22,17 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 
 export function VariablesContainer() {
-  const {data: platforms, isLoading} = usePlatforms();
+  const [platforms] = useAtom(platformsAtom);
   const [, setFlowState] = useAtom(keyCreationFlowAtom);
   const { preferences, setVariablesViewMode, setShowRevokedKeys } = useUserPreferences();
   const logger = useLogger('VariablesContainer');
-  
-  if (isLoading) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
     return <div>Loading...</div>;
   }
 
@@ -76,38 +81,6 @@ export function VariablesContainer() {
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Environment Variables</h2>
         <div className="flex items-center gap-2">
-          <div className="flex border rounded-md overflow-hidden">
-            <Button
-              variant="ghost"
-              size="sm"
-              className={cn(
-                'h-8 px-2 rounded-none',
-                preferences.variables_view_mode === 'detailed' ? 'bg-secondary' : 'hover:bg-secondary/50'
-              )}
-              onClick={() => {
-                setVariablesViewMode('detailed');
-                logger.info('View mode switched to detailed');
-              }}
-            >
-              <List className="h-4 w-4 mr-1" />
-              <span className="text-xs">Detailed</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className={cn(
-                'h-8 px-2 rounded-none',
-                preferences.variables_view_mode === 'compact' ? 'bg-secondary' : 'hover:bg-secondary/50'
-              )}
-              onClick={() => {
-                setVariablesViewMode('compact');
-                logger.info('View mode switched to compact');
-              }}
-            >
-              <LayoutGrid className="h-4 w-4 mr-1" />
-              <span className="text-xs">Compact</span>
-            </Button>
-          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon">
@@ -117,6 +90,26 @@ export function VariablesContainer() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Display Settings</DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                className="flex items-center justify-between cursor-pointer"
+                onSelect={(e) => {
+                  e.preventDefault();
+                }}
+              >
+                <span className="flex items-center gap-2">
+                  <LayoutGrid className="h-3.5 w-3.5" />
+                  Compact View
+                </span>
+                <Switch
+                  checked={preferences.variables_view_mode === 'compact'}
+                  onCheckedChange={(checked) => {
+                    const mode = checked ? 'compact' : 'detailed';
+                    setVariablesViewMode(mode);
+                    logger.info(`View mode switched to ${mode}`);
+                  }}
+                  className="ml-2"
+                />
+              </DropdownMenuItem>
               <DropdownMenuItem 
                 className="flex items-center justify-between cursor-pointer"
                 onSelect={(e) => {

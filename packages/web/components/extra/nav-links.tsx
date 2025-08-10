@@ -7,8 +7,8 @@ export function NavLinks() {
   const pathname = usePathname();
 
   const links = [
-    { href: '/protected/variables', label: '变量管理' },
-    { href: '/protected/projects', label: '项目管理' },
+    { href: '/variables', label: '变量管理' },
+    { href: '/projects', label: '项目管理' },
   ];
 
   return (

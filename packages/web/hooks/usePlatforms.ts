@@ -113,7 +113,7 @@ export function useCreateKey() {
       };
     }) => {
       try {
-        return await actions.createKey(groupId, data);
+        return await actions.createKey(groupId, { ...data, revoked: false });
       } catch (error: any) {
         toast({
           title: 'Error',
