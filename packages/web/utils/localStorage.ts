@@ -8,6 +8,7 @@ export interface Platform {
   created_at: string;
   updated_at: string;
   key_groups: KeyGroup[];
+  variable_groups?: VariableGroup[]; // 新增变量组
 }
 
 export interface KeyGroup {
@@ -18,6 +19,40 @@ export interface KeyGroup {
   created_at: string;
   updated_at: string;
   keys: Key[];
+  variable_group_id?: string; // 关联到变量组
+}
+
+// 变量组定义 - 增强版，支持多实例
+export interface VariableGroup {
+  id: string;
+  name: string;
+  description?: string;
+  template_id?: string; // 关联的服务模板
+  key_group_ids: string[]; // 包含的 key_group IDs
+  relationship_type: 'required_group' | 'optional_group' | 'mutex';
+  validation_rules?: {
+    template_id?: string;
+    required_variables?: string[];
+  };
+  // 实例身份标识
+  instance_identity?: {
+    unique_key: string; // 唯一标识符，如 "prod-supabase-1"
+    display_name: string; // 显示名称
+    short_name?: string; // 简短名称，用于紧凑显示
+  };
+  // 新增实例相关字段
+  instance_name?: string; // 实例名称，如 "Production Supabase"
+  environment_tag?: 'production' | 'staging' | 'development' | 'test' | 'local' | string; // 环境标签
+  variable_prefix?: string; // 变量前缀，如 "PROD_SUPABASE_"
+  instance_number?: number; // 同类型服务的第几个实例
+  instance_metadata?: {
+    purpose?: string; // "primary", "replica", "backup", "cache"
+    color?: string; // 用于UI显示的颜色
+    icon?: string; // 用于UI显示的图标
+    tags?: string[]; // 自定义标签
+  };
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Key {

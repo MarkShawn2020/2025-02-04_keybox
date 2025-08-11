@@ -4,8 +4,7 @@ import {PlatformContainer} from "@/components/variables/platform-container";
 import { useAtom } from 'jotai';
 import React, { useEffect, useState } from "react";
 import { platformsAtom } from '@/atoms/localStorage';
-import { keyCreationFlowAtom } from '@/atoms/key-creation-flow';
-import { LayoutGrid, List, Settings } from 'lucide-react';
+import { LayoutGrid, List, Settings, Plus } from 'lucide-react';
 import { PlatformCompactView } from "@/components/variables/platform-compact-view";
 import { cn } from "@/lib/utils";
 import { useUserPreferences } from '@/hooks/use-user-preferences';
@@ -20,13 +19,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { UnifiedAddDialog } from "./unified-add-dialog";
 
 export function VariablesContainer() {
   const [platforms] = useAtom(platformsAtom);
-  const [, setFlowState] = useAtom(keyCreationFlowAtom);
   const { preferences, setVariablesViewMode, setShowRevokedKeys } = useUserPreferences();
   const logger = useLogger('VariablesContainer');
   const [isClient, setIsClient] = useState(false);
+  const [showUnifiedDialog, setShowUnifiedDialog] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -35,16 +35,6 @@ export function VariablesContainer() {
   if (!isClient) {
     return <div>Loading...</div>;
   }
-
-  // 创建一个按钮来控制对话框的显示
-  const createVariableButton = (name: string) => (
-    <button
-      onClick={() => setFlowState({ isOpen: true, step: 'platform' })}
-      className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-    >
-      {name}
-    </button>
-  );
   
   if (!platforms?.length) {
     return (
@@ -70,7 +60,13 @@ export function VariablesContainer() {
           Get started by creating your first cloud variable.
         </p>
         <div className="mt-6">
-          {createVariableButton("Add My First Cloud Variable")}
+          <Button 
+            onClick={() => setShowUnifiedDialog(true)}
+            className="gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Add My First Cloud Variable
+          </Button>
         </div>
       </div>
     );
@@ -125,7 +121,13 @@ export function VariablesContainer() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          {createVariableButton("Add New")}
+          <Button 
+            onClick={() => setShowUnifiedDialog(true)}
+            className="gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Add New
+          </Button>
         </div>
       </div>
       
@@ -150,6 +152,12 @@ export function VariablesContainer() {
           ))}
         </div>
       )}
+      
+      {/* Unified Add Dialog */}
+      <UnifiedAddDialog
+        open={showUnifiedDialog}
+        onOpenChange={setShowUnifiedDialog}
+      />
     </div>
   );
 }

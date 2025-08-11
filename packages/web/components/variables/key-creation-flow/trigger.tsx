@@ -1,6 +1,7 @@
 'use client';
 
 import { useAtom } from 'jotai';
+import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { keyCreationFlowAtom } from '@/atoms/key-creation-flow';
@@ -13,10 +14,43 @@ interface KeyCreationTriggerProps {
   platformId?: string;
   /** 自定义触发器按钮 */
   children?: React.ReactNode;
+  /** 外部控制开关状态 */
+  open?: boolean;
+  /** 外部控制开关状态变化 */
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function KeyCreationTrigger({ startStep = 'platform', platformId, children }: KeyCreationTriggerProps) {
-  const [, setFlowState] = useAtom(keyCreationFlowAtom);
+export function KeyCreationTrigger({ 
+  startStep = 'platform', 
+  platformId, 
+  children,
+  open,
+  onOpenChange 
+}: KeyCreationTriggerProps) {
+  const [flowState, setFlowState] = useAtom(keyCreationFlowAtom);
+
+  // Handle external control
+  useEffect(() => {
+    if (open !== undefined) {
+      if (open && startStep === 'key-name' && !platformId) {
+        console.error('platformId is required when startStep is key-name');
+        return;
+      }
+      
+      setFlowState({
+        isOpen: open,
+        step: startStep,
+        platformId,
+      });
+    }
+  }, [open, startStep, platformId, setFlowState]);
+
+  // Notify parent when flow closes
+  useEffect(() => {
+    if (onOpenChange && !flowState.isOpen && open) {
+      onOpenChange(false);
+    }
+  }, [flowState.isOpen, open, onOpenChange]);
 
   const handleClick = () => {
     if (startStep === 'key-name' && !platformId) {
@@ -30,6 +64,11 @@ export function KeyCreationTrigger({ startStep = 'platform', platformId, childre
       platformId,
     });
   };
+
+  // If externally controlled, don't render trigger button
+  if (open !== undefined) {
+    return null;
+  }
 
   if (children) {
     return (

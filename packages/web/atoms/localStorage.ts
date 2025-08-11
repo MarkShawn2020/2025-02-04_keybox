@@ -1,6 +1,7 @@
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
-import { Platform, KeyGroup, Key } from '@/utils/localStorage';
+import { Platform, KeyGroup, Key, VariableGroup } from '@/utils/localStorage';
+import { ENVIRONMENT_CONFIG, generateInstanceIdentity } from '@/lib/instance-utils';
 
 export interface KeyConfig {
   platforms: Platform[];
@@ -337,5 +338,203 @@ export const importConfigAtom = atom(
       reader.onerror = () => reject(new Error('Failed to read file'));
       reader.readAsText(file);
     });
+  }
+);
+
+// Variable Group atoms
+export const addVariableGroupAtom = atom(
+  null,
+  (get, set, { platformId, variableGroup }: {
+    platformId: string;
+    variableGroup: Omit<VariableGroup, 'id' | 'created_at' | 'updated_at'>
+  }) => {
+    const platforms = get(platformsAtom);
+    
+    const newVariableGroup: VariableGroup = {
+      ...variableGroup,
+      id: crypto.randomUUID(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    
+    const updatedPlatforms = platforms.map(p => 
+      p.id === platformId 
+        ? { 
+            ...p, 
+            variable_groups: [...(p.variable_groups || []), newVariableGroup],
+            updated_at: new Date().toISOString()
+          }
+        : p
+    );
+    
+    set(platformsAtom, updatedPlatforms);
+    return newVariableGroup;
+  }
+);
+
+export const importTemplateAtom = atom(
+  null,
+  (get, set, { 
+    platformId, 
+    templateId, 
+    instanceName,
+    environment,
+    variablePrefix,
+    variableValues 
+  }: {
+    platformId: string;
+    templateId: string;
+    instanceName: string;
+    environment?: string;
+    variablePrefix?: string;
+    variableValues: Record<string, string>;
+  }) => {
+    const platforms = get(platformsAtom);
+    const platform = platforms.find(p => p.id === platformId);
+    
+    if (!platform) {
+      throw new Error('Platform not found');
+    }
+    
+    // Calculate instance number
+    const existingInstances = (platform.variable_groups || []).filter(
+      vg => vg.template_id === templateId
+    );
+    const instanceNumber = existingInstances.length + 1;
+    
+    // Create variable group
+    const variableGroupId = crypto.randomUUID();
+    const keyGroupIds: string[] = [];
+    
+    // Apply prefix to variables if provided
+    const finalVariables = variablePrefix 
+      ? Object.entries(variableValues).reduce((acc, [key, value]) => {
+          acc[`${variablePrefix}${key}`] = value;
+          return acc;
+        }, {} as Record<string, string>)
+      : variableValues;
+    
+    // Create key groups for each variable
+    const updatedKeyGroups: KeyGroup[] = [...platform.key_groups];
+    
+    Object.entries(finalVariables).forEach(([variableName, variableValue]) => {
+      if (!variableValue) return;
+      
+      const keyGroupId = crypto.randomUUID();
+      const keyId = crypto.randomUUID();
+      
+      const newKeyGroup: KeyGroup = {
+        id: keyGroupId,
+        name: variableName,
+        description: undefined,
+        tags: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        variable_group_id: variableGroupId,
+        keys: [{
+          id: keyId,
+          value: variableValue,
+          note: `${instanceName} - ${environment || 'default'}`,
+          revoked: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }]
+      };
+      
+      updatedKeyGroups.push(newKeyGroup);
+      keyGroupIds.push(keyGroupId);
+    });
+    
+    // Generate instance identity
+    const instanceIdentity = generateInstanceIdentity(
+      templateId,
+      environment || 'default',
+      instanceNumber,
+      instanceName
+    );
+    
+    // Create the variable group with enhanced metadata
+    const newVariableGroup: VariableGroup = {
+      id: variableGroupId,
+      name: instanceName,
+      description: `${templateId} configuration for ${environment || 'default'} environment`,
+      template_id: templateId,
+      key_group_ids: keyGroupIds,
+      relationship_type: 'required_group',
+      instance_identity: instanceIdentity,
+      instance_name: instanceName,
+      environment_tag: environment,
+      variable_prefix: variablePrefix,
+      instance_number: instanceNumber,
+      instance_metadata: {
+        purpose: instanceNumber === 1 ? 'primary' : 'secondary',
+        color: environment ? ENVIRONMENT_CONFIG[environment as keyof typeof ENVIRONMENT_CONFIG]?.color : undefined,
+        icon: environment ? ENVIRONMENT_CONFIG[environment as keyof typeof ENVIRONMENT_CONFIG]?.icon : undefined,
+      },
+      validation_rules: {
+        template_id: templateId,
+        required_variables: Object.keys(variableValues)
+      },
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    
+    // Update the platform
+    const updatedPlatforms = platforms.map(p => 
+      p.id === platformId 
+        ? { 
+            ...p, 
+            key_groups: updatedKeyGroups,
+            variable_groups: [...(p.variable_groups || []), newVariableGroup],
+            updated_at: new Date().toISOString()
+          }
+        : p
+    );
+    
+    set(platformsAtom, updatedPlatforms);
+    return { variableGroupId, keyGroupIds };
+  }
+);
+
+// Helper atom to get variable groups for a platform
+export const getVariableGroupsAtom = atom(
+  (get) => (platformId: string) => {
+    const platforms = get(platformsAtom);
+    const platform = platforms.find(p => p.id === platformId);
+    return platform?.variable_groups || [];
+  }
+);
+
+// Delete variable group atom - also deletes associated key groups
+export const deleteVariableGroupAtom = atom(
+  null,
+  (get, set, { platformId, groupId }: {
+    platformId: string;
+    groupId: string
+  }) => {
+    const platforms = get(platformsAtom);
+    
+    const updatedPlatforms = platforms.map(p => {
+      if (p.id === platformId) {
+        const variableGroup = p.variable_groups?.find(vg => vg.id === groupId);
+        
+        if (!variableGroup) return p;
+        
+        // Remove all key groups that belong to this variable group
+        const updatedKeyGroups = p.key_groups.filter(kg => 
+          !variableGroup.key_group_ids.includes(kg.id)
+        );
+        
+        return {
+          ...p,
+          key_groups: updatedKeyGroups,
+          variable_groups: p.variable_groups?.filter(vg => vg.id !== groupId) || [],
+          updated_at: new Date().toISOString()
+        };
+      }
+      return p;
+    });
+    
+    set(platformsAtom, updatedPlatforms);
   }
 );
