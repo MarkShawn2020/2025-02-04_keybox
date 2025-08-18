@@ -16,5 +16,6 @@
       "esbuild-code-inspector-plugin": "file:../../repos/code-inspector/packages/esbuild-plugin",
       "turbopack-code-inspector-plugin": "file:../../repos/code-inspector/packages/turbopack-plugin"
     }
-  }
+  },
+  "version": "0.1.0"
 }
