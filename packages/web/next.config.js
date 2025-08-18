@@ -1,4 +1,5 @@
 const { codeInspectorPlugin } = require('code-inspector-plugin');
+console.log("codeInspectorPlugin: ", codeInspectorPlugin)
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
