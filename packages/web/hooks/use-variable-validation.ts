@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
-import { GroupedVariable } from '@/types/variable-groups';
+import { GroupedVariableLocal } from '@/hooks/use-variable-groups';
 import { 
   getServiceTemplate, 
   validateTemplateVariables,
-  ServiceTemplate 
+  ServiceTemplate,
+  serviceTemplates 
 } from '@/lib/service-templates';
 
 export interface ValidationResult {
@@ -16,7 +17,7 @@ export interface ValidationResult {
 }
 
 export function useVariableValidation(
-  group: GroupedVariable | null
+  group: GroupedVariableLocal | null
 ): ValidationResult | null {
   return useMemo(() => {
     if (!group) return null;
@@ -133,7 +134,7 @@ export function useTemplateDetection(variableNames: string[]): {
       missing: string[];
     } | null = null;
 
-    for (const template of getServiceTemplate('') || []) {
+    for (const template of serviceTemplates) {
       const requiredVars = template.variables.filter(v => v.required);
       const matched = requiredVars.filter(v => 
         variableNames.includes(v.name)
