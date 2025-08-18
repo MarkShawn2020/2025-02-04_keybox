@@ -1,224 +1,35 @@
-'use server'
-import { cookies } from 'next/headers';
-import { createServerClient } from '@supabase/ssr';
 import { parse as parseEnv } from 'dotenv';
-
 import { createPlatformSchema, createKeyNameSchema, createKeySchema, KeyNameSchema } from '@keybox/shared';
 
+// Note: These functions now serve as placeholders since the system has moved to local storage (Jotai atoms)
+// The actual data management is now handled on the client side
+
 export async function listKeys() {
-  const cookieStore = cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        async get(name: string) {
-          const cookieStore = await cookies();
-          const cookie = await cookieStore.get(name);
-          return cookie?.value;
-        },
-      },
-    }
-  );
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    throw new Error('Not authenticated');
-  }
-
-  const { data: platforms, error } = await supabase
-    .from('platforms')
-    .select(`
-      id,
-      name,
-      description,
-      tags,
-      created_at,
-      updated_at,
-      key_groups:key_groups(
-        id,
-        name,
-        description,
-        created_at,
-        updated_at,
-        tags,
-        keys:keys(
-          id,
-          value,
-          note,
-          revoked,
-          created_at,
-          updated_at
-        )
-      )
-    `)
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false });
-
-  if (error) throw error;
-  return platforms;
+  // This function is no longer used - data is managed via Jotai atoms on the client
+  throw new Error('This function is deprecated. Data is now managed via client-side Jotai atoms.');
 }
 
 export async function createPlatform(data: any) {
-  const cookieStore = cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        async get(name: string) {
-          const cookieStore = await cookies();
-          const cookie = await cookieStore.get(name);
-          return cookie?.value;
-        },
-      },
-    }
-  );
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    throw new Error('Not authenticated');
-  }
-
+  // This function is no longer used - data is managed via Jotai atoms on the client
   const validatedData = createPlatformSchema.parse(data);
-  const { error } = await supabase
-    .from('platforms')
-    .insert({ ...validatedData, user_id: user.id });
-
-  if (error) throw error;
-  return { success: true };
+  throw new Error('This function is deprecated. Data is now managed via client-side Jotai atoms.');
 }
 
 export async function createKeyName(platformId: string, data: any) {
-  console.log('Creating Key Name with platformId:', platformId);
-  console.log('Data:', data);
-
-  const cookieStore = cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        async get(name: string) {
-          const cookieStore = await cookies();
-          const cookie = await cookieStore.get(name);
-          return cookie?.value;
-        },
-      },
-    }
-  );
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    throw new Error('Not authenticated');
-  }
-  console.log('Current user:', user.id);
-
-  // 验证 platformId
-  const { data: platform, error: platformError } = await supabase
-    .from('platforms')
-    .select('id, user_id')
-    .eq('id', platformId)
-    .single();
-
-  console.log('Platform query result:', { platform, error: platformError });
-
-  if (platformError) {
-    console.error('Platform error:', platformError);
-    throw new Error(`Platform error: ${platformError.message}`);
-  }
-
-  if (!platform) {
-    throw new Error('Platform not found');
-  }
-
-  if (platform.user_id !== user.id) {
-    throw new Error('Access denied: platform belongs to another user');
-  }
-
+  // This function is no longer used - data is managed via Jotai atoms on the client
   const validatedData = createKeyNameSchema.parse(data);
-  console.log('Validated data:', validatedData);
-
-  const { data: newGroup, error } = await supabase
-    .from('key_groups')
-    .insert({
-      ...validatedData,
-      platform_id: platformId,
-      user_id: user.id
-    })
-    .select('id')
-    .single();
-
-  if (error) {
-    console.error('Error creating Key Name:', error);
-    throw error;
-  }
-
-  console.log('Key Name created successfully');
-  return { success: true, groupId: newGroup?.id };
+  throw new Error('This function is deprecated. Data is now managed via client-side Jotai atoms.');
 }
 
 export async function createKey(groupId: string, data: any) {
-  const cookieStore = cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        async get(name: string) {
-          const cookieStore = await cookies();
-          const cookie = await cookieStore.get(name);
-          return cookie?.value;
-        },
-      },
-    }
-  );
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    throw new Error('Not authenticated');
-  }
-
+  // This function is no longer used - data is managed via Jotai atoms on the client
   const validatedData = createKeySchema.parse(data);
-  const { error } = await supabase
-    .from('keys')
-    .insert({ ...validatedData, key_group_id: groupId, user_id: user.id });
-
-  if (error) throw error;
-  return { success: true };
+  throw new Error('This function is deprecated. Data is now managed via client-side Jotai atoms.');
 }
 
 export async function deleteKey(id: string) {
-  const cookieStore = cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        async get(name: string) {
-          const cookieStore = await cookies();
-          const cookie = await cookieStore.get(name);
-          return cookie?.value;
-        },
-      },
-    }
-  );
-
-  const { error } = await supabase
-    .from('keys')
-    .delete()
-    .eq('id', id);
-
-  if (error) throw error;
-  return { success: true };
+  // This function is no longer used - data is managed via Jotai atoms on the client
+  throw new Error('This function is deprecated. Data is now managed via client-side Jotai atoms.');
 }
 
 export async function importEnvFile(content: string) {
@@ -239,164 +50,27 @@ export async function exportEnvFile(env: Record<string, string>) {
 }
 
 export async function updateKeyName(groupId: string, data: any) {
-  const cookieStore = cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        async get(name: string) {
-          const cookieStore = await cookies();
-          const cookie = await cookieStore.get(name);
-          return cookie?.value;
-        },
-      },
-    }
-  );
-
+  // This function is no longer used - data is managed via Jotai atoms on the client
   const validatedData = KeyNameSchema.omit({ id: true, created_at: true, updated_at: true, keys: true }).parse(data);
-  const { error } = await supabase
-    .from('key_groups')
-    .update(validatedData)
-    .eq('id', groupId);
-
-  if (error) throw error;
-  return { success: true };
+  throw new Error('This function is deprecated. Data is now managed via client-side Jotai atoms.');
 }
 
 export async function updateKeyNote(keyId: string, note: string) {
-  const cookieStore = cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        async get(name: string) {
-          const cookieStore = await cookies();
-          const cookie = await cookieStore.get(name);
-          return cookie?.value;
-        },
-      },
-    }
-  );
-
-  const { error } = await supabase
-    .from('keys')
-    .update({ note })
-    .eq('id', keyId);
-
-  if (error) throw error;
-  return { success: true };
+  // This function is no longer used - data is managed via Jotai atoms on the client
+  throw new Error('This function is deprecated. Data is now managed via client-side Jotai atoms.');
 }
 
 export async function toggleKeyStatus(keyId: string) {
-  const cookieStore = cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        async get(name: string) {
-          const cookieStore = await cookies();
-          const cookie = await cookieStore.get(name);
-          return cookie?.value;
-        },
-      },
-    }
-  );
-
-  // First get the current status
-  const { data: key, error: fetchError } = await supabase
-    .from('keys')
-    .select('revoked')
-    .eq('id', keyId)
-    .single();
-
-  if (fetchError) throw fetchError;
-  if (!key) throw new Error('Key not found');
-
-  // Toggle the status
-  const { error: updateError } = await supabase
-    .from('keys')
-    .update({ revoked: !key.revoked })
-    .eq('id', keyId);
-
-  if (updateError) throw updateError;
-  return { success: true };
+  // This function is no longer used - data is managed via Jotai atoms on the client
+  throw new Error('This function is deprecated. Data is now managed via client-side Jotai atoms.');
 }
 
 export async function deleteKeyName(groupId: string) {
-  const cookieStore = cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        async get(name: string) {
-          const cookieStore = await cookies();
-          const cookie = await cookieStore.get(name);
-          return cookie?.value;
-        },
-      },
-    }
-  );
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    throw new Error('Not authenticated');
-  }
-
-  // 验证 groupId
-  const { data: group, error: groupError } = await supabase
-    .from('key_groups')
-    .select('id, user_id')
-    .eq('id', groupId)
-    .single();
-
-  if (groupError) {
-    throw new Error(`Group error: ${groupError.message}`);
-  }
-
-  if (!group) {
-    throw new Error('Group not found');
-  }
-
-  if (group.user_id !== user.id) {
-    throw new Error('Access denied: group belongs to another user');
-  }
-
-  const { error } = await supabase
-    .from('key_groups')
-    .delete()
-    .eq('id', groupId);
-
-  if (error) throw error;
-  return { success: true };
+  // This function is no longer used - data is managed via Jotai atoms on the client
+  throw new Error('This function is deprecated. Data is now managed via client-side Jotai atoms.');
 }
 
 export async function deletePlatform(platformId: string) {
-  const cookieStore = cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        async get(name: string) {
-          const cookieStore = await cookies();
-          const cookie = await cookieStore.get(name);
-          return cookie?.value;
-        },
-      },
-    }
-  );
-
-  const { error } = await supabase
-    .from('platforms')
-    .delete()
-    .eq('id', platformId);
-
-  if (error) throw error;
-  return { success: true };
+  // This function is no longer used - data is managed via Jotai atoms on the client
+  throw new Error('This function is deprecated. Data is now managed via client-side Jotai atoms.');
 }

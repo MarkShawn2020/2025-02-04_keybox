@@ -3,8 +3,6 @@ import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Bell, Key, Lock, User } from "lucide-react";
-import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
 import { ProfileSettings } from "./profile-settings";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -81,13 +79,7 @@ const NotificationSettings = () => (
 );
 
 // Settings Page Component
-export default async function SettingsPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/auth/login");
-  }
+export default function SettingsPage() {
 
   return (
     <div className="space-y-6">

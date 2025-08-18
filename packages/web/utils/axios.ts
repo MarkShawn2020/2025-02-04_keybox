@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { createClient } from './supabase/client'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 
@@ -10,14 +9,7 @@ const api = axios.create({
   }
 })
 
-// 请求拦截器：添加认证 token
-api.interceptors.request.use(async (config) => {
-  const supabase = createClient()
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) throw new Error('No active session')
-
-  config.headers.Authorization = `Bearer ${session.access_token}`
-  return config
-})
+// Note: Authentication has been removed since the system no longer uses Supabase auth
+// If you need authentication for API calls, implement it according to your new auth system
 
 export { api }

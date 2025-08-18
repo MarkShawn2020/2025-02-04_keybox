@@ -193,7 +193,6 @@ export function useVariableSuggestions(
       { prefix: 'DATABASE_', vars: ['HOST', 'PORT', 'USER', 'PASSWORD', 'NAME', 'URL'] },
       { prefix: 'REDIS_', vars: ['HOST', 'PORT', 'PASSWORD', 'URL'] },
       { prefix: 'AWS_', vars: ['ACCESS_KEY_ID', 'SECRET_ACCESS_KEY', 'REGION'] },
-      { prefix: 'SUPABASE_', vars: ['URL', 'ANON_KEY', 'SERVICE_KEY'] },
       { prefix: 'OPENAI_', vars: ['API_KEY', 'ORGANIZATION', 'BASE_URL'] },
       { prefix: 'STRIPE_', vars: ['PUBLISHABLE_KEY', 'SECRET_KEY', 'WEBHOOK_SECRET'] },
       { prefix: 'GITHUB_', vars: ['CLIENT_ID', 'CLIENT_SECRET', 'REDIRECT_URI'] },
