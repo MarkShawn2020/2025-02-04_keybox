@@ -103,29 +103,21 @@ const Dashboard = () => (
     </div>
 
     {/* Quick Actions */}
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <Link href="/variables" className="group">
         <div className="p-6 rounded-lg border border-border/50 group-hover:border-border/80 transition-all bg-card hover:shadow-sm">
           <h3 className="font-semibold flex items-center gap-2 mb-2">
-            <Key className="w-5 h-5" /> 创建环境变量
+            <Key className="w-5 h-5" /> 环境变量管理
           </h3>
-          <p className="text-sm text-muted-foreground">添加新的环境变量或从文件导入</p>
+          <p className="text-sm text-muted-foreground">添加、编辑和管理您的环境变量</p>
         </div>
       </Link>
-      <Link href="/projects" className="group">
+      <Link href="/protected/settings" className="group">
         <div className="p-6 rounded-lg border border-border/50 group-hover:border-border/80 transition-all bg-card hover:shadow-sm">
           <h3 className="font-semibold flex items-center gap-2 mb-2">
-            <Users className="w-5 h-5" /> 管理解决方案
+            <Lock className="w-5 h-5" /> 设置
           </h3>
-          <p className="text-sm text-muted-foreground">查看和管理您的解决方案</p>
-        </div>
-      </Link>
-      <Link href="/settings" className="group">
-        <div className="p-6 rounded-lg border border-border/50 group-hover:border-border/80 transition-all bg-card hover:shadow-sm">
-          <h3 className="font-semibold flex items-center gap-2 mb-2">
-            <Lock className="w-5 h-5" /> 安全设置
-          </h3>
-          <p className="text-sm text-muted-foreground">管理访问权限和安全选项</p>
+          <p className="text-sm text-muted-foreground">配置应用偏好和选项</p>
         </div>
       </Link>
     </div>

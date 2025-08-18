@@ -156,7 +156,7 @@ export default function RootLayout({
                       {/* <Link href="/docs" className="hover:text-foreground transition-colors">
                         文档中心
                       </Link> */}
-                      <Link href="/settings" className="hover:text-foreground transition-colors">
+                      <Link href="/protected/settings" className="hover:text-foreground transition-colors">
                         配置设置
                       </Link>
                       <a 

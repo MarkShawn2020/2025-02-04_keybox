@@ -8,7 +8,7 @@ export function NavLinks() {
 
   const links = [
     { href: '/variables', label: '变量管理' },
-    { href: '/projects', label: '项目管理' },
+    // { href: '/protected/projects', label: '项目管理' }, // 暂时隐藏项目管理
   ];
 
   return (

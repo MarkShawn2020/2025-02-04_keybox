@@ -1,11 +1,10 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trash, Download, ExternalLink } from 'lucide-react';
+import { Trash, Download } from 'lucide-react';
 import type { ProjectWithKeys } from '@keybox/shared';
 import { usePlatforms } from '@/hooks/usePlatforms';
 import { useMemo } from 'react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useRouter } from 'next/navigation';
 
 interface ProjectCompactCardProps {
   project: ProjectWithKeys;
@@ -18,7 +17,6 @@ export function ProjectCompactCard({
   onDelete,
   onDownloadEnv,
 }: ProjectCompactCardProps) {
-  const router = useRouter();
   const { data: platforms } = usePlatforms();
   
   // Find which platforms this project uses keys from
@@ -44,16 +42,11 @@ export function ProjectCompactCard({
     return platforms.filter(platform => platformIds.has(platform.id));
   }, [platforms, project.keys]);
 
-  const handleCardClick = () => {
-    router.push(`/protected/projects/${project.id}`);
-  };
-
   return (
     <Card className="overflow-hidden h-full flex flex-col transition-all duration-200 hover:shadow-md">
       <CardContent className="p-3 flex flex-col h-full">
         <div 
-          className="flex-1 cursor-pointer" 
-          onClick={handleCardClick}
+          className="flex-1" 
         >
           <h3 className="font-medium text-sm mb-2 line-clamp-2">{project.name}</h3>
           
@@ -97,14 +90,15 @@ export function ProjectCompactCard({
           >
             <Download className="h-3.5 w-3.5" />
           </Button>
-          <Button
+          {/* 项目详情页暂时不可用 */}
+          {/* <Button
             size="icon"
             variant="ghost"
             className="h-7 w-7"
             onClick={() => router.push(`/protected/projects/${project.id}`)}
           >
             <ExternalLink className="h-3.5 w-3.5" />
-          </Button>
+          </Button> */}
           <Button 
             size="icon" 
             variant="ghost" 
