@@ -7,15 +7,5 @@
     "start": "pnpm -r run start",
     "lint": "pnpm -r run lint"
   },
-  "pnpm": {
-    "overrides": {
-      "code-inspector-core": "file:../../repos/code-inspector/packages/core",
-      "code-inspector-plugin": "file:../../repos/code-inspector/packages/code-inspector-plugin",
-      "vite-code-inspector-plugin": "file:../../repos/code-inspector/packages/vite-plugin",
-      "webpack-code-inspector-plugin": "file:../../repos/code-inspector/packages/webpack-plugin",
-      "esbuild-code-inspector-plugin": "file:../../repos/code-inspector/packages/esbuild-plugin",
-      "turbopack-code-inspector-plugin": "file:../../repos/code-inspector/packages/turbopack-plugin"
-    }
-  },
   "version": "0.1.0"
 }

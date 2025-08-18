@@ -4,14 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  code-inspector-core: file:../../repos/code-inspector/packages/core
-  code-inspector-plugin: file:../../repos/code-inspector/packages/code-inspector-plugin
-  vite-code-inspector-plugin: file:../../repos/code-inspector/packages/vite-plugin
-  webpack-code-inspector-plugin: file:../../repos/code-inspector/packages/webpack-plugin
-  esbuild-code-inspector-plugin: file:../../repos/code-inspector/packages/esbuild-plugin
-  turbopack-code-inspector-plugin: file:../../repos/code-inspector/packages/turbopack-plugin
-
 importers:
 
   .: {}
@@ -167,8 +159,8 @@ importers:
         specifier: ^1.0.0
         version: 1.1.1(@types/react-dom@19.0.2(@types/react@19.1.10))(@types/react@19.1.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       code-inspector-plugin:
-        specifier: file:../../../../repos/code-inspector/packages/code-inspector-plugin
-        version: file:../../repos/code-inspector/packages/code-inspector-plugin
+        specifier: ^1.0.5
+        version: 1.2.2
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -825,6 +817,24 @@ packages:
   '@babel/types@7.28.2':
     resolution: {integrity: sha512-ruv7Ae4J5dUYULmeXw1gmb7rYRz57OWCPM57pHojnLq/3Z1CK2lNSLTCVjxVk1F/TZHwOZZrOWi0ur95BbLxNQ==}
     engines: {node: '>=6.9.0'}
+
+  '@code-inspector/core@1.2.2':
+    resolution: {integrity: sha512-MQUxqP90y5yyL5v0Mhyw2L2FeIMjrTfg5tLquuexrMnVPVoreziKWvGh30Eyx7Kg9wFtpaSKa3IAWPfg7xh42g==}
+
+  '@code-inspector/esbuild@1.2.2':
+    resolution: {integrity: sha512-0A9qVvvHI/hlnVwH2N/IjqnOnExnVo6cMiHxLTNwCu2vE6XTNdRnagHhBMd1CV/LJnMQZmwrmsS+ktBvaBxS7A==}
+
+  '@code-inspector/mako@1.2.2':
+    resolution: {integrity: sha512-LYLyTrWIPuW7DUZ44jxJ8O9OdObHUNSo4Dxxdh1uZKNj741g5qXtpWMgHZpWzhYy4AyjLViC89KpnbU/HssB3A==}
+
+  '@code-inspector/turbopack@1.2.2':
+    resolution: {integrity: sha512-FOtTqTHvLKlgI3y/mTngDqkVChOMSHeutjyWBMGB0YHp3ZNhfddMl1i8/hTDqTvNhQZSMbREirwg4VBT7AzJpw==}
+
+  '@code-inspector/vite@1.2.2':
+    resolution: {integrity: sha512-VvQ2n+UVIpiIrhUarvEb/JZiJdWDHsPIUcIt0Z61AbWEz7vN/fWNelPyHiGgLRCG5bdvjrPHruVpo2bj5TYJKQ==}
+
+  '@code-inspector/webpack@1.2.2':
+    resolution: {integrity: sha512-Y9urfrHoB81IkscKCc/cmLe5IV364RNQHz7HUj7RSOhCAwMsZC6oXrsh36LhDHfk7rdjgL2/JGPRhHAZgWYnIw==}
 
   '@date-fns/tz@1.3.1':
     resolution: {integrity: sha512-LnBOyuj+piItX/D5BWBSckBsuZyOt7Jg2obGNiObq7qjl1A2/8F+i4RS8/MmkSdnw6hOe6afrJLCWrUWZw5Mlw==}
@@ -2109,11 +2119,8 @@ packages:
       react: ^18 || ^19 || ^19.0.0-rc
       react-dom: ^18 || ^19 || ^19.0.0-rc
 
-  code-inspector-core@file:../../repos/code-inspector/packages/core:
-    resolution: {directory: ../../repos/code-inspector/packages/core, type: directory}
-
-  code-inspector-plugin@file:../../repos/code-inspector/packages/code-inspector-plugin:
-    resolution: {directory: ../../repos/code-inspector/packages/code-inspector-plugin, type: directory}
+  code-inspector-plugin@1.2.2:
+    resolution: {integrity: sha512-unc4VEii3mBCqrUOILHuexJ1pHP2FHqXWCJXYSdqHArIpE9POO5Gt9JqWZH3irS6cvnLfbKcE6l8pPisKcCU4g==}
 
   color-convert@2.0.1:
     resolution: {integrity: sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==}
@@ -2360,9 +2367,6 @@ packages:
   es-set-tostringtag@2.1.0:
     resolution: {integrity: sha512-j6vWzfrGVfyXxge+O0x5sh6cvxAog0a/4Rdd2K36zCMV5eJ+/+tOAngRO8cODMNWbVRdVlmGZQL2YS3yR8bIUA==}
     engines: {node: '>= 0.4'}
-
-  esbuild-code-inspector-plugin@file:../../repos/code-inspector/packages/esbuild-plugin:
-    resolution: {directory: ../../repos/code-inspector/packages/esbuild-plugin, type: directory}
 
   escalade@3.2.0:
     resolution: {integrity: sha512-WUj2qlxaQtO4g6Pq5c29GTcWGDyd8itL8zTlipgECz3JesAiiOKotd8JU6otB3PACgG6xkJUyVhboMS+bje/jA==}
@@ -3095,9 +3099,6 @@ packages:
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
-  turbopack-code-inspector-plugin@file:../../repos/code-inspector/packages/turbopack-plugin:
-    resolution: {directory: ../../repos/code-inspector/packages/turbopack-plugin, type: directory}
-
   typescript@5.9.2:
     resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}
     engines: {node: '>=14.17'}
@@ -3165,14 +3166,8 @@ packages:
   victory-vendor@36.9.2:
     resolution: {integrity: sha512-PnpQQMuxlwYdocC8fIJqVXvkeViHYzotI+NJrCuav0ZYFoq912ZHBk3mCeuj+5/VpodOjPe1z0Fk2ihgzlXqjQ==}
 
-  vite-code-inspector-plugin@file:../../repos/code-inspector/packages/vite-plugin:
-    resolution: {directory: ../../repos/code-inspector/packages/vite-plugin, type: directory}
-
   webidl-conversions@3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
-
-  webpack-code-inspector-plugin@file:../../repos/code-inspector/packages/webpack-plugin:
-    resolution: {directory: ../../repos/code-inspector/packages/webpack-plugin, type: directory}
 
   whatwg-url@5.0.0:
     resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
@@ -3956,6 +3951,48 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
+
+  '@code-inspector/core@1.2.2':
+    dependencies:
+      '@vue/compiler-dom': 3.5.18
+      chalk: 4.1.2
+      dotenv: 16.6.1
+      launch-ide: 1.1.1
+      portfinder: 1.0.37
+    transitivePeerDependencies:
+      - supports-color
+
+  '@code-inspector/esbuild@1.2.2':
+    dependencies:
+      '@code-inspector/core': 1.2.2
+    transitivePeerDependencies:
+      - supports-color
+
+  '@code-inspector/mako@1.2.2':
+    dependencies:
+      '@code-inspector/core': 1.2.2
+    transitivePeerDependencies:
+      - supports-color
+
+  '@code-inspector/turbopack@1.2.2':
+    dependencies:
+      '@code-inspector/core': 1.2.2
+      '@code-inspector/webpack': 1.2.2
+    transitivePeerDependencies:
+      - supports-color
+
+  '@code-inspector/vite@1.2.2':
+    dependencies:
+      '@code-inspector/core': 1.2.2
+      chalk: 4.1.1
+    transitivePeerDependencies:
+      - supports-color
+
+  '@code-inspector/webpack@1.2.2':
+    dependencies:
+      '@code-inspector/core': 1.2.2
+    transitivePeerDependencies:
+      - supports-color
 
   '@date-fns/tz@1.3.1': {}
 
@@ -5257,24 +5294,15 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
 
-  code-inspector-core@file:../../repos/code-inspector/packages/core:
+  code-inspector-plugin@1.2.2:
     dependencies:
-      '@vue/compiler-dom': 3.5.18
-      chalk: 4.1.2
-      dotenv: 16.6.1
-      launch-ide: 1.1.1
-      portfinder: 1.0.37
-    transitivePeerDependencies:
-      - supports-color
-
-  code-inspector-plugin@file:../../repos/code-inspector/packages/code-inspector-plugin:
-    dependencies:
+      '@code-inspector/core': 1.2.2
+      '@code-inspector/esbuild': 1.2.2
+      '@code-inspector/mako': 1.2.2
+      '@code-inspector/turbopack': 1.2.2
+      '@code-inspector/vite': 1.2.2
+      '@code-inspector/webpack': 1.2.2
       chalk: 4.1.1
-      code-inspector-core: file:../../repos/code-inspector/packages/core
-      esbuild-code-inspector-plugin: file:../../repos/code-inspector/packages/esbuild-plugin
-      turbopack-code-inspector-plugin: file:../../repos/code-inspector/packages/turbopack-plugin
-      vite-code-inspector-plugin: file:../../repos/code-inspector/packages/vite-plugin
-      webpack-code-inspector-plugin: file:../../repos/code-inspector/packages/webpack-plugin
     transitivePeerDependencies:
       - supports-color
 
@@ -5498,12 +5526,6 @@ snapshots:
       get-intrinsic: 1.3.0
       has-tostringtag: 1.0.2
       hasown: 2.0.2
-
-  esbuild-code-inspector-plugin@file:../../repos/code-inspector/packages/esbuild-plugin:
-    dependencies:
-      code-inspector-core: file:../../repos/code-inspector/packages/core
-    transitivePeerDependencies:
-      - supports-color
 
   escalade@3.2.0: {}
 
@@ -6215,13 +6237,6 @@ snapshots:
 
   tslib@2.8.1: {}
 
-  turbopack-code-inspector-plugin@file:../../repos/code-inspector/packages/turbopack-plugin:
-    dependencies:
-      code-inspector-core: file:../../repos/code-inspector/packages/core
-      webpack-code-inspector-plugin: file:../../repos/code-inspector/packages/webpack-plugin
-    transitivePeerDependencies:
-      - supports-color
-
   typescript@5.9.2: {}
 
   undici-types@6.20.0: {}
@@ -6290,19 +6305,7 @@ snapshots:
       d3-time: 3.1.0
       d3-timer: 3.0.1
 
-  vite-code-inspector-plugin@file:../../repos/code-inspector/packages/vite-plugin:
-    dependencies:
-      code-inspector-core: file:../../repos/code-inspector/packages/core
-    transitivePeerDependencies:
-      - supports-color
-
   webidl-conversions@3.0.1: {}
-
-  webpack-code-inspector-plugin@file:../../repos/code-inspector/packages/webpack-plugin:
-    dependencies:
-      code-inspector-core: file:../../repos/code-inspector/packages/core
-    transitivePeerDependencies:
-      - supports-color
 
   whatwg-url@5.0.0:
     dependencies:
